@@ -1,0 +1,155 @@
+Section "validationSuccess" "peopleTable"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "validationFailure" "peopleTable"
+"First","Last","Age"
+"Barry","Blue",21.2
+"Oscar","White",7.6
+
+Section "toleranceSuccess" "peopleTable"
+"First","Last","Age"
+"Barry","White",21.2
+"Oscar","White",7.7
+
+Section "toleranceSuccessForFirstColumn" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.3,1.02,1.5
+
+Section "toleranceSuccessForSecondColumn" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.1,1.07,1.5
+
+Section "toleranceSuccessForTwoColumns" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.3,1.07,1.5
+
+Section "toleranceSuccessWithGeneralCase" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",2.1,1.07,0.5
+
+Section "toleranceFailure" "peopleTable"
+"First","Last","Age"
+"Barry","White",21.2
+"Oscar","White",7.6
+
+Section "toleranceFailureForTwoColumns" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.4,1.08,1.5
+
+Section "toleranceFailureWithGeneralCase" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",2.1,1.08,0.5
+
+Section "varianceSuccess" "peopleTable"
+"First","Last","Age"
+"Barry","White",20.3
+"Oscar","White",7.6
+
+Section "varianceSuccessForTwoColumns" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.15,1.01,1.5
+
+Section "varianceSuccessWithTolerance" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.15,1.01,1.5
+
+Section "varianceFailure" "peopleTable"
+"First","Last","Age"
+"Barry","White",20.1
+"Oscar","White",7.6
+
+Section "varianceFailureForTwoColumns" "peopleTable"
+"Name","Age","Weight","Height"
+"Elliot",1.16,1.02,1.5
+
+Section "mismatchedTypesFormatting" "peopleTable"
+"First","Last","Age"
+"Barry","White","20.2"
+"Oscar","White",7.6
+
+Section "rowOrderSuccess" "peopleTable"
+"First","Last","Age"
+"Oscar","White",7.6
+"Barry","White",21.2
+
+Section "rowOrderFailure" "peopleTable"
+"First","Last","Age"
+"Oscar","White",7.6
+"Barry","White",21.2
+
+Section "verifyCanOnlyBeCalledOnce" "peopleTable"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "actualAdapter" "peopleTable"
+"Adapted First","Adapted Last","Adapted Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "expectedAdapter" "peopleTable"
+"Ignored First","Ignored Last","Ignored Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "multiVerifySuccess" "table1"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "multiVerifySuccess" "table2"
+"First","Last","Age"
+"Elliot","White",3.8
+
+Section "multiVerifySurplus" "table1"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "multiVerifyMissing" "table1"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "multiVerifyMissing" "table2"
+"First","Last","Age"
+"Elliot","White",3.8
+
+Section "onFailedCalledWhenMissingTable" "table1"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "onFailedCalledWhenMissingTable" "table2"
+"First","Last","Age"
+"Elliot","White",3.8
+
+Section "actualAdapterWithTableNotToAdapt" "table1"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "actualAdapterWithTableNotToAdapt" "table2"
+"Adapted First","Adapted Last","Adapted Age"
+"Elliot","White",3.8
+
+Section "expectedAdapterWithTableNotToAdapt" "table1"
+"First","Last","Age"
+"Barry","White",21.3
+"Oscar","White",7.6
+
+Section "expectedAdapterWithTableNotToAdapt" "table2"
+"Ignored First","Ignored Last","Ignored Age"
+"Elliot","White",3.8
+
+Section "verifyJson" "verifyJson: /"
+"/key"
+"val"
+
+Section "verifyJsonString" "verifyJsonString: /"
+"/key"
+"val2"
+
+Metadata "Recorded At" "2014-02-14 05:53:21"

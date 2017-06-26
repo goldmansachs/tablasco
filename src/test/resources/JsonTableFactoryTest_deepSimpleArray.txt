@@ -1,0 +1,7 @@
+Metadata "Recorded At" "2016-09-28 13:50:08"
+
+Section "deepSimpleArray" "deepSimpleArray: /parent/candidates"
+"/parent/candidates"
+"Donald"
+"Hillary"
+

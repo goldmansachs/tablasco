@@ -1,0 +1,6 @@
+Metadata "Recorded At" "2014-05-06 17:02:26"
+
+Section "example" "balanceSheet"
+"Entity","Assets","Liabilities"
+"GSCO",160,-40
+"GSIL",70,-30
