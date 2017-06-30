@@ -1,0 +1,12 @@
+Metadata "Recorded At" "2016-09-28 13:50:08"
+
+Section "multiSimpleArray" "multiSimpleArray: /candidates"
+"/candidates"
+"Donald"
+"Hillary"
+
+Section "multiSimpleArray" "multiSimpleArray: /parties"
+"/parties"
+"Rep"
+"Dem"
+

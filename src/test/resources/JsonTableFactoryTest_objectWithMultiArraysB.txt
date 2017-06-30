@@ -1,0 +1,17 @@
+Metadata "Recorded At" "2016-09-16 11:06:16"
+
+Section "objectWithMultiArraysB" "objectWithMultiArraysB: /"
+"/year"
+2016
+
+Section "objectWithMultiArraysB" "objectWithMultiArraysB: /a1"
+"/year","/a1/age","/a1/name"
+2016,70,"Donald"
+2016,68,"Hillary"
+
+Section "objectWithMultiArraysB" "objectWithMultiArraysB: /a2"
+"/year","/a2/age","/a2/name"
+2016,68,"Hillary"
+2016,74,"Bernie"
+2016,70,"Donald"
+

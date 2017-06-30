@@ -1,0 +1,7 @@
+Metadata "Recorded At" "2016-09-28 16:20:18"
+
+Section "simpleArray" "simpleArray: /"
+"/"
+"Donald"
+"Hillary"
+
