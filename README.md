@@ -3,7 +3,7 @@
 ## What is it?
 Tablasco is a JUnit rule that adds table verification to your unit tests. The three main features of Tablasco together allow you to 
 create maintainable tests that thoroughly verify software behaviour:
-
+`
 ### 1. Fast and efficient table verification algorithm
 Tablasco's table verification algorithm can process tens of thousands of table rows out-of-the-box, and many more with custom 
 configuration. Verification can be configured to control behavior such as verifying row order, ignoring columns and applying tolerance to
@@ -70,6 +70,7 @@ public void tableToBaselineTest()
     VerifiableTable table = new MyResultsVerifiableTable(getResults());
     this.tableVerifier.verify("results", table);
 }
+```
 
 ### Rebasing
 To rebase a test or suite of tests set the system property `rebase=true` or configure the verifier directly using `.withRebase()`. As a
