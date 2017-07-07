@@ -23,6 +23,11 @@ public class FixedDirectoryStrategy implements DirectoryStrategy
     private final File expectedDir;
     private final File outputDir;
 
+    public FixedDirectoryStrategy()
+    {
+        this(new File(System.getProperty("user.dir")), new File(System.getProperty("java.io.tmpdir")));
+    }
+
     public FixedDirectoryStrategy(File expectedDir, File outputDir)
     {
         this.expectedDir = expectedDir;
