@@ -112,7 +112,7 @@ public class TableVerifier<T extends TableVerifier> extends TestWatcher
     private boolean isRebasing = Rebaser.inRebaseMode();
     private Description description;
     private FilenameStrategy fileStrategy = new FilePerMethodStrategy();
-    private DirectoryStrategy directoryStrategy = new FixedDirectoryStrategy(null, null);
+    private DirectoryStrategy directoryStrategy = new FixedDirectoryStrategy();
     private boolean verifyRowOrder = true;
     private boolean hideMatchedRows = false;
     private boolean hideMatchedTables = false;
