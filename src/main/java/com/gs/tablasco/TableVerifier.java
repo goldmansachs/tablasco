@@ -71,25 +71,24 @@ import java.util.concurrent.ThreadFactory;
  * instances of <tt>VerifiableTable</tt>. <tt>TableVerifier</tt> can compare actual and expected tables provided by the
  * test or, more commonly, compares actual tables with expected results stored in the filesystem (the baseline). When
  * expected results are stored in the filesystem there are two modes of operation: rebase mode and the default verify
- * mode.<p>
- *
+ * mode.
+ * <p>
  * In rebase mode actual results provided by the test are saved in the configured expected results directory. No
  * verification is performed and the test always fails to ensure that rebase is not enabled accidentally. Rebase mode
- * can be enabled by setting the system property <ii>rebase</ii> to <ii>true</ii> or by calling
- * {@link .withRebase()}.<p>
- *
+ * can be enabled by setting the system property <ii>rebase</ii> to <ii>true</ii> or by calling <ii>.withRebase()</ii>.
+ * <p>
  * In the default verify mode expected results are read from the filesystem and compared with the actual results
  * provided by the test. If the actual and expected tables match the test passes, otherwise the test fails. The
- * verification results are published as an HTML file in the configured output directory.<p>
- *
+ * verification results are published as an HTML file in the configured output directory.
+ * <p>
  * A number of configuration options are available to influence the behaviour of <tt>TableVerifier</tt>. A fluent
- * interface allows configuration options to be combined in a flexible manner.<p>
- *
+ * interface allows configuration options to be combined in a flexible manner.
+ * <p>
  * <tt>TableVerifier</tt> can be subclasses but the only methods that can be overridden are hooks into the JUnit
  * lifecycle to aloow for custom setup and teardown code. Subclasses should provide the subclass type as generic
  * type <tt>T</tt> to ensure that the fluent interface returns instances of the subclass rather than
- * <tt>TableVerfier</tt>.<p>
- *
+ * <tt>TableVerfier</tt>.
+ * <p>
  * @param <T> Subclass type provided by subclasses to ensure fluent interface returns instances of subclass rather than
  *           instances of <tt>TableVerifier</tt>
  */
