@@ -31,6 +31,7 @@ public final TableVerifier tableVerifier = new TableVerifier()
     .withExpectedDir("src/test/resources")
     .withOutputDir("target");
 ```
+
 JUnit, by design, ensures that each test method has its own instance of `TableVerifier` and Tablasco takes advantage of
 this to offer a fluent API that allows configuration to cascade from the project, to the class, to the test level. To
 set project level configuration you can wrap the initialisation code above in a factory method:
