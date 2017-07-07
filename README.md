@@ -30,8 +30,8 @@ public final TableVerifier tableVerifier = new TableVerifier()
     .withExpectedDir("src/test/resources")
     .withOutputDir("target");
 ```
-Each test method in a JUnit test has its own instance of a rule and thus each Tablasco test method has its own instance of
-`TableVerifier`. Tablasco takes advantage of this to offer a fluent configuration API that mutates the `TableVerifier` instance and 
+JUnit design ensures that each test method has its own instance of
+`TableVerifier` and Tablasco takes advantage of this to offer a fluent configuration API that
 allows configuration to cascade from the project, to the class, to the test level. To set project level configuration you are encouraged 
 to wrap the code above in a factory method:
 ```
