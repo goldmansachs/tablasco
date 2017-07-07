@@ -15,7 +15,7 @@ Output can be configured to support large datasets by hiding matched rows and co
 
 ### 3. Automatic baseline management
 Each Tablasco test is backed by a text file containing expected results; this _baseline_ file is normally saved with the code in version 
-control. If a test fails because of a change that causes an expected difference the test can be _rebased_ to automatically update
+control. If a test fails because of a change that causes an expected difference the test can be _rebased_ to update
 the text file with the new results. The updated baseline can then be committed with the corresponding software changes.
 
 ## Usage
