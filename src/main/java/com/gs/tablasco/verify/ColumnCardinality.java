@@ -27,8 +27,8 @@ import java.io.Serializable;
 
 class ColumnCardinality implements Serializable
 {
+    private final int maximumCardinalityToCount;
     private MutableBag<Object> bag = Bags.mutable.of();
-    private int maximumCardinalityToCount;
 
     ColumnCardinality(int maximumCardinalityToCount)
     {
