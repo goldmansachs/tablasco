@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Map;
+
 public class TableVerifierPerformanceTest
 {
     @Rule
@@ -70,7 +72,10 @@ public class TableVerifierPerformanceTest
 
     private void verify(VerifiableTable actualData)
     {
-        this.tableVerifier.verify(Maps.fixedSize.of("table", new ExpectedTable()), Maps.fixedSize.of("table", actualData));;
+        VerifiableTable expectedTable = new ExpectedTable();
+        Map<String, VerifiableTable> expectedTables = Maps.fixedSize.of("table", expectedTable);
+        Map<String, VerifiableTable> actualTables = Maps.fixedSize.of("table", actualData);
+        this.tableVerifier.verify(expectedTables, actualTables);;
     }
 
     private static class ExpectedTable implements VerifiableTable

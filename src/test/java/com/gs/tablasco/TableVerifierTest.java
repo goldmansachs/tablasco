@@ -16,6 +16,8 @@
 
 package com.gs.tablasco;
 
+import com.gs.tablasco.lifecycle.ExceptionHandler;
+import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.impl.factory.Maps;
@@ -24,11 +26,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Description;
 
+import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TableVerifierTest
 {
-    private final TableVerifierSubclass verifier = new TableVerifierSubclass()
+    private final TableVerifier verifier = new TableVerifier()
             .withExpectedDir(TableTestUtils.getExpectedDirectory())
             .withOutputDir(TableTestUtils.getOutputDirectory())
             .withFilePerClass();
@@ -261,6 +265,8 @@ public class TableVerifierTest
     @Test
     public void onFailedCalledWhenMissingTable()
     {
+        TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
+        this.verifier.withLifecycleEventHandler(handler);
         this.verifier.starting(this.description.get());
         this.verifier.verify("table1", TableTestUtils.ACTUAL);
         TableTestUtils.assertAssertionError(new Runnable()
@@ -271,7 +277,28 @@ public class TableVerifierTest
                 verifier.succeeded(description.get());
             }
         });
-        Assert.assertEquals("started failed ", this.verifier.lifecycle);
+        Assert.assertEquals("started failed ", handler.lifecycle);
+    }
+
+    @Test
+    public void exceptionHandlerTest()
+    {
+        final RuntimeException exception = new RuntimeException();
+        final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        ExceptionHandler exceptionHandler = new ExceptionHandler()
+        {
+            @Override
+            public void onException(File outputFile, Throwable throwable)
+            {
+                Assert.assertTrue(outputFile.exists());
+                Assert.assertSame(exception, throwable);
+                atomicBoolean.set(true);
+            }
+        };
+        this.verifier.withExceptionHandler(exceptionHandler);
+        this.verifier.starting(this.description.get());
+        this.verifier.failed(exception, this.description.get());
+        Assert.assertTrue(atomicBoolean.get());
     }
 
     @Test
@@ -382,14 +409,15 @@ public class TableVerifierTest
     @Test(expected = AssertionError.class)
     public void rebaseLifecycle()
     {
-        TableVerifierSubclass watcher = new TableVerifierSubclass().withRebase();
+        TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
+        TableVerifier watcher = new TableVerifier().withLifecycleEventHandler(handler).withRebase();
         try
         {
             watcher.succeeded(this.description.get());
         }
         finally
         {
-            Assert.assertEquals("succeeded ", watcher.lifecycle);
+            Assert.assertEquals("succeeded ", handler.lifecycle);
         }
     }
 
@@ -401,36 +429,36 @@ public class TableVerifierTest
         Assert.assertTrue(tableVerifier.withRebase().isRebasing());
     }
 
-    private static class TableVerifierSubclass extends TableVerifier<TableVerifierSubclass>
+    private static class TestLifecycleEventHandler implements LifecycleEventHandler
     {
         private String lifecycle = "";
 
         @Override
-        protected void onStarted(Description description)
+        public void onStarted(Description description)
         {
             this.lifecycle += "started ";
         }
 
         @Override
-        protected void onSucceeded(Description description)
+        public void onSucceeded(Description description)
         {
             this.lifecycle += "succeeded ";
         }
 
         @Override
-        protected void onFailed(Throwable e, Description description)
+        public void onFailed(Throwable e, Description description)
         {
             this.lifecycle += "failed ";
         }
 
         @Override
-        protected void onSkipped(Description description)
+        public void onSkipped(Description description)
         {
             this.lifecycle += "skipped ";
         }
 
         @Override
-        protected void onFinished(Description description)
+        public void onFinished(Description description)
         {
             this.lifecycle += "finished";
         }

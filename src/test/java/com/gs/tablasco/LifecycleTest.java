@@ -16,6 +16,7 @@
 
 package com.gs.tablasco;
 
+import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -193,39 +194,38 @@ public class LifecycleTest
 
     private static TableVerifier newInnerClassVerifier(final List<String> events)
     {
-        return new TableVerifier()
+        return new TableVerifier().withLifecycleEventHandler(new LifecycleEventHandler()
         {
             @Override
-            protected void onStarted(Description description)
+            public void onStarted(Description description)
             {
                 events.add("onStarted");
             }
 
             @Override
-            protected void onSucceeded(Description description)
+            public void onSucceeded(Description description)
             {
                 events.add("onSucceeded");
             }
 
             @Override
-            protected void onFailed(Throwable e, Description description)
+            public void onFailed(Throwable e, Description description)
             {
-                super.onFailed(e, description);
                 events.add("onFailed");
             }
 
             @Override
-            protected void onSkipped(Description description)
+            public void onSkipped(Description description)
             {
                 events.add("onSkipped");
             }
 
             @Override
-            protected void onFinished(Description description)
+            public void onFinished(Description description)
             {
                 events.add("onFinished");
             }
-        }
+        })
         .withExpectedDir(TableTestUtils.getExpectedDirectory())
         .withOutputDir(TableTestUtils.getOutputDirectory())
         .withFilePerClass();
