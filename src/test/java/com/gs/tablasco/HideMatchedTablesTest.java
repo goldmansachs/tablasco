@@ -48,8 +48,8 @@ public class HideMatchedTablesTest
             public void run()
             {
                 tableVerifier.verify(
-                        Maps.fixedSize.of("match", matchTable, "outOfOrder", outOfOrderTableExpected, "break", breakTableExpected),
-                        Maps.fixedSize.of("match", matchTable, "outOfOrder", outOfOrderTableActual, "break", breakTableActual));
+                        Maps.fixedSize.of("match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
+                        Maps.fixedSize.of("match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual));
             }
         });
         Assert.assertEquals(

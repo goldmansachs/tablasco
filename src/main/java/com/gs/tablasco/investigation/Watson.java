@@ -17,23 +17,17 @@
 package com.gs.tablasco.investigation;
 
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.ColumnComparators;
-import com.gs.tablasco.verify.HtmlFormatter;
-import com.gs.tablasco.verify.KeyedVerifiableTableAdapter;
-import com.gs.tablasco.verify.Metadata;
-import com.gs.tablasco.verify.MultiTableVerifier;
-import com.gs.tablasco.verify.ResultCell;
-import com.gs.tablasco.verify.ResultTable;
+import com.gs.tablasco.verify.*;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.utility.Iterate;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +48,7 @@ class Watson
     {
         this.outputFile = outputFile;
         ColumnComparators columnComparators = new ColumnComparators.Builder().withTolerance(1.0).build();
-        this.multiTableVerifier = new MultiTableVerifier(columnComparators, new IndexMapTableVerifier(false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD));
+        this.multiTableVerifier = new MultiTableVerifier(new IndexMapTableVerifier(columnComparators, false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD));
     }
 
     public List<Object> assist(String levelName, InvestigationLevel nextLevel, int drilldownLimit)
@@ -78,7 +72,7 @@ class Watson
 
         String levelDescription = nextLevel.getLevelDescription();
         ResultTable results = this.findBreaks(levelDescription, actualResults, expectedResults);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, Sets.fixedSize.of(levelDescription), false, false, HtmlFormatter.DEFAULT_ROW_LIMIT);
+        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, true, false, Collections.<String>emptySet()));
         htmlFormatter.appendResults(levelName, Maps.fixedSize.of(levelDescription, results), Metadata.newEmpty());
         return getRowKeys(results, drilldownLimit);
     }

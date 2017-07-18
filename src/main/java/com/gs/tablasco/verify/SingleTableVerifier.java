@@ -20,5 +20,5 @@ import com.gs.tablasco.VerifiableTable;
 
 public interface SingleTableVerifier
 {
-    ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators);
+    ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData);
 }

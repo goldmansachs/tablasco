@@ -21,20 +21,16 @@ import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TestName;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 public class MultiTableVerifierTest
@@ -53,7 +49,8 @@ public class MultiTableVerifierTest
     {
         this.resultsFile = new File(TableTestUtils.getOutputDirectory(), MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName.getMethodName() + ".html");
         this.resultsFile.delete();
-        this.verifier = new MultiTableVerifier(new ColumnComparators.Builder().build(), new IndexMapTableVerifier(true, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false));
+        ColumnComparators columnComparators = new ColumnComparators.Builder().build();
+        this.verifier = new MultiTableVerifier(new IndexMapTableVerifier(columnComparators, true, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false));
     }
 
     @After
@@ -115,7 +112,7 @@ public class MultiTableVerifierTest
     private Map<String, ResultTable> verifyTables(Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults)
     {
         Map<String, ResultTable> results = this.verifier.verifyTables(expectedResults, actualResults);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, Sets.fixedSize.<String>of(), false, false, HtmlFormatter.DEFAULT_ROW_LIMIT);
+        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.<String>emptySet()));
         htmlFormatter.appendResults(this.testName.getMethodName(), results, null);
         return results;
     }

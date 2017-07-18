@@ -30,9 +30,9 @@ import java.util.Map;
 public class SingleTableVerifierMaxBestMatchThresholdTest extends AbstractSingleTableVerifierTest
 {
     @Override
-    protected IndexMapTableVerifier createSingleTableVerifier()
+    protected IndexMapTableVerifier createSingleTableVerifier(ColumnComparators columnComparators)
     {
-        return new IndexMapTableVerifier(true, Integer.MAX_VALUE, false, false);
+        return new IndexMapTableVerifier(columnComparators, true, Integer.MAX_VALUE, false, false);
     }
 
     @Override

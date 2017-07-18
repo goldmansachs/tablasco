@@ -23,7 +23,6 @@ import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsParser;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.factory.Sets;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -35,6 +34,7 @@ import org.junit.runners.MethodSorters;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -89,11 +89,11 @@ public abstract class AbstractSingleTableVerifierTest
 
     private void assertVerification()
     {
-        SingleTableVerifier verifier = createSingleTableVerifier();
         ColumnComparators columnComparators = new ColumnComparators.Builder().withTolerance(1.0d).build();
-        List<List<ResultCell>> actualVerification = verifier.verify(this.actual, this.expected, columnComparators).getVerifiedRows();
+        SingleTableVerifier verifier = createSingleTableVerifier(columnComparators);
+        List<List<ResultCell>> actualVerification = verifier.verify(this.actual, this.expected).getVerifiedRows();
         VerifiableTable rebasedExpected = getRebasedExpected();
-        List<List<ResultCell>> rebasedActualVerification = verifier.verify(this.actual, rebasedExpected, columnComparators).getVerifiedRows();
+        List<List<ResultCell>> rebasedActualVerification = verifier.verify(this.actual, rebasedExpected).getVerifiedRows();
         List<List<ResultCell>> expectedVerification = this.getExpectedVerification(this.testName.getMethodName());
         this.writeResults("ACTUAL", actualVerification);
         this.writeResults("ACTUAL (REBASE)", rebasedActualVerification);
@@ -117,14 +117,14 @@ public abstract class AbstractSingleTableVerifierTest
         }
     }
 
-    protected abstract SingleTableVerifier createSingleTableVerifier();
+    protected abstract SingleTableVerifier createSingleTableVerifier(ColumnComparators columnComparators);
 
     protected abstract List<List<ResultCell>> getExpectedVerification(String methodName);
 
     private void writeResults(String tableName, List<List<ResultCell>> verify)
     {
         File outputFile = new File(TableTestUtils.getOutputDirectory(), this.getClass().getSimpleName() + ".html");
-        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, Sets.fixedSize.<String>of(), false, false, HtmlFormatter.DEFAULT_ROW_LIMIT);
+        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.<String>emptySet()));
         htmlFormatter.appendResults(this.testName.getMethodName(), Maps.fixedSize.of(tableName, new ResultTable(new boolean[verify.get(0).size()], verify)), Metadata.newEmpty());
     }
 

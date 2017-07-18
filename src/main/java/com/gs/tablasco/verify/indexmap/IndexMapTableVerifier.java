@@ -17,12 +17,7 @@
 package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.CellComparator;
-import com.gs.tablasco.verify.ColumnComparators;
-import com.gs.tablasco.verify.KeyedVerifiableTable;
-import com.gs.tablasco.verify.ResultCell;
-import com.gs.tablasco.verify.ResultTable;
-import com.gs.tablasco.verify.SingleTableVerifier;
+import com.gs.tablasco.verify.*;
 import org.eclipse.collections.api.block.function.Function2;
 import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.list.MutableList;
@@ -42,6 +37,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexMapTableVerifier.class);
     public static final int DEFAULT_BEST_MATCH_THRESHOLD = 1000000;
     public static final long DEFAULT_PARTIAL_MATCH_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(5L);
+    private final ColumnComparators columnComparators;
     private final boolean verifyRowOrder;
     private final int bestMatchThreshold;
     private final boolean ignoreSurplusRows;
@@ -50,18 +46,19 @@ public class IndexMapTableVerifier implements SingleTableVerifier
     private final boolean ignoreMissingColumns;
     private final long partialMatchTimeoutMillis;
 
-    public IndexMapTableVerifier(boolean verifyRowOrder, int bestMatchThreshold)
+    public IndexMapTableVerifier(ColumnComparators columnComparators, boolean verifyRowOrder, int bestMatchThreshold)
     {
-        this(verifyRowOrder, bestMatchThreshold, false, false);
+        this(columnComparators, verifyRowOrder, bestMatchThreshold, false, false);
     }
 
-    public IndexMapTableVerifier(boolean verifyRowOrder, int bestMatchThreshold, boolean ignoreSurplusRows, boolean ignoreMissingRows)
+    public IndexMapTableVerifier(ColumnComparators columnComparators, boolean verifyRowOrder, int bestMatchThreshold, boolean ignoreSurplusRows, boolean ignoreMissingRows)
     {
-        this(verifyRowOrder, bestMatchThreshold, ignoreSurplusRows, ignoreMissingRows, false, false, DEFAULT_PARTIAL_MATCH_TIMEOUT_MILLIS);
+        this(columnComparators, verifyRowOrder, bestMatchThreshold, ignoreSurplusRows, ignoreMissingRows, false, false, DEFAULT_PARTIAL_MATCH_TIMEOUT_MILLIS);
     }
 
-    public IndexMapTableVerifier(boolean verifyRowOrder, int bestMatchThreshold, boolean ignoreSurplusRows, boolean ignoreMissingRows, boolean ignoreSurplusColumns, boolean ignoreMissingColumns, long partialMatchTimeoutMillis)
+    public IndexMapTableVerifier(ColumnComparators columnComparators, boolean verifyRowOrder, int bestMatchThreshold, boolean ignoreSurplusRows, boolean ignoreMissingRows, boolean ignoreSurplusColumns, boolean ignoreMissingColumns, long partialMatchTimeoutMillis)
     {
+        this.columnComparators = columnComparators;
         this.verifyRowOrder = verifyRowOrder;
         this.bestMatchThreshold = bestMatchThreshold;
         this.ignoreSurplusRows = ignoreSurplusRows;
@@ -72,7 +69,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier
     }
 
     @Override
-    public ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData, final ColumnComparators columnComparators)
+    public ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData)
     {
         if (actualData == null)
         {

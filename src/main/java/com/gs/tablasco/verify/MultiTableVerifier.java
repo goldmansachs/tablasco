@@ -31,12 +31,10 @@ import java.util.Map;
 
 public class MultiTableVerifier
 {
-    private final ColumnComparators columnComparators;
     private final SingleTableVerifier singleTableVerifier;
 
-    public MultiTableVerifier(ColumnComparators columnComparators, SingleTableVerifier singleSingleTableVerifier)
+    public MultiTableVerifier(SingleTableVerifier singleSingleTableVerifier)
     {
-        this.columnComparators = columnComparators;
         this.singleTableVerifier = singleSingleTableVerifier;
     }
 
@@ -71,7 +69,7 @@ public class MultiTableVerifier
         {
             throw new IllegalStateException("Expected table '" + tableName + "' has no columns");
         }
-        ResultTable results = this.singleTableVerifier.verify(actualData, expectedData, this.columnComparators);
+        ResultTable results = this.singleTableVerifier.verify(actualData, expectedData);
         resultsMap.put(tableName, results);
     }
 }

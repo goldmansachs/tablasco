@@ -33,9 +33,7 @@ import com.gs.tablasco.verify.*;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.predicate.Predicate;
-import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.procedure.Procedure2;
-import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.block.factory.Functions;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.factory.Sets;
@@ -445,7 +443,6 @@ public final class TableVerifier extends TestWatcher
      * Returns the same instance of <tt>TableVerifier</tt> configured to create a text file of the actual results in the
      * verification output directory. This can be useful for analysis and manual rebasing.
      *
-     * @param createActualResults
      * @return this
      */
     public final TableVerifier withCreateActualResults(boolean createActualResults)
@@ -457,7 +454,6 @@ public final class TableVerifier extends TestWatcher
     /**
      * Limits the creation of the actual results for only tests that have failed verification.
      *
-     * @param createActualResultsOnFailure
      * @return this
      */
     public final TableVerifier withCreateActualResultsOnFailure(boolean createActualResultsOnFailure)
@@ -469,7 +465,6 @@ public final class TableVerifier extends TestWatcher
     /**
      * Adds an assertion summary to html output
      *
-     * @param assertionSummary
      * @return this
      */
     public final TableVerifier withAssertionSummary(boolean assertionSummary)
@@ -492,6 +487,15 @@ public final class TableVerifier extends TestWatcher
     }
 
     /**
+     * Returns the actual table adapter
+     * @return - the actual table adapter
+     */
+    public Function<VerifiableTable, VerifiableTable> getActualAdapter()
+    {
+        return actualAdapter;
+    }
+
+    /**
      * Returns the same instance of <tt>TableVerifier</tt> configured with a function for adapting expected results.
      * Each table in the expected results will be adapted using the specified function before being verified.
      *
@@ -502,6 +506,15 @@ public final class TableVerifier extends TestWatcher
     {
         this.expectedAdapter = expectedAdapter;
         return this;
+    }
+
+    /**
+     * Returns the expected table adapter
+     * @return - the expected table adapter
+     */
+    public Function<VerifiableTable, VerifiableTable> getExpectedAdapter()
+    {
+        return expectedAdapter;
     }
 
     /**
@@ -728,7 +741,7 @@ public final class TableVerifier extends TestWatcher
         {
             if (MapIterate.notEmpty(this.expectedTables))
             {
-                this.verifyTables(this.expectedTables, Maps.fixedSize.<String, VerifiableTable>of(), this.expectedMetadata, this.columnComparatorsBuilder.build());
+                this.verifyTables(this.expectedTables, Maps.fixedSize.<String, VerifiableTable>of(), this.expectedMetadata);
             }
         }
         catch (AssertionError assertionError)
@@ -800,17 +813,16 @@ public final class TableVerifier extends TestWatcher
     /**
      * Verifies a map of table names to actual tables.
      *
-     * @param actualTables
+     * @param actualTables - actual tables by name
      */
     public final void verify(Map<String, VerifiableTable> actualTables)
     {
         this.runPreVerifyChecks();
         this.makeSureDirectoriesAreNotSame();
 
-        ColumnComparators columnComparators = this.columnComparatorsBuilder.build();
         if (this.isRebasing)
         {
-            this.rebaser(columnComparators).rebase(this.description.getMethodName(), adaptAndFilterTables(actualTables, this.actualAdapter), this.getExpectedFile());
+            this.newRebaser().rebase(this.description.getMethodName(), adaptAndFilterTables(actualTables, this.actualAdapter), this.getExpectedFile());
         }
         else
         {
@@ -825,7 +837,7 @@ public final class TableVerifier extends TestWatcher
             {
                 expectedTablesToVerify.put(actualTableName, this.expectedTables.remove(actualTableName));
             }
-            this.verifyTables(expectedTablesToVerify, actualTables, this.expectedMetadata, columnComparators);
+            this.verifyTables(expectedTablesToVerify, actualTables, this.expectedMetadata);
         }
     }
 
@@ -841,34 +853,34 @@ public final class TableVerifier extends TestWatcher
         }
     }
 
-    private Rebaser rebaser(ColumnComparators columnComparators)
+    private Rebaser newRebaser()
     {
-        return new Rebaser(columnComparators, this.metadata, this.baselineHeaders);
+        return new Rebaser(this.columnComparatorsBuilder.build(), this.metadata, this.baselineHeaders);
     }
 
     /**
      * Verifies a map of table names to expected tables with a map of table names to actual tables.
-     * @param expectedTables
-     * @param actualTables
+     * @param expectedTables - expected tables by name
+     * @param actualTables - actual tables by name
      */
     public final void verify(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables)
     {
         this.runPreVerifyChecks();
         if (!this.isRebasing)
         {
-            this.verifyTables(expectedTables, actualTables, null, this.columnComparatorsBuilder.build());
+            this.verifyTables(expectedTables, actualTables, null);
         }
     }
 
-    private void verifyTables(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables, Metadata metadata, ColumnComparators columnComparators)
+    private void verifyTables(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables, Metadata metadata)
     {
         Map<String, VerifiableTable> adaptedExpectedTables = adaptAndFilterTables(expectedTables, this.expectedAdapter);
         Map<String, VerifiableTable> adaptedActualTables = adaptAndFilterTables(actualTables, this.actualAdapter);
-        Map<String, FormattableTable> allResults = getVerifiedResults(columnComparators, adaptedExpectedTables, adaptedActualTables);
-        MutableMap<String, FormattableTable> failedTables = MapIterate.rejectMapOnEntry(allResults, new Predicate2<String, FormattableTable>()
+        Map<String, FormattableTable> allResults = getVerifiedResults(adaptedExpectedTables, adaptedActualTables);
+        boolean verificationSuccess = MapIterate.allSatisfy(allResults, new Predicate<FormattableTable>()
         {
             @Override
-            public boolean accept(String key, FormattableTable verifiedTable)
+            public boolean accept(FormattableTable verifiedTable)
             {
                 return verifiedTable.isSuccess();
             }
@@ -876,26 +888,25 @@ public final class TableVerifier extends TestWatcher
         boolean createActual = this.createActualResults;
         if (this.createActualResultsOnFailure)
         {
-            createActual = !failedTables.isEmpty();
+            createActual = !verificationSuccess;
         }
         if (createActual)
         {
-            this.rebaser(columnComparators).rebase(this.description.getMethodName(), adaptedActualTables, this.getActualFile());
+            this.newRebaser().rebase(this.description.getMethodName(), adaptedActualTables, this.getActualFile());
         }
-        Map<String, FormattableTable> tablesToFormat = this.hideMatchedTables ? failedTables : allResults;
-        if (!tablesToFormat.isEmpty())
-        {
-            Set<String> tablesToHideMatchedRowsFor = this.hideMatchedRows ? UnifiedSet.newSet(tablesToFormat.keySet()) : UnifiedSet.<String>newSet();
-            tablesToHideMatchedRowsFor.removeAll(this.tablesToAlwaysShowMatchedRowsFor);
-            HtmlFormatter htmlFormatter = new HtmlFormatter(this.getOutputFile(), tablesToHideMatchedRowsFor, this.assertionSummary, this.hideMatchedColumns, this.htmlRowLimit);
-            htmlFormatter.appendResults(this.description.getMethodName(), tablesToFormat, metadata, ++this.verifyCount);
-        }
-        failUnless(failedTables.isEmpty());
+        HtmlFormatter htmlFormatter = newHtmlFormatter();
+        htmlFormatter.appendResults(this.description.getMethodName(), allResults, metadata, ++this.verifyCount);
+        Assert.assertTrue("Some tests failed. Check test results file " + this.getOutputFile().getAbsolutePath() + " for more details.", verificationSuccess);
     }
 
-    private Map<String, FormattableTable> getVerifiedResults(ColumnComparators columnComparators, Map<String, VerifiableTable> adaptedExpectedTables, Map<String, VerifiableTable> adaptedActualTables)
+    public HtmlFormatter newHtmlFormatter()
     {
-        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(columnComparators, newSingleSingleTableVerifier());
+        return new HtmlFormatter(this.getOutputFile(), new HtmlOptions(this.assertionSummary, this.htmlRowLimit, this.hideMatchedTables, this.hideMatchedRows, this.hideMatchedColumns, this.tablesToAlwaysShowMatchedRowsFor));
+    }
+
+    private Map<String, FormattableTable> getVerifiedResults(Map<String, VerifiableTable> adaptedExpectedTables, Map<String, VerifiableTable> adaptedActualTables)
+    {
+        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(newSingleTableVerifier());
         Map<String, ResultTable> resultTables = multiTableVerifier.verifyTables(adaptedExpectedTables, adaptedActualTables);
         Map<String, FormattableTable> resultTableInterfaces = new LinkedHashMap<>(resultTables.size());
         for (Map.Entry<String, ResultTable> resultTableEntry : resultTables.entrySet())
@@ -906,14 +917,9 @@ public final class TableVerifier extends TestWatcher
         return resultTableInterfaces;
     }
 
-    private void failUnless(boolean condition)
+    public SingleTableVerifier newSingleTableVerifier()
     {
-        Assert.assertTrue("Some tests failed. Check test results file " + this.getOutputFile().getAbsolutePath() + " for more details.", condition);
-    }
-
-    private IndexMapTableVerifier newSingleSingleTableVerifier()
-    {
-        return new IndexMapTableVerifier(this.verifyRowOrder, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, this.ignoreSurplusRows, this.ignoreMissingRows, this.ignoreSurplusColumns, this.ignoreMissingColumns, this.partialMatchTimeoutMillis);
+        return new IndexMapTableVerifier(this.columnComparatorsBuilder.build(), this.verifyRowOrder, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, this.ignoreSurplusRows, this.ignoreMissingRows, this.ignoreSurplusColumns, this.ignoreMissingColumns, this.partialMatchTimeoutMillis);
     }
 
     private Map<String, VerifiableTable> adaptAndFilterTables(final Map<String, VerifiableTable> tables, final Function<VerifiableTable, VerifiableTable> adapter)
