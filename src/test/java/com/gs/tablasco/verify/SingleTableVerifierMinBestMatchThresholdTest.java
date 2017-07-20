@@ -29,9 +29,9 @@ import java.util.Map;
 public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingleTableVerifierTest
 {
     @Override
-    protected IndexMapTableVerifier createSingleTableVerifier()
+    protected IndexMapTableVerifier createSingleTableVerifier(ColumnComparators columnComparators)
     {
-        return new IndexMapTableVerifier(true, 1, false, false);
+        return new IndexMapTableVerifier(columnComparators, true, 1, false, false);
     }
 
     @Override

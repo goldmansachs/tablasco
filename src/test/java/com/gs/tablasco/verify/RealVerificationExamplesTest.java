@@ -24,15 +24,11 @@ import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsParser;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.factory.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class RealVerificationExamplesTest
 {
@@ -90,8 +86,8 @@ public class RealVerificationExamplesTest
         Assert.assertFalse("Obfuscation is only to help prepare results for checkin", OBFUSCATE);
         Assert.assertTrue(!actualTables.isEmpty());
         Assert.assertEquals(actualTables.keySet(), expectedTables.keySet());
-        ResultTable verify = new IndexMapTableVerifier(false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false).verify(actualTables.get(tableName), expectedTables.get(tableName), columnComparators);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(new File(TableTestUtils.getOutputDirectory(), RealVerificationExamplesTest.class.getSimpleName() + '_' + className + '_' + methodName + ".html"), Sets.fixedSize.of(tableName), false, false, HtmlFormatter.DEFAULT_ROW_LIMIT);
+        ResultTable verify = new IndexMapTableVerifier(columnComparators, false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false).verify(actualTables.get(tableName), expectedTables.get(tableName));
+        HtmlFormatter htmlFormatter = new HtmlFormatter(new File(TableTestUtils.getOutputDirectory(), RealVerificationExamplesTest.class.getSimpleName() + '_' + className + '_' + methodName + ".html"), new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.<String>emptySet()));
         htmlFormatter.appendResults(methodName, Maps.fixedSize.of(tableName, new SummaryResultTable(verify)), Metadata.newEmpty());
         int failedCells = verify.getTotalCellCount() - verify.getPassedCellCount();
         Assert.assertEquals(expectedBrokenCells, failedCells);

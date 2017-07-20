@@ -14,11 +14,11 @@
  * under the License.
  */
 
-package com.gs.tablasco.verify;
+package com.gs.tablasco.lifecycle;
 
-import com.gs.tablasco.VerifiableTable;
+import java.io.File;
 
-public interface SingleTableVerifier
+public interface ExceptionHandler
 {
-    ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData);
+    void onException(File outputFile, Throwable throwable);
 }

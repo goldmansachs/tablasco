@@ -18,20 +18,23 @@ package com.gs.tablasco.verify;
 
 import java.util.Set;
 
-class HtmlOptions
+public class HtmlOptions
 {
-    private final Set<String> tablesToHideMatchedRows;
     private final boolean displayAssertionSummary;
-    private final boolean hideMatchedColumns;
     private final int htmlRowLimit;
+    private final boolean hideMatchedTables;
+    private final boolean hideMatchedRows;
+    private final boolean hideMatchedColumns;
+    private final Set<String> tablesToAlwaysShowMatchedRowsFor;
 
-    HtmlOptions(Set<String> tablesToHideMatchedRows, boolean displayAssertionSummary, boolean hideMatchedColumns, int htmlRowLimit)
+    public HtmlOptions(boolean displayAssertionSummary, int htmlRowLimit, boolean hideMatchedTables, boolean hideMatchedRows, boolean hideMatchedColumns, Set<String> tablesToAlwaysShowMatchedRowsFor)
     {
-
-        this.tablesToHideMatchedRows = tablesToHideMatchedRows;
         this.displayAssertionSummary = displayAssertionSummary;
         this.hideMatchedColumns = hideMatchedColumns;
+        this.hideMatchedTables = hideMatchedTables;
         this.htmlRowLimit = htmlRowLimit;
+        this.hideMatchedRows = hideMatchedRows;
+        this.tablesToAlwaysShowMatchedRowsFor = tablesToAlwaysShowMatchedRowsFor;
     }
 
     boolean isHideMatchedColumns()
@@ -51,6 +54,11 @@ class HtmlOptions
 
     boolean isHideMatchedRowsFor(String tableName)
     {
-        return this.tablesToHideMatchedRows.contains(tableName);
+        return this.hideMatchedRows && !this.tablesToAlwaysShowMatchedRowsFor.contains(tableName);
+    }
+
+    boolean isHideMatchedTables()
+    {
+        return this.hideMatchedTables;
     }
 }

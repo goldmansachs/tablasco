@@ -25,23 +25,14 @@ import org.w3c.dom.Node;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class HtmlFormatter
 {
@@ -85,10 +76,10 @@ public class HtmlFormatter
     private final File outputFile;
     private final HtmlOptions htmlOptions;
 
-    public HtmlFormatter(File outputFile, Set<String> tablesToHideMatchedRows, boolean displayAssertionSummary, boolean hideMatchedColumns, int htmlRowLimit)
+    public HtmlFormatter(File outputFile, HtmlOptions htmlOptions)
     {
         this.outputFile = outputFile;
-        this.htmlOptions = new HtmlOptions(tablesToHideMatchedRows, displayAssertionSummary, hideMatchedColumns, htmlRowLimit);
+        this.htmlOptions = htmlOptions;
     }
 
     private Document initialize(Metadata metadata)
@@ -166,15 +157,28 @@ public class HtmlFormatter
 
     public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount)
     {
-        Document dom = this.initialize(metadata);
-        ensurePathExists(this.outputFile);
-        try (OutputStream outputStream = new FileOutputStream(this.outputFile))
+        Map<String, FormattableTable> resultsToFormat = new LinkedHashMap<>();
+        for (String name : results.keySet())
         {
-            appendResults(testName, results, metadata, verifyCount, dom, outputStream);
+            FormattableTable formattableTable = results.get(name);
+            boolean dontFormat = this.htmlOptions.isHideMatchedTables() && formattableTable.isSuccess();
+            if (!dontFormat)
+            {
+                resultsToFormat.put(name, formattableTable);
+            }
         }
-        catch (Exception e)
+        if (!resultsToFormat.isEmpty())
         {
-            throw new RuntimeException(e);
+            Document dom = this.initialize(metadata);
+            ensurePathExists(this.outputFile);
+            try (OutputStream outputStream = new FileOutputStream(this.outputFile))
+            {
+                appendResults(testName, resultsToFormat, metadata, verifyCount, dom, outputStream);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
     }
 

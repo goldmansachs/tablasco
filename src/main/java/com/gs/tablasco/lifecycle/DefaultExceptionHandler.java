@@ -14,11 +14,17 @@
  * under the License.
  */
 
-package com.gs.tablasco.verify;
+package com.gs.tablasco.lifecycle;
 
-import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.verify.ExceptionHtml;
 
-public interface SingleTableVerifier
+import java.io.File;
+
+public class DefaultExceptionHandler implements ExceptionHandler
 {
-    ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData);
+    @Override
+    public void onException(File outputFile, Throwable throwable)
+    {
+        ExceptionHtml.create(outputFile, throwable);
+    }
 }

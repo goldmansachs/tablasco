@@ -14,11 +14,19 @@
  * under the License.
  */
 
-package com.gs.tablasco.verify;
+package com.gs.tablasco.lifecycle;
 
-import com.gs.tablasco.VerifiableTable;
+import org.junit.runner.Description;
 
-public interface SingleTableVerifier
+public interface LifecycleEventHandler
 {
-    ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData);
+    void onStarted(Description description);
+
+    void onSucceeded(Description description);
+
+    void onFailed(Throwable e, Description description);
+
+    void onSkipped(Description description);
+
+    void onFinished(Description description);
 }
