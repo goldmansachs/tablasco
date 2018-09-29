@@ -1,0 +1,7 @@
+Metadata "Recorded At" "2016-09-16 11:06:16"
+
+Section "arrayWithObjectsWithDifferentKeys" "arrayWithObjectsWithDifferentKeys: /"
+"/age","/name","/party"
+"","Donald","Rep"
+68,"Hillary",""
+

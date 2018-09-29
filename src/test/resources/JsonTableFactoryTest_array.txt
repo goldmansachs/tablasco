@@ -1,7 +1,0 @@
-Metadata "Recorded At" "2016-09-16 11:06:16"
-
-Section "array" "array: /"
-"/age","/name"
-70,"Donald"
-68,"Hillary"
-

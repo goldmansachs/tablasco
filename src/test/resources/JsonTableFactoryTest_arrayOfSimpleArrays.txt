@@ -1,7 +1,0 @@
-Metadata "Recorded At" "2016-10-21 10:22:49"
-
-Section "arrayOfSimpleArrays" "arrayOfSimpleArrays: /array"
-"/array"
-"[foo]"
-"[bar, baz]"
-

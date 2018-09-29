@@ -1,6 +1,0 @@
-Metadata "Recorded At" "2014-02-14 05:53:21"
-
-Section "testFalseFail" "peopleTable"
-"First","Last","Age"
-"Barry","White",21.3
-

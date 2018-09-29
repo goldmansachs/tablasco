@@ -1,7 +1,0 @@
-Metadata "Recorded At" "2016-08-31 16:09:54"
-
-Section "testMavenStyleDirectoryStrategy" "maven"
-"h1","h2"
-"r11","r12"
-"r21","r22"
-

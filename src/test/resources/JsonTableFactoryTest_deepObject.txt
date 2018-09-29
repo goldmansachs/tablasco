@@ -1,6 +1,0 @@
-Metadata "Recorded At" "2016-09-16 11:06:15"
-
-Section "deepObject" "deepObject: /"
-"/level","/candidate/age","/candidate/name","/child/level","/child/candidate/age","/child/candidate/name","/child/child/level","/child/child/candidate/age","/child/child/candidate/name"
-1,68,"Hillary",2,70,"Donald",3,74,"Bernie"
-

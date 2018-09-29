@@ -1,6 +1,0 @@
-Section "toleranceAndRowOrderSuccess" "peopleTable"
-"First","Last","Age"
-"Oscar","White",7.7
-"Barry","White",21.2
-
-Metadata "Recorded At" "2014-02-14 05:53:21"
