@@ -1,9 +1,0 @@
-Metadata "Recorded At" "2016-09-28 19:35:10"
-
-Section "emptySimpleArrayWithParent" "emptySimpleArrayWithParent: /"
-"/year"
-2016
-
-Section "emptySimpleArrayWithParent" "emptySimpleArrayWithParent: /candidates"
-"/year","/candidates"
-

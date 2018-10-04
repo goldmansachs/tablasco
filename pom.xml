@@ -7,9 +7,14 @@
     <groupId>com.goldmansachs.tablasco</groupId>
     <artifactId>tablasco</artifactId>
     <version>2.1.0</version>
+    <packaging>pom</packaging>
 
-    <name>Tablasco</name>
-    <description>Tablasco is a JUnit rule that adds table verification to your unit tests</description>
+    <modules>
+        <module>tablasco-junit</module>
+        <module>tablasco-spark</module>
+    </modules>
+
+    <name>Tablasco Parent Project</name>
     <url>https://github.com/goldmansachs/tablasco/</url>
     <inceptionYear>2017</inceptionYear>
 
@@ -54,30 +59,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.collections</groupId>
-            <artifactId>eclipse-collections</artifactId>
-            <version>7.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.databene</groupId>
-            <artifactId>contiperf</artifactId>
-            <version>2.3.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

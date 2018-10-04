@@ -1,0 +1,14 @@
+Metadata "Recorded At" "2016-09-16 11:06:16"
+
+Section "arrayOfObjectsWithArrays" "arrayOfObjectsWithArrays: /"
+"/vote"
+"president"
+"democrat"
+
+Section "arrayOfObjectsWithArrays" "arrayOfObjectsWithArrays: /candidates"
+"/vote","/candidates/age","/candidates/name"
+"president",70,"Donald"
+"president",68,"Hillary"
+"democrat",74,"Bernie"
+"democrat",68,"Hillary"
+

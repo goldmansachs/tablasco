@@ -1,7 +1,0 @@
-Metadata "Recorded At" "2016-09-28 13:47:02"
-
-Section "singleSimpleArray" "singleSimpleArray: /parties"
-"/parties"
-"Rep"
-"Dem"
-
