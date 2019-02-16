@@ -24,6 +24,7 @@ public interface FilenameStrategy
     /**
      * Returns the expected results filename for a given test class.
      * @param testClass the test class
+     * @param methodName the test method name
      * @return the expected results filename
      */
     String getExpectedFilename(Class<?> testClass, String methodName);
@@ -31,6 +32,7 @@ public interface FilenameStrategy
     /**
      * Returns the verification output filename for a given test class.
      * @param testClass the test class
+     * @param methodName the test method name
      * @return the verification output filename
      */
     String getOutputFilename(Class<?> testClass, String methodName);
@@ -38,6 +40,7 @@ public interface FilenameStrategy
     /**
      * Returns the actual results filename for a given test class.
      * @param testClass the test class
+     * @param methodName the test method name
      * @return the verification output filename
      */
     String getActualFilename(Class<?> testClass, String methodName);

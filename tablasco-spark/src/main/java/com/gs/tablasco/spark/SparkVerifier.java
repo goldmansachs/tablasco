@@ -1,6 +1,5 @@
 package com.gs.tablasco.spark;
 
-import com.google.common.base.Optional;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.FormattableTable;
 import com.gs.tablasco.verify.HtmlFormatter;
@@ -9,6 +8,7 @@ import com.gs.tablasco.verify.Metadata;
 import com.gs.tablasco.verify.SummaryResultTable;
 import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.Optional;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.factory.Sets;
@@ -71,8 +71,9 @@ public class SparkVerifier
         Set<String> groupKeyColumnSet = new LinkedHashSet<>(this.groupKeyColumns);
         Pair<List<String>, JavaPairRDD<Integer, Iterable<List<Object>>>> actualHeadersAndGroups = this.dataFormat.readHeadersAndGroups(actualDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
         Pair<List<String>, JavaPairRDD<Integer, Iterable<List<Object>>>> expectedHeadersAndGroups = this.dataFormat.readHeadersAndGroups(expectedDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
-        JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualHeadersAndGroups.getTwo()
-                .fullOuterJoin(expectedHeadersAndGroups.getTwo());
+        JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualHeadersAndGroups.getTwo();
+        JavaPairRDD<Integer, Iterable<List<Object>>> expectedGroups = expectedHeadersAndGroups.getTwo();
+        JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualGroups.fullOuterJoin(expectedGroups);
         VerifyGroupFunction verifyGroupFunction = new VerifyGroupFunction(
                 groupKeyColumnSet,
                 actualHeadersAndGroups.getOne(),

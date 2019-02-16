@@ -78,7 +78,7 @@ import java.util.concurrent.ThreadFactory;
  * <p>
  * In rebase mode actual results provided by the test are saved in the configured expected results directory. No
  * verification is performed and the test always fails to ensure that rebase is not enabled accidentally. Rebase mode
- * can be enabled by setting the system property <ii>rebase</ii> to <ii>true</ii> or by calling <ii>.withRebase()</ii>.
+ * can be enabled by setting the system property <i>rebase</i> to <i>true</i> or by calling <i>.withRebase()</i>.
  * <p>
  * In the default verify mode expected results are read from the filesystem and compared with the actual results
  * provided by the test. If the actual and expected tables match the test passes, otherwise the test fails. The
@@ -467,6 +467,7 @@ public final class TableVerifier extends TestWatcher
      * Returns the same instance of <tt>TableVerifier</tt> configured to create a text file of the actual results in the
      * verification output directory. This can be useful for analysis and manual rebasing.
      *
+     * @param createActualResults
      * @return this
      */
     public final TableVerifier withCreateActualResults(boolean createActualResults)

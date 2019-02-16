@@ -1,6 +1,5 @@
 package com.gs.tablasco.spark;
 
-import com.google.common.base.Optional;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.adapters.TableAdapters;
 import com.gs.tablasco.verify.ColumnComparators;
@@ -10,6 +9,7 @@ import com.gs.tablasco.verify.ListVerifiableTable;
 import com.gs.tablasco.verify.ResultTable;
 import com.gs.tablasco.verify.SummaryResultTable;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
+import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.Function;
 import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.impl.list.mutable.FastList;
