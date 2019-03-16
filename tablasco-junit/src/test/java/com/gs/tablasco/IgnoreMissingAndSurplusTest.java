@@ -16,12 +16,12 @@
 
 package com.gs.tablasco;
 
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class IgnoreMissingAndSurplusTest
 {
@@ -34,7 +34,7 @@ public class IgnoreMissingAndSurplusTest
     public void allRowsMatch() throws IOException
     {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
-        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table), Maps.fixedSize.of("name", table));
+        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Collections.singletonMap("name", table), Collections.singletonMap("name", table));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -58,14 +58,7 @@ public class IgnoreMissingAndSurplusTest
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
 
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withIgnoreMissingRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
 
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
@@ -92,14 +85,7 @@ public class IgnoreMissingAndSurplusTest
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
 
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreSurplusRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -124,7 +110,7 @@ public class IgnoreMissingAndSurplusTest
     {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
-        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
+        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -143,14 +129,7 @@ public class IgnoreMissingAndSurplusTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 3", "C1", "C2", "B1", "B2");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -175,14 +154,7 @@ public class IgnoreMissingAndSurplusTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B3");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -203,7 +175,7 @@ public class IgnoreMissingAndSurplusTest
     {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
-        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
+        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -218,7 +190,7 @@ public class IgnoreMissingAndSurplusTest
     {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2");
-        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
+        this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -233,7 +205,7 @@ public class IgnoreMissingAndSurplusTest
     {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         VerifiableTable actual = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
-        this.tableVerifier.withIgnoreSurplusColumns().verify(Maps.fixedSize.of("name", expected), Maps.fixedSize.of("name", actual));
+        this.tableVerifier.withIgnoreSurplusColumns().verify(Collections.singletonMap("name", expected), Collections.singletonMap("name", actual));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -252,14 +224,7 @@ public class IgnoreMissingAndSurplusTest
     {
         final VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withIgnoreSurplusColumns().verify(Maps.fixedSize.of("name", expected), Maps.fixedSize.of("name", actual));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreSurplusColumns().verify(Collections.singletonMap("name", expected), Collections.singletonMap("name", actual)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -280,7 +245,7 @@ public class IgnoreMissingAndSurplusTest
     {
         VerifiableTable expected = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
-        this.tableVerifier.withIgnoreMissingColumns().verify(Maps.fixedSize.of("name", expected), Maps.fixedSize.of("name", actual));
+        this.tableVerifier.withIgnoreMissingColumns().verify(Collections.singletonMap("name", expected), Collections.singletonMap("name", actual));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -299,14 +264,7 @@ public class IgnoreMissingAndSurplusTest
     {
         final VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withIgnoreMissingColumns().verify(Maps.fixedSize.of("name", expected), Maps.fixedSize.of("name", actual));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingColumns().verify(Collections.singletonMap("name", expected), Collections.singletonMap("name", actual)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -327,7 +285,7 @@ public class IgnoreMissingAndSurplusTest
     {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
-        this.tableVerifier.withIgnoreMissingColumns().withIgnoreSurplusColumns().verify(Maps.fixedSize.of("name", expected), Maps.fixedSize.of("name", actual));
+        this.tableVerifier.withIgnoreMissingColumns().withIgnoreSurplusColumns().verify(Collections.singletonMap("name", expected), Collections.singletonMap("name", actual));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +

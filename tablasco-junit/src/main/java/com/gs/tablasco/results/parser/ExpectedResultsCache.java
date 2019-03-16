@@ -20,22 +20,21 @@ import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.ExpectedResultsLoader;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 public class ExpectedResultsCache
 {
-    private static final Map<File, ExpectedResults> RESULT_CACHES = new WeakHashMap<>();
+    private static final Map<File, ExpectedResults> RESULT_CACHES = Collections.synchronizedMap(new WeakHashMap<>());
 
     public static ExpectedResults getExpectedResults(ExpectedResultsLoader expectedResultsLoader, File expectedResultsFile)
     {
-        ExpectedResults cached = RESULT_CACHES.get(expectedResultsFile);
-        if (cached != null)
+        return RESULT_CACHES.computeIfAbsent(expectedResultsFile, file ->
         {
-            return cached;
-        }
-        ExpectedResults expectedResults = new ExpectedResultsParser(expectedResultsLoader, expectedResultsFile).parse();
-        RESULT_CACHES.put(expectedResultsFile, expectedResults);
-        return expectedResults;
+            ExpectedResults expectedResults = new ExpectedResultsParser(expectedResultsLoader, expectedResultsFile).parse();
+            RESULT_CACHES.put(expectedResultsFile, expectedResults);
+            return expectedResults;
+        });
     }
 }

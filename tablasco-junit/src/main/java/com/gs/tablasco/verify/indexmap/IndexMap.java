@@ -33,7 +33,7 @@ public class IndexMap implements Comparable<IndexMap>
         }
     }
 
-    public void setOutOfOrder()
+    void setOutOfOrder()
     {
         this.isOutOfOrder = true;
     }
@@ -100,7 +100,7 @@ public class IndexMap implements Comparable<IndexMap>
         return this.actualIndex >= 0 && this.expectedIndex >= 0;
     }
 
-    public boolean isOutOfOrder()
+    boolean isOutOfOrder()
     {
         return this.isOutOfOrder;
     }
@@ -132,12 +132,12 @@ public class IndexMap implements Comparable<IndexMap>
                 '}';
     }
 
-    public int getExpectedIndex()
+    int getExpectedIndex()
     {
         return expectedIndex;
     }
 
-    public int getActualIndex()
+    int getActualIndex()
     {
         return actualIndex;
     }

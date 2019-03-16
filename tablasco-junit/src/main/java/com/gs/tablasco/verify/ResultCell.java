@@ -16,17 +16,15 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.block.predicate.Predicate;
-import org.eclipse.collections.api.block.procedure.Procedure2;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.utility.MapIterate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Bean which holds result information for each cell in the grid, including formatted strings for actual and expected values and a
@@ -35,24 +33,10 @@ import java.util.Map;
 
 public abstract class ResultCell implements Serializable
 {
-    public static final Predicate<ResultCell> IS_FAILED_CELL = new Predicate<ResultCell>()
-    {
-        @Override
-        public boolean accept(ResultCell each)
-        {
-            return FailedCell.class.isInstance(each);
-        }
-    };
-    public static final Predicate<ResultCell> IS_PASSED_CELL = new Predicate<ResultCell>()
-    {
-        @Override
-        public boolean accept(ResultCell each)
-        {
-            return PassedCell.class.isInstance(each);
-        }
-    };
+    public static final Predicate<ResultCell> IS_FAILED_CELL = FailedCell.class::isInstance;
+    public static final Predicate<ResultCell> IS_PASSED_CELL = PassedCell.class::isInstance;
 
-    protected final CellFormatter formatter;
+    final CellFormatter formatter;
 
     protected ResultCell(CellFormatter formatter)
     {
@@ -86,12 +70,12 @@ public abstract class ResultCell implements Serializable
         return new SurplusCell(formatter, actual);
     }
 
-    public static ResultCell createCustomCell(String contents, String cssClass)
+    static ResultCell createCustomCell(String contents, String cssClass)
     {
         return createCustomCell(null, contents, cssClass);
     }
 
-    public static ResultCell createCustomCell(String title, String contents, String cssClass)
+    static ResultCell createCustomCell(String title, String contents, String cssClass)
     {
         return new CustomCell(title, contents, cssClass);
     }
@@ -101,17 +85,17 @@ public abstract class ResultCell implements Serializable
         return new OutOfOrderCell(formatter, actualAndExpected);
     }
 
-    public static ResultCell createSummaryCell(int maximumCardinalityToCount, ColumnCardinality columnCardinality)
+    static ResultCell createSummaryCell(int maximumCardinalityToCount, ColumnCardinality columnCardinality)
     {
         return new SummaryCell(maximumCardinalityToCount, columnCardinality);
     }
 
-    public static Element createNodeWithText(Document document, String tagName, String content)
+    static Element createNodeWithText(Document document, String tagName, String content)
     {
         return createNodeWithText(document, tagName, content, null);
     }
 
-    public static Element createNodeWithText(Document document, String tagName, String content, String cssClass)
+    static Element createNodeWithText(Document document, String tagName, String content, String cssClass)
     {
         Element element = document.createElement(tagName);
         if (cssClass != null)
@@ -122,7 +106,7 @@ public abstract class ResultCell implements Serializable
         return element;
     }
 
-    public static Element createCell(Document document, String className, boolean headerRow, boolean isNumeric, Node... content)
+    private static Element createCell(Document document, String className, boolean headerRow, boolean isNumeric, Node... content)
     {
         Element td = document.createElement(headerRow ? "th" : "td");
         td.setAttribute("class", className + (isNumeric ? " number" : ""));
@@ -255,7 +239,10 @@ public abstract class ResultCell implements Serializable
         @Override
         public Object getSummary()
         {
-            return Maps.fixedSize.of("Expected", this.formatter.format(this.expected), "Actual", this.formatter.format(this.actual));
+            Map<String, String> summary = new LinkedHashMap<>(2);
+            summary.put("Expected", this.formatter.format(this.expected));
+            summary.put("Actual", this.formatter.format(this.actual));
+            return summary;
         }
     }
 
@@ -359,7 +346,7 @@ public abstract class ResultCell implements Serializable
 
     private static class OutOfOrderCell extends ResultCell
     {
-        protected final Object actualAndExpected;
+        final Object actualAndExpected;
 
         private OutOfOrderCell(CellFormatter formatter, Object actualAndExpected)
         {
@@ -454,32 +441,22 @@ public abstract class ResultCell implements Serializable
             }
             else
             {
-                this.columnCardinality.forEachWithOccurrences(new Procedure2<Object, Integer>()
-                {
-                    @Override
-                    public void value(Object value, Integer occurrences)
+                this.columnCardinality.forEachWithOccurrences((value, occurrences) -> {
+                    if (value instanceof Map)
                     {
-                        if (value instanceof Map)
-                        {
-                            Map valueMap = (Map) value;
-                            MapIterate.forEachKeyValue(valueMap, new Procedure2()
-                            {
-                                @Override
-                                public void value(Object type, Object value)
-                                {
-                                    node.appendChild(ResultCell.createNodeWithText(document, "span", String.valueOf(type) + " ", "grey"));
-                                    node.appendChild(getValueNode(document, value));
-                                }
-                            });
-                        }
-                        else
-                        {
-                            node.appendChild(getValueNode(document, value));
-                        }
-                        node.appendChild(ResultCell.createNodeWithText(document, "span", "- ", "grey"));
-                        node.appendChild(ResultCell.createNodeWithText(document, "span", NUMBER_FORMAT.format(occurrences) + adaptOnCount(occurrences, " row"), "italic blue"));
-                        node.appendChild(document.createElement("br"));
+                        Map valueMap = (Map) value;
+                        valueMap.forEach((k, v) -> {
+                            node.appendChild(ResultCell.createNodeWithText(document, "span", k + " ", "grey"));
+                            node.appendChild(getValueNode(document, v));
+                        });
                     }
+                    else
+                    {
+                        node.appendChild(getValueNode(document, value));
+                    }
+                    node.appendChild(ResultCell.createNodeWithText(document, "span", "- ", "grey"));
+                    node.appendChild(ResultCell.createNodeWithText(document, "span", NUMBER_FORMAT.format(occurrences) + adaptOnCount(occurrences, " row"), "italic blue"));
+                    node.appendChild(document.createElement("br"));
                 });
             }
             return node;
@@ -487,7 +464,7 @@ public abstract class ResultCell implements Serializable
 
         private Node getValueNode(Document document, Object value)
         {
-            return document.createTextNode(String.valueOf(value) + " ");
+            return document.createTextNode(value + " ");
         }
     }
 

@@ -17,8 +17,9 @@
 package com.gs.tablasco.adapters;
 
 import com.gs.tablasco.VerifiableTable;
-import org.eclipse.collections.api.block.predicate.Predicate;
-import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 
 public class TableAdapters
 {
@@ -29,7 +30,7 @@ public class TableAdapters
      * @param rowFilter a predicate that takes row index and table and returns true if the row should be included
      * @return the adapted table
      */
-    public static VerifiableTable withRows(VerifiableTable delegate, IntObjectPredicate<VerifiableTable> rowFilter)
+    public static VerifiableTable withRows(VerifiableTable delegate, IntPredicate rowFilter)
     {
         return new RowFilterAdapter(delegate, rowFilter);
     }

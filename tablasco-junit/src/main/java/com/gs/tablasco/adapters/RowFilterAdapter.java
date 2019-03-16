@@ -18,22 +18,23 @@ package com.gs.tablasco.adapters;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
+
+import java.util.function.IntPredicate;
 
 class RowFilterAdapter extends DefaultVerifiableTableAdapter
 {
-    private final IntArrayList indexMap;
+    private final int[] indexMap;
+    private int rowCount = 0;
 
-    RowFilterAdapter(VerifiableTable delegate, IntObjectPredicate<VerifiableTable> rowFilter)
+    RowFilterAdapter(VerifiableTable delegate, IntPredicate rowFilter)
     {
         super(delegate);
-        this.indexMap = new IntArrayList(delegate.getRowCount());
+        this.indexMap = new int[delegate.getRowCount()];
         for (int i = 0; i < delegate.getRowCount(); i++)
         {
-            if (rowFilter.accept(i, delegate))
+            if (rowFilter.test(i))
             {
-                indexMap.add(i);
+                indexMap[this.rowCount++] = i;
             }
         }
     }
@@ -41,12 +42,12 @@ class RowFilterAdapter extends DefaultVerifiableTableAdapter
     @Override
     public int getRowCount()
     {
-        return this.indexMap.size();
+        return this.rowCount;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        return super.getValueAt(this.indexMap.get(rowIndex), columnIndex);
+        return super.getValueAt(this.indexMap[rowIndex], columnIndex);
     }
 }

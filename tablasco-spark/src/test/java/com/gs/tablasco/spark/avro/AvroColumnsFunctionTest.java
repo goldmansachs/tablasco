@@ -1,9 +1,6 @@
 package com.gs.tablasco.spark.avro;
 
 import org.apache.avro.Schema;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,17 +8,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
-public class AvroHeadersFunctionTest
+public class AvroColumnsFunctionTest
 {
     @Test
     public void test()
     {
-        MutableList<Schema.Field> fields = FastList.newListWith(
+        List<Schema.Field> fields = Arrays.asList(
                 new Schema.Field(Schema.Type.ARRAY.getName(), Schema.createArray(Schema.create(Schema.Type.BOOLEAN)), null, null),
-                new Schema.Field(Schema.Type.RECORD.getName(), Schema.createRecord(Collections.<Schema.Field>emptyList()), null, null),
+                new Schema.Field(Schema.Type.RECORD.getName(), Schema.createRecord(Collections.emptyList()), null, null),
                 new Schema.Field(Schema.Type.MAP.getName(), Schema.createMap(Schema.create(Schema.Type.BOOLEAN)), null, null),
                 new Schema.Field(Schema.Type.BOOLEAN.getName(), Schema.create(Schema.Type.BOOLEAN), null, null),
                 new Schema.Field(Schema.Type.STRING.getName(), Schema.create(Schema.Type.STRING), null, null),
@@ -37,20 +36,20 @@ public class AvroHeadersFunctionTest
 
         assertEquals(Schema.Type.values().length, fields.size());
 
-        List<String> headers = new AvroHeadersFunction(new HashSet<String>()).getHeaders(fields);
+        List<String> headers = new AvroColumnsFunction(new HashSet<>()).getColumns(fields);
 
         assertEquals(
-                FastList.newListWith("boolean", "string", "int", "long", "float", "bytes", "double", "null", "fixed", "enum", "union").sortThis(),
-                FastList.newList(headers).sortThis());
+                Stream.of("boolean", "string", "int", "long", "float", "bytes", "double", "null", "fixed", "enum", "union").sorted().collect(Collectors.toList()),
+                headers.stream().sorted().collect(Collectors.toList()));
     }
 
     @Test
     public void testInvalidShardColumn()
     {
-        List<Schema.Field> validColumns = FastList.newListWith(new Schema.Field("FieldA", Schema.create(Schema.Type.STRING), null, null));
+        List<Schema.Field> validColumns = Collections.singletonList(new Schema.Field("FieldA", Schema.create(Schema.Type.STRING), null, null));
         try
         {
-            new AvroHeadersFunction(UnifiedSet.newSetWith("FieldA", "FieldB")).getHeaders(validColumns);
+            new AvroColumnsFunction(new HashSet<>(Arrays.asList("FieldA", "FieldB"))).getColumns(validColumns);
             Assert.fail();
         } catch (IllegalArgumentException e)
         {

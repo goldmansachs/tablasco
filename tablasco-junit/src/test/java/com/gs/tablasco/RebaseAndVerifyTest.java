@@ -18,11 +18,6 @@ package com.gs.tablasco;
 
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import com.gs.tablasco.verify.ListVerifiableTable;
-import org.eclipse.collections.api.block.function.Function;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.utility.ArrayIterate;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -36,11 +31,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class RebaseAndVerifyTest
 {
@@ -48,7 +41,7 @@ public class RebaseAndVerifyTest
     private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<VerifiableTable, VerifiableTable>()
     {
         @Override
-        public VerifiableTable valueOf(VerifiableTable table)
+        public VerifiableTable apply(VerifiableTable table)
         {
             return new DefaultVerifiableTableAdapter(table)
             {
@@ -106,8 +99,8 @@ public class RebaseAndVerifyTest
     public void rebasingOfMultipleDataTypes() throws Exception
     {
         VerifiableTable table = createTypedTable("Hello World!", "11000", 21000.0d, 31000.0f, 41000L, 51000, new Date(Timestamp.valueOf("1993-02-16 23:59:00.0").getTime()));
-        this.rebase(Maps.fixedSize.of("tableName", table));
-        this.verify(Maps.fixedSize.of("tableName", table), 5.0d);
+        this.rebase(Collections.singletonMap("tableName", table));
+        this.verify(Collections.singletonMap("tableName", table), 5.0d);
         this.verifyHtmlCells("Hello World!", "11000", "21,000", "31,000", "41,000", "51,000", "1993-02-16 23:59:00");
     }
 
@@ -116,8 +109,8 @@ public class RebaseAndVerifyTest
     {
         VerifiableTable tableForRebase = createTypedTable(21000.0d, 31000.0f, 41000L, 51000);
         VerifiableTable tableForVerify = createTypedTable(21003.0d, 31003.0f, 41003L, 51003);
-        this.rebase(Maps.fixedSize.of("tableName", tableForRebase));
-        this.verify(Maps.fixedSize.of("tableName", tableForVerify), 5.0d);
+        this.rebase(Collections.singletonMap("tableName", tableForRebase));
+        this.verify(Collections.singletonMap("tableName", tableForVerify), 5.0d);
     }
 
     @Test
@@ -127,8 +120,8 @@ public class RebaseAndVerifyTest
                 "Double Inf", "Double Neg Inf", "Double NaN", "Float Inf", "Float Neg Inf", "Float NaN",
                 Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN,
                 Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NaN);
-        this.rebase(Maps.fixedSize.of("tableName", tableForRebase));
-        this.verify(Maps.fixedSize.of("tableName", tableForRebase), 1.0d);
+        this.rebase(Collections.singletonMap("tableName", tableForRebase));
+        this.verify(Collections.singletonMap("tableName", tableForRebase), 1.0d);
         char infinity = '\u221E';
         this.verifyHtmlCells(String.valueOf(infinity), "-" + infinity, "NaN", String.valueOf(infinity), "-" + infinity, "NaN");
     }
@@ -137,8 +130,8 @@ public class RebaseAndVerifyTest
     public void withActualAdapter() throws Exception
     {
         VerifiableTable table = TableTestUtils.createTable(2, "Key", "Val", "1", ADAPT);
-        this.rebase(Maps.fixedSize.of("tableName", table));
-        this.verify(Maps.fixedSize.of("tableName", table), 1.0d);
+        this.rebase(Collections.singletonMap("tableName", table));
+        this.verify(Collections.singletonMap("tableName", table), 1.0d);
         this.verifyHtmlCells("1", "ADAPT");
     }
 
@@ -147,8 +140,8 @@ public class RebaseAndVerifyTest
     {
         VerifiableTable tableForRebase = createTypedTable(21000.0d, 31000.0f, 41000L, 51000);
         VerifiableTable tableForVerify = createTypedTable(21003.0d, 31003.0f, 41000L, 51000);
-        this.rebase(Maps.fixedSize.of("tableName", tableForRebase));
-        this.verify(Maps.fixedSize.of("tableName", tableForVerify), 5.0d);
+        this.rebase(Collections.singletonMap("tableName", tableForRebase));
+        this.verify(Collections.singletonMap("tableName", tableForVerify), 5.0d);
         this.verifyHtmlCells("21,003", "31,003", "41,000", "51,000");
     }
 
@@ -156,14 +149,14 @@ public class RebaseAndVerifyTest
     public void backslashHandling() throws Exception
     {
         VerifiableTable table = createTypedTable("Foo\\Bar");
-        this.rebase(Maps.fixedSize.of("Side-by-side - Nettable\\NonNettable", table));
-        this.verify(Maps.fixedSize.of("Side-by-side - Nettable\\NonNettable", table), 1.0d);
+        this.rebase(Collections.singletonMap("Side-by-side - Nettable\\NonNettable", table));
+        this.verify(Collections.singletonMap("Side-by-side - Nettable\\NonNettable", table), 1.0d);
     }
 
     @Test
     public void tableOrderControlledExternally() throws Exception
     {
-        Map<String, VerifiableTable> tables = new LinkedHashMap<String, VerifiableTable>();
+        Map<String, VerifiableTable> tables = new LinkedHashMap<>();
         tables.put("tableC", createTypedTable("C"));
         tables.put("tableA", createTypedTable("A"));
         tables.put("tableB", createTypedTable("B"));
@@ -175,7 +168,7 @@ public class RebaseAndVerifyTest
     @Test
     public void multipleVerifyCalls() throws Exception
     {
-        Map<String, VerifiableTable> tables = new LinkedHashMap<String, VerifiableTable>();
+        Map<String, VerifiableTable> tables = new LinkedHashMap<>();
         tables.put("tableC", createTypedTable("C"));
         tables.put("tableA", createTypedTable("A"));
         tables.put("tableB", createTypedTable("B"));
@@ -204,13 +197,13 @@ public class RebaseAndVerifyTest
     {
         this.baselineHeaders = null;
         VerifiableTable table = TableTestUtils.createTable(2, "Key", "Val", "1", "A");
-        this.rebase(Maps.fixedSize.of("tableName", table));
+        this.rebase(Collections.singletonMap("tableName", table));
         try (BufferedReader reader = new BufferedReader(new FileReader(this.expectedFile)))
         {
             String firstLine = reader.readLine();
             Assert.assertTrue(firstLine.startsWith("Metadata"));
         }
-        this.verify(Maps.fixedSize.of("tableName", table), 1.0d);
+        this.verify(Collections.singletonMap("tableName", table), 1.0d);
         this.verifyHtmlCells("1", "A");
     }
 
@@ -218,9 +211,9 @@ public class RebaseAndVerifyTest
     public void svnHeadersAreIgnoredByReader() throws Exception
     {
         VerifiableTable table = TableTestUtils.createTable(2, "Key", "Val", "1", "A");
-        this.rebase(Maps.fixedSize.of("tableName", table));
+        this.rebase(Collections.singletonMap("tableName", table));
         this.baselineHeaders = null;
-        this.verify(Maps.fixedSize.of("tableName", table), 1.0d);
+        this.verify(Collections.singletonMap("tableName", table), 1.0d);
         this.verifyHtmlCells("1", "A");
     }
 
@@ -239,14 +232,7 @@ public class RebaseAndVerifyTest
 
     private void finishRebase(final TableVerifier rebaseWatcher)
     {
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                rebaseWatcher.succeeded(description.get());
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> rebaseWatcher.succeeded(description.get()));
         this.expectedFile = rebaseWatcher.getExpectedFile();
     }
 
@@ -275,7 +261,7 @@ public class RebaseAndVerifyTest
     private List<String> getHtmlTagValues(String tagName)
     {
         NodeList tdNodes = this.outputHtml.getElementsByTagName(tagName);
-        List<String> tdValues = FastList.newList(tdNodes.getLength());
+        List<String> tdValues = new ArrayList<>(tdNodes.getLength());
         for (int i = 0; i < tdNodes.getLength(); i++)
         {
             tdValues.add(tdNodes.item(i).getFirstChild().getNodeValue());
@@ -291,14 +277,9 @@ public class RebaseAndVerifyTest
 
     private static VerifiableTable createTypedTable(Object... values)
     {
-        MutableList<Object> headers = ArrayIterate.collect(values, new Function<Object, Object>()
-        {
-            @Override
-            public Object valueOf(Object object)
-            {
-                return object.getClass().getSimpleName();
-            }
-        });
-        return new ListVerifiableTable(headers, Arrays.asList(Arrays.<Object>asList(values)));
+        List<Object> headers = Arrays.stream(values)
+                .map((Function<Object, Object>) object -> object.getClass().getSimpleName())
+                .collect(Collectors.toList());
+        return new ListVerifiableTable(headers, Collections.singletonList(Arrays.asList(values)));
     }
 }

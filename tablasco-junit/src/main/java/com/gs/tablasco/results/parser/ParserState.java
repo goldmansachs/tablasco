@@ -24,7 +24,7 @@ public abstract class ParserState
 {
     private ExpectedResultsParser parser;
 
-    protected ParserState(ExpectedResultsParser parser)
+    ParserState(ExpectedResultsParser parser)
     {
         this.parser = parser;
     }
@@ -34,12 +34,5 @@ public abstract class ParserState
         return parser;
     }
 
-    /**
-     * @param st Input stream
-     * @return Next Parser state
-     * @throws IOException
-     * @throws ParseException
-     */
     public abstract ParserState parse(StreamTokenizer st) throws IOException, ParseException;
-
 }

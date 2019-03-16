@@ -4,17 +4,17 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.mapred.AvroWrapper;
 import org.apache.spark.api.java.function.Function;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class AvroHeadersFunction implements Function<AvroWrapper, List<String>>
+class AvroColumnsFunction implements Function<AvroWrapper, List<String>>
 {
     private final Set<String> groupKeyColumns;
 
-    AvroHeadersFunction(Set<String> groupKeyColumns)
+    AvroColumnsFunction(Set<String> groupKeyColumns)
     {
         this.groupKeyColumns = groupKeyColumns;
     }
@@ -22,12 +22,12 @@ class AvroHeadersFunction implements Function<AvroWrapper, List<String>>
     @Override
     public List<String> call(AvroWrapper avroWrapper)
     {
-        return getHeaders(GenericData.Record.class.cast(avroWrapper.datum()).getSchema().getFields());
+        return getColumns(((GenericData.Record) avroWrapper.datum()).getSchema().getFields());
     }
 
-    List<String> getHeaders(List<Schema.Field> fields)
+    List<String> getColumns(List<Schema.Field> fields)
     {
-        List<String> headers = FastList.newList(fields.size());
+        List<String> columns = new ArrayList<>(fields.size());
         for (Schema.Field field : fields)
         {
             switch (field.schema().getType())
@@ -39,19 +39,20 @@ class AvroHeadersFunction implements Function<AvroWrapper, List<String>>
                 default:
                     if (!groupKeyColumns.contains(field.name()))
                     {
-                        headers.add(field.name());
+                        columns.add(field.name());
                     }
                     else
                     {
-                        headers.add(0, field.name());
+                        columns.add(0, field.name());
                     }
             }
         }
-        Set<String> invalidGroupKeyColumns = UnifiedSet.newSet(this.groupKeyColumns).withoutAll(headers);
+        Set<String> invalidGroupKeyColumns = new HashSet<>(this.groupKeyColumns);
+        invalidGroupKeyColumns.removeAll(columns);
         if (!invalidGroupKeyColumns.isEmpty())
         {
             throw new IllegalArgumentException("Invalid group key columns: " + invalidGroupKeyColumns);
         }
-        return headers;
+        return columns;
     }
 }

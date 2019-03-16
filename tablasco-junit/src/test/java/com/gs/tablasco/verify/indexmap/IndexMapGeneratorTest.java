@@ -16,22 +16,23 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.eclipse.collections.impl.list.mutable.FastList;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class IndexMapGeneratorTest
 {
     @Test
     public void indexOrderIsCorrect()
     {
-        IndexMapGenerator<String> generator = new IndexMapGenerator<String>(
-                FastList.newListWith("A", "B", "C", "D", "E", "F", "G", "H", "I", "J").iterator(),
-                FastList.newListWith("F", "G", "H", "I", "J", "K", "L", "M", "N", "O").iterator(), 0);
+        IndexMapGenerator<String> generator = new IndexMapGenerator<>(
+                Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J").iterator(),
+                Arrays.asList("F", "G", "H", "I", "J", "K", "L", "M", "N", "O").iterator(), 0);
         generator.generate();
-        Assert.assertEquals(FastList.newListWith(im(5, 0), im(6, 1), im(7, 2), im(8, 3), im(9, 4)), generator.getMatched());
-        Assert.assertEquals(FastList.newListWith(uim(0, -1), uim(1, -1), uim(2, -1), uim(3, -1), uim(4, -1)), generator.getMissing());
-        Assert.assertEquals(FastList.newListWith(uim(-1, 5), uim(-1, 6), uim(-1, 7), uim(-1, 8), uim(-1, 9)), generator.getSurplus());
+        Assert.assertEquals(Arrays.asList(im(5, 0), im(6, 1), im(7, 2), im(8, 3), im(9, 4)), generator.getMatched());
+        Assert.assertEquals(Arrays.asList(uim(0, -1), uim(1, -1), uim(2, -1), uim(3, -1), uim(4, -1)), generator.getMissing());
+        Assert.assertEquals(Arrays.asList(uim(-1, 5), uim(-1, 6), uim(-1, 7), uim(-1, 8), uim(-1, 9)), generator.getSurplus());
     }
 
     private static IndexMap im(int expectedIndex, int actualIndex)

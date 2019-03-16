@@ -17,12 +17,12 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.verify.KeyedVerifiableTableAdapter;
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class HideMatchedColumnsTest
 {
@@ -36,7 +36,7 @@ public class HideMatchedColumnsTest
     public void allColumnsMatch() throws IOException
     {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
-        this.tableVerifier.verify(Maps.fixedSize.of("name", table), Maps.fixedSize.of("name", table));
+        this.tableVerifier.verify(Collections.singletonMap("name", table), Collections.singletonMap("name", table));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -64,14 +64,7 @@ public class HideMatchedColumnsTest
                 "B1", "B2", "B9",
                 "C1", "C2", "C9",
                 "D1", "D2", "D3");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -114,14 +107,7 @@ public class HideMatchedColumnsTest
                 "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8",
                 "A", "A", "A", "A", "A", "X", "A", "A",
                 "B", "B", "X", "B", "B", "B", "B", "B");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -156,7 +142,7 @@ public class HideMatchedColumnsTest
     public void keyColumnIgnored() throws IOException
     {
         VerifiableTable table = new KeyedVerifiableTableAdapter(TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
-        this.tableVerifier.verify(Maps.fixedSize.of("name", table), Maps.fixedSize.of("name", table));
+        this.tableVerifier.verify(Collections.singletonMap("name", table), Collections.singletonMap("name", table));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -185,14 +171,7 @@ public class HideMatchedColumnsTest
                 "B", "B", "B", "B",
                 "C", "C", "C", "C",
                 "X", "D", "D", "D");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withHideMatchedRows(true).verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withHideMatchedRows(true).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +

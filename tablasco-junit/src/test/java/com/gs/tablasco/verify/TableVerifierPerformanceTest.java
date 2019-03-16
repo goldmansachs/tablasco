@@ -22,12 +22,12 @@ import com.gs.tablasco.VerifiableTable;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
 import org.databene.contiperf.junit.ContiPerfRule;
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class TableVerifierPerformanceTest
@@ -73,9 +73,9 @@ public class TableVerifierPerformanceTest
     private void verify(VerifiableTable actualData)
     {
         VerifiableTable expectedTable = new ExpectedTable();
-        Map<String, VerifiableTable> expectedTables = Maps.fixedSize.of("table", expectedTable);
-        Map<String, VerifiableTable> actualTables = Maps.fixedSize.of("table", actualData);
-        this.tableVerifier.verify(expectedTables, actualTables);;
+        Map<String, VerifiableTable> expectedTables = Collections.singletonMap("table", expectedTable);
+        Map<String, VerifiableTable> actualTables = Collections.singletonMap("table", actualData);
+        this.tableVerifier.verify(expectedTables, actualTables);
     }
 
     private static class ExpectedTable implements VerifiableTable

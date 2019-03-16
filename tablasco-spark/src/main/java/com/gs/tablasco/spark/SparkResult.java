@@ -1,5 +1,6 @@
 package com.gs.tablasco.spark;
 
+@SuppressWarnings("WeakerAccess")
 public class SparkResult
 {
     private final boolean passed;

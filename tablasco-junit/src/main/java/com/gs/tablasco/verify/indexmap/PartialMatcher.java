@@ -16,9 +16,9 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.eclipse.collections.api.list.MutableList;
+import java.util.List;
 
 public interface PartialMatcher
 {
-    void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns);
+    void match(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> matchedColumns);
 }

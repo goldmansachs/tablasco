@@ -4,21 +4,21 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.mapred.AvroWrapper;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.spark.api.java.function.PairFunction;
-import org.eclipse.collections.impl.list.mutable.FastList;
 import scala.Tuple2;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 class AvroGroupKeyFunction implements PairFunction<Tuple2<AvroWrapper, NullWritable>, Integer, List<Object>>
 {
-    private final List<String> headers;
+    private final List<String> columns;
     private final Set<String> groupKeyColumns;
     private final int numberOfGroups;
 
-    AvroGroupKeyFunction(List<String> headers, Set<String> groupKeyColumns, int numberOfGroups)
+    AvroGroupKeyFunction(List<String> columns, Set<String> groupKeyColumns, int numberOfGroups)
     {
-        this.headers = headers;
+        this.columns = columns;
         this.groupKeyColumns = groupKeyColumns;
         this.numberOfGroups = numberOfGroups;
     }
@@ -27,9 +27,9 @@ class AvroGroupKeyFunction implements PairFunction<Tuple2<AvroWrapper, NullWrita
     public Tuple2<Integer, List<Object>> call(Tuple2<AvroWrapper, NullWritable> avroTuple)
     {
         final GenericData.Record datum = (GenericData.Record) avroTuple._1().datum();
-        List<Object> row = FastList.newList(this.headers.size());
+        List<Object> row = new ArrayList<>(this.columns.size());
         int hashCode = 0;
-        for (String header : this.headers)
+        for (String header : this.columns)
         {
             Object value = datum.get(header);
             if (value instanceof CharSequence) // Avro Utf8 type

@@ -23,7 +23,7 @@ import java.util.List;
 
 public class ExpectedRowView extends RowView
 {
-    public ExpectedRowView(VerifiableTable expectedData, List<IndexMap> keyColumns, ColumnComparators columnComparators, int rowIndex)
+    ExpectedRowView(VerifiableTable expectedData, List<IndexMap> keyColumns, ColumnComparators columnComparators, int rowIndex)
     {
         super(expectedData, keyColumns, columnComparators, rowIndex);
     }

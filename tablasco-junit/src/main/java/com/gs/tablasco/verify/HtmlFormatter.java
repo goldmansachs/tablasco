@@ -16,8 +16,6 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.utility.StringIterate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,10 +27,8 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class HtmlFormatter
 {
@@ -71,7 +67,7 @@ public class HtmlFormatter
             }
         }
     };
-    private static final UnifiedSet<File> INITIALIZED_FILES = UnifiedSet.newSet();
+    private static final Set<File> INITIALIZED_FILES = new HashSet<>();
 
     private final File outputFile;
     private final HtmlOptions htmlOptions;
@@ -182,7 +178,7 @@ public class HtmlFormatter
         }
     }
 
-    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount, Document dom, OutputStream outputStream) throws TransformerException, UnsupportedEncodingException
+    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount, Document dom, OutputStream outputStream) throws TransformerException
     {
         if (dom == null)
         {
@@ -202,7 +198,7 @@ public class HtmlFormatter
         {
             appendResults(testName, namedTable.getKey(), namedTable.getValue(), body, true);
         }
-        TRANSFORMER.value().transform(new DOMSource(dom), new StreamResult(new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"))));
+        TRANSFORMER.value().transform(new DOMSource(dom), new StreamResult(new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))));
     }
 
     private void appendAssertionSummary(String testName, Map<String, ? extends FormattableTable> results, Node htmlBody)
@@ -330,7 +326,7 @@ public class HtmlFormatter
 
     static String toHtmlId(String testName, String tableName)
     {
-        if (StringIterate.isEmpty(tableName))
+        if (tableName == null || tableName.isEmpty())
         {
             return testName;
         }

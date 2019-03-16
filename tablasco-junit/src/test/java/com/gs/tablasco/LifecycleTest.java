@@ -17,10 +17,8 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.lifecycle.LifecycleEventHandler;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -28,18 +26,17 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LifecycleTest
 {
-    private static final Map<Class, List<String>> EVENTS = UnifiedMap.newMap();
+    private static final Map<Class, List<String>> EVENTS = new HashMap<>();
+    public static final String INNER_TEST_EXECUTION = "inner.test.execution";
 
     // todo: rebase, missing table, rebase exception
 
     @Test
-    public void passedTest() throws Exception
+    public void passedTest()
     {
         Class testClass = LifecycleTestPassedInnerTest.class;
         Result result = runInnerTest(testClass);
@@ -49,7 +46,7 @@ public class LifecycleTest
     }
 
     @Test
-    public void failedTest() throws Exception
+    public void failedTest()
     {
         Class testClass = LifecycleTestFailedInnerTest.class;
         Result result = runInnerTest(testClass);
@@ -59,7 +56,7 @@ public class LifecycleTest
     }
 
     @Test
-    public void exceptionTest() throws Exception
+    public void exceptionTest()
     {
         Class testClass = LifecycleTestExceptionInnerTest.class;
         Result result = runInnerTest(testClass);
@@ -69,7 +66,7 @@ public class LifecycleTest
     }
 
     @Test
-    public void rebaseTest() throws Exception
+    public void rebaseTest()
     {
         Class testClass = LifecycleTestRebaseInnerTest.class;
         Result result = runInnerTest(testClass);
@@ -80,7 +77,7 @@ public class LifecycleTest
     }
 
     @Test
-    public void rebaseExceptionTest() throws Exception
+    public void rebaseExceptionTest()
     {
         Class testClass = LifecycleTestRebaseExceptionInnerTest.class;
         Result result = runInnerTest(testClass);
@@ -91,7 +88,7 @@ public class LifecycleTest
     }
 
     @Test
-    public void  missingTableTest() throws Exception
+    public void  missingTableTest()
     {
         Class testClass = LifecycleTestMissingTableInnerTest.class;
         Result result = runInnerTest(testClass);
@@ -107,13 +104,26 @@ public class LifecycleTest
 
     private static Result runInnerTest(Class innerClass)
     {
-        EVENTS.put(innerClass, FastList.<String>newList());
+        EVENTS.put(innerClass, new ArrayList<>());
         File ouputFile = new File(TableTestUtils.getOutputDirectory(), innerClass.getSimpleName() + ".html");
         if (ouputFile.exists())
         {
             Assert.assertTrue("Deleting " + ouputFile, ouputFile.delete());
         }
-        return new JUnitCore().run(innerClass);
+        try
+        {
+            System.setProperty(INNER_TEST_EXECUTION, Boolean.TRUE.toString());
+            return new JUnitCore().run(innerClass);
+        }
+        finally
+        {
+            System.clearProperty(INNER_TEST_EXECUTION);
+        }
+    }
+
+    private static void assumeInnerTestExecution()
+    {
+        Assume.assumeTrue(Boolean.getBoolean(INNER_TEST_EXECUTION));
     }
 
     public static class LifecycleTestPassedInnerTest
@@ -124,7 +134,8 @@ public class LifecycleTest
         @Test
         public void test()
         {
-            this.verifier.verify(Maps.fixedSize.of("table", TableTestUtils.ACTUAL), Maps.fixedSize.of("table", TableTestUtils.ACTUAL));
+            assumeInnerTestExecution();
+            this.verifier.verify(Collections.singletonMap("table", TableTestUtils.ACTUAL), Collections.singletonMap("table", TableTestUtils.ACTUAL));
         }
     }
 
@@ -136,7 +147,8 @@ public class LifecycleTest
         @Test
         public void test()
         {
-            this.verifier.verify(Maps.fixedSize.of("table", TableTestUtils.ACTUAL), Maps.fixedSize.of("table", TableTestUtils.ACTUAL_2));
+            assumeInnerTestExecution();
+            this.verifier.verify(Collections.singletonMap("table", TableTestUtils.ACTUAL), Collections.singletonMap("table", TableTestUtils.ACTUAL_2));
         }
     }
 
@@ -148,6 +160,7 @@ public class LifecycleTest
         @Test
         public void test()
         {
+            assumeInnerTestExecution();
             throw new RuntimeException();
         }
     }
@@ -162,6 +175,7 @@ public class LifecycleTest
         @Test
         public void test()
         {
+            assumeInnerTestExecution();
             this.verifier.verify("table", TableTestUtils.ACTUAL);
         }
     }
@@ -176,6 +190,7 @@ public class LifecycleTest
         @Test
         public void test()
         {
+            assumeInnerTestExecution();
             throw new RuntimeException();
         }
     }
@@ -188,7 +203,8 @@ public class LifecycleTest
         @Test
         public void test()
         {
-            this.verifier.verify(Maps.fixedSize.of("table_1", TableTestUtils.ACTUAL, "table_2", TableTestUtils.ACTUAL_2));
+            assumeInnerTestExecution();
+            this.verifier.verify(TableTestUtils.doubletonMap("table_1", TableTestUtils.ACTUAL, "table_2", TableTestUtils.ACTUAL_2));
         }
     }
 

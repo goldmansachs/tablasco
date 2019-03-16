@@ -19,16 +19,15 @@ package com.gs.tablasco;
 import com.gs.tablasco.lifecycle.ExceptionHandler;
 import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-import org.eclipse.collections.api.block.function.Function;
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Description;
 
-import java.io.File;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 public class TableVerifierTest
 {
@@ -196,8 +195,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
         this.verifier.succeeded(this.description.get());
     }
 
@@ -206,8 +205,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
     }
 
     @Test(expected = AssertionError.class)
@@ -215,8 +214,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
     }
 
     @Test(expected = AssertionError.class)
@@ -224,8 +223,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL));
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                Collections.singletonMap("table1", TableTestUtils.ACTUAL));
     }
 
     @Test(expected = AssertionError.class)
@@ -233,8 +232,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL),
-                Maps.fixedSize.of("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
+                Collections.singletonMap("table1", TableTestUtils.ACTUAL),
+                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
     }
 
     @Test
@@ -269,14 +268,7 @@ public class TableVerifierTest
         this.verifier.withLifecycleEventHandler(handler);
         this.verifier.starting(this.description.get());
         this.verifier.verify("table1", TableTestUtils.ACTUAL);
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                verifier.succeeded(description.get());
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> verifier.succeeded(description.get()));
         Assert.assertEquals("started failed ", handler.lifecycle);
     }
 
@@ -285,18 +277,12 @@ public class TableVerifierTest
     {
         final RuntimeException exception = new RuntimeException();
         final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        ExceptionHandler exceptionHandler = new ExceptionHandler()
-        {
-            @Override
-            public void onException(File outputFile, Throwable throwable)
-            {
-                Assert.assertTrue(outputFile.exists());
-                Assert.assertSame(exception, throwable);
-                atomicBoolean.set(true);
-            }
+        ExceptionHandler exceptionHandler = (outputFile, throwable) -> {
+            Assert.assertTrue(outputFile.exists());
+            Assert.assertSame(exception, throwable);
+            atomicBoolean.set(true);
         };
-        this.verifier.withExceptionHandler(exceptionHandler);
-        this.verifier.starting(this.description.get());
+        this.verifier.withExceptionHandler(exceptionHandler).starting(this.description.get());
         this.verifier.failed(exception, this.description.get());
         Assert.assertTrue(atomicBoolean.get());
     }
@@ -305,14 +291,14 @@ public class TableVerifierTest
     public void withoutPartialMatchTimeout()
     {
         this.verifier.starting(this.description.get());
-        this.verifier.withoutPartialMatchTimeout();
-        this.verifier.verify(Maps.fixedSize.of("table1", TableTestUtils.ACTUAL), Maps.fixedSize.of("table1", TableTestUtils.ACTUAL));
+        this.verifier.withoutPartialMatchTimeout()
+                .verify(Collections.singletonMap("table1", TableTestUtils.ACTUAL), Collections.singletonMap("table1", TableTestUtils.ACTUAL));
         this.verifier.succeeded(this.description.get());
     }
 
     private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<VerifiableTable, VerifiableTable>() {
         @Override
-        public VerifiableTable valueOf(VerifiableTable actual) {
+        public VerifiableTable apply(VerifiableTable actual) {
             return new DefaultVerifiableTableAdapter(actual) {
                 @Override
                 public String getColumnName(int columnIndex) {
@@ -347,19 +333,16 @@ public class TableVerifierTest
     public void actualAdapterNoExpectedFile()
     {
         this.verifier.starting(this.description.get());
-        this.verifier.withActualAdapter(new Function<VerifiableTable, VerifiableTable>() {
-            @Override
-            public VerifiableTable valueOf(VerifiableTable actual) {
-                Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
-                return TableTestUtils.ACTUAL;
-            }
-        }).verify(Maps.fixedSize.of(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL), Maps.fixedSize.of(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2));
+        this.verifier.withActualAdapter(actual -> {
+            Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
+            return TableTestUtils.ACTUAL;
+        }).verify(Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL), Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2));
         this.verifier.succeeded(this.description.get());
     }
 
     private static final Function<VerifiableTable, VerifiableTable> EXPECTED_ADAPTER = new Function<VerifiableTable, VerifiableTable>() {
         @Override
-        public VerifiableTable valueOf(VerifiableTable actual) {
+        public VerifiableTable apply(VerifiableTable actual) {
             return new DefaultVerifiableTableAdapter(actual) {
                 @Override
                 public String getColumnName(int columnIndex) {
@@ -394,15 +377,10 @@ public class TableVerifierTest
     public void expectedAdapterNoExpectedFile()
     {
         this.verifier.starting(this.description.get());
-        this.verifier.withExpectedAdapter(new Function<VerifiableTable, VerifiableTable>()
-        {
-            @Override
-            public VerifiableTable valueOf(VerifiableTable actual)
-            {
-                Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
-                return TableTestUtils.ACTUAL;
-            }
-        }).verify(Maps.fixedSize.of(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2), Maps.fixedSize.of(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
+        this.verifier.withExpectedAdapter(actual -> {
+            Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
+            return TableTestUtils.ACTUAL;
+        }).verify(Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2), Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
         this.verifier.succeeded(this.description.get());
     }
 

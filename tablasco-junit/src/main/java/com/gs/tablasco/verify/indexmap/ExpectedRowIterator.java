@@ -18,11 +18,12 @@ package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
-import org.eclipse.collections.api.list.MutableList;
+
+import java.util.List;
 
 public class ExpectedRowIterator extends RowIterator
 {
-    public ExpectedRowIterator(VerifiableTable table, MutableList<IndexMap> columns, ColumnComparators columnComparators, int initialIndex, int lastUnMatchedOffset)
+    ExpectedRowIterator(VerifiableTable table, List<IndexMap> columns, ColumnComparators columnComparators, int initialIndex, int lastUnMatchedOffset)
     {
         super(table, columns, columnComparators, initialIndex, lastUnMatchedOffset);
     }

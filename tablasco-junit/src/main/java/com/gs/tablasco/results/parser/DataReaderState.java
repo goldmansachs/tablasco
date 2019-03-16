@@ -16,19 +16,17 @@
 
 package com.gs.tablasco.results.parser;
 
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.utility.Iterate;
-
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataReaderState extends ParserState
 {
     private String sectionName;
 
-    protected DataReaderState(ExpectedResultsParser parserState)
+    DataReaderState(ExpectedResultsParser parserState)
     {
         super(parserState);
     }
@@ -46,7 +44,7 @@ public class DataReaderState extends ParserState
         int token = st.ttype;
 
         boolean wantData = true;
-        List<Object> rowValue = FastList.newList();
+        List<Object> rowValue = new ArrayList<>();
         while (token != StreamTokenizer.TT_EOL && token != StreamTokenizer.TT_EOF)
         {
             if (wantData)
@@ -64,14 +62,14 @@ public class DataReaderState extends ParserState
             wantData = !wantData;
             token = st.nextToken();
         }
-        if (Iterate.notEmpty(rowValue))
+        if (!rowValue.isEmpty())
         {
             this.getParser().getExpectedTable().addRowToList(rowValue);
         }
         return this.getParser().getBeginningOfLineState();
     }
 
-    public void setSectionName(String sectionName)
+    void setSectionName(String sectionName)
     {
         this.sectionName = sectionName;
     }

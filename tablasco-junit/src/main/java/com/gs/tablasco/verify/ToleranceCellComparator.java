@@ -16,7 +16,9 @@
 
 package com.gs.tablasco.verify;
 
-public class ToleranceCellComparator extends CellComparator
+import java.io.Serializable;
+
+public class ToleranceCellComparator extends CellComparator implements Serializable
 {
     public ToleranceCellComparator(CellFormatter formatter)
     {
@@ -35,7 +37,7 @@ public class ToleranceCellComparator extends CellComparator
         return false;
     }
 
-    public static double getDifference(Object actual, Object expected)
+    static double getDifference(Object actual, Object expected)
     {
         return ((Number) expected).doubleValue() - ((Number) actual).doubleValue();
     }

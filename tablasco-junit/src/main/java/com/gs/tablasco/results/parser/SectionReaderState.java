@@ -22,7 +22,7 @@ import java.text.ParseException;
 
 public class SectionReaderState extends ParserState
 {
-    protected SectionReaderState(ExpectedResultsParser parserState)
+    SectionReaderState(ExpectedResultsParser parserState)
     {
         super(parserState);
     }

@@ -16,19 +16,17 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.bag.MutableBag;
-import org.eclipse.collections.api.block.procedure.Procedure;
-import org.eclipse.collections.api.block.procedure.Procedure2;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
-import org.eclipse.collections.impl.factory.Bags;
-
 import java.io.Serializable;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 class ColumnCardinality implements Serializable
 {
     private final int maximumCardinalityToCount;
-    private MutableBag<Object> bag = Bags.mutable.of();
+    private Map<Object, Integer> bag = new HashMap<>();
 
     ColumnCardinality(int maximumCardinalityToCount)
     {
@@ -41,7 +39,7 @@ class ColumnCardinality implements Serializable
         {
             return this.maximumCardinalityToCount;
         }
-        return this.bag.sizeDistinct();
+        return this.bag.size();
     }
 
     void merge(ColumnCardinality that)
@@ -52,41 +50,40 @@ class ColumnCardinality implements Serializable
         }
         else
         {
-            that.bag.forEachWithOccurrences(new ObjectIntProcedure<Object>()
-            {
-                @Override
-                public void value(Object value, int cardinality)
-                {
-                    ColumnCardinality.this.addCardinality(value, cardinality);
-                }
-            });
+            that.bag.forEach(ColumnCardinality.this::addOccurrences);
         }
     }
 
-    void add(Object value)
+    void addOccurrence(Object value)
     {
-        this.addCardinality(value, 1);
+        this.addOccurrences(value, 1);
     }
 
-    void remove(Object value)
+    void removeOccurrence(Object value)
     {
         if (!this.isFull())
         {
-            this.bag.remove(value);
+            Integer integer = this.bag.get(value);
+            if (integer != null)
+            {
+                if (integer > 1)
+                {
+                    this.bag.put(value, integer - 1);
+                }
+                else
+                {
+                    this.bag.remove(value);
+                }
+            }
         }
     }
 
-    void forEachWithOccurrences(final Procedure2<Object, Integer> procedure)
+    void forEachWithOccurrences(final BiConsumer<Object, Integer> procedure)
     {
-        this.bag.topOccurrences(this.maximumCardinalityToCount).forEach(new Procedure<ObjectIntPair<Object>>()
-        {
-            @Override
-            public void value(ObjectIntPair<Object> pair)
-            {
-                procedure.value(pair.getOne(), pair.getTwo());
-            }
-        });
-
+        this.bag.entrySet().stream()
+                .sorted(Comparator.comparing((Function<Map.Entry<Object, Integer>, Integer>) Map.Entry::getValue).reversed())
+                .limit(this.maximumCardinalityToCount)
+                .forEach(objectIntegerEntry -> procedure.accept(objectIntegerEntry.getKey(), objectIntegerEntry.getValue()));
     }
 
     boolean isFull()
@@ -94,13 +91,14 @@ class ColumnCardinality implements Serializable
         return this.bag == null;
     }
 
-    private void addCardinality(Object value, int cardinalityToAdd)
+    private void addOccurrences(Object value, int occurrences)
     {
         if (!this.isFull())
         {
-            if (this.bag.contains(value) || this.bag.sizeDistinct() < this.maximumCardinalityToCount)
+            Integer cardinality = this.bag.get(value);
+            if (cardinality != null || this.bag.size() < this.maximumCardinalityToCount)
             {
-                this.bag.addOccurrences(value, cardinalityToAdd);
+                this.bag.put(value, (cardinality == null ? 0 : cardinality) + occurrences);
             }
             else
             {
@@ -113,5 +111,4 @@ class ColumnCardinality implements Serializable
     {
         this.bag = null;
     }
-
 }

@@ -17,7 +17,6 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
-import org.eclipse.collections.impl.utility.Iterate;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class ListVerifiableTable implements VerifiableTable
 
     public ListVerifiableTable(List<List<Object>> headersAndData)
     {
-        this(Iterate.getFirst(headersAndData), headersAndData.subList(1, headersAndData.size()));
+        this(headersAndData.get(0), headersAndData.subList(1, headersAndData.size()));
     }
 
     public ListVerifiableTable(List<?> headers, List<List<Object>> data)

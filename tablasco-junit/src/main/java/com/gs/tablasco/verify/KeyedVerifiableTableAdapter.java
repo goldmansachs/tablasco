@@ -17,22 +17,24 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
-import org.eclipse.collections.api.set.primitive.ImmutableIntSet;
-import org.eclipse.collections.impl.factory.primitive.IntSets;
 
 public class KeyedVerifiableTableAdapter extends DefaultVerifiableTableAdapter implements KeyedVerifiableTable
 {
-    private final ImmutableIntSet keyColumnIndices;
+    private final boolean[] keyColumnIndices;
 
     public KeyedVerifiableTableAdapter(VerifiableTable delegate, int... keyColumnIndices)
     {
         super(delegate);
-        this.keyColumnIndices = IntSets.immutable.of(keyColumnIndices);
+        this.keyColumnIndices = new boolean[delegate.getColumnCount()];
+        for (int keyColumnIndex : keyColumnIndices)
+        {
+            this.keyColumnIndices[keyColumnIndex] = true;
+        }
     }
 
     @Override
     public boolean isKeyColumn(int columnIndex)
     {
-        return this.keyColumnIndices.contains(columnIndex);
+        return columnIndex >= 0 && columnIndex< this.keyColumnIndices.length && this.keyColumnIndices[columnIndex];
     }
 }

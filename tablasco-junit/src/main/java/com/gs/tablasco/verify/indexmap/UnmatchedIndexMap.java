@@ -16,11 +16,8 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.eclipse.collections.api.block.SerializableComparator;
-import org.eclipse.collections.api.block.function.primitive.IntFunction;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.block.factory.Comparators;
-
+import java.util.Comparator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -34,7 +31,7 @@ public class UnmatchedIndexMap extends IndexMap
         super(expectedIndex, actualIndex);
     }
 
-    static void linkBestMatches(MutableList<UnmatchedIndexMap> allMissingRows)
+    static void linkBestMatches(List<UnmatchedIndexMap> allMissingRows)
     {
         boolean keepMatching = true;
         while (keepMatching)
@@ -110,23 +107,10 @@ public class UnmatchedIndexMap extends IndexMap
 
     private static class Match implements Comparable<Match>
     {
-        private static final SerializableComparator<Match> MATCH_COMPARATOR = Comparators.chain(
-                Comparators.reverse(Comparators.byIntFunction(new IntFunction<Match>()
-                {
-                    @Override
-                    public int intValueOf(Match match)
-                    {
-                        return match.matchScore;
-                    }
-                })),
-                Comparators.byIntFunction(new IntFunction<Match>()
-                {
-                    @Override
-                    public int intValueOf(Match match)
-                    {
-                        return Math.max(match.match.getActualIndex(), match.match.getExpectedIndex());
-                    }
-                }));
+        private static final Comparator<Match> MATCH_COMPARATOR = Comparator
+                .comparing(Match::getMatchScore)
+                .reversed()
+                .thenComparing(match -> Math.max(match.match.getActualIndex(), match.match.getExpectedIndex()));
         private final int matchScore;
         private final UnmatchedIndexMap match;
 
@@ -140,6 +124,11 @@ public class UnmatchedIndexMap extends IndexMap
         public int compareTo(Match that)
         {
             return MATCH_COMPARATOR.compare(this, that);
+        }
+
+        int getMatchScore()
+        {
+            return matchScore;
         }
     }
 }

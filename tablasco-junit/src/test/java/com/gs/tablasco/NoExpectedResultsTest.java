@@ -16,10 +16,10 @@
 
 package com.gs.tablasco;
 
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class NoExpectedResultsTest
@@ -31,7 +31,7 @@ public class NoExpectedResultsTest
     @Test
     public void asynchronousResultsLoadingOnlyFailsIfResultsAreRequired()
     {
-        Map<String, VerifiableTable> tables = Maps.fixedSize.of(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        Map<String, VerifiableTable> tables = Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.verify(tables, tables);
     }
 }

@@ -16,12 +16,10 @@
 
 package com.gs.tablasco.investigation;
 
-import org.eclipse.collections.impl.utility.Iterate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Compares results from two environments and drills down on breaks in multiple
@@ -29,25 +27,25 @@ import java.util.List;
  */
 public class Sherlock
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Sherlock.class);
+    private static final Logger LOGGER = Logger.getLogger(Sherlock.class.getSimpleName());
 
     public void handle(Investigation investigation, File outputFile)
     {
         Watson watson = new Watson(outputFile);
         InvestigationLevel currentLevel = investigation.getFirstLevel();
         List<Object> drilldownKeys = watson.assist("Initial Results", currentLevel, investigation.getRowKeyLimit());
-        if (Iterate.isEmpty(drilldownKeys))
+        if (drilldownKeys == null || drilldownKeys.isEmpty())
         {
-            LOGGER.info("No breaks found :)");
+            LOGGER.log(Level.INFO, "No breaks found :)");
             return;
         }
 
-        LOGGER.info("Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
+        LOGGER.log(Level.INFO, "Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
         int level = 1;
         while (!drilldownKeys.isEmpty() && (currentLevel = investigation.getNextLevel(drilldownKeys)) != null)
         {
             drilldownKeys = watson.assist("Investigation Level " + level + " (Top " + investigation.getRowKeyLimit() + ')', currentLevel, investigation.getRowKeyLimit());
-            LOGGER.info("Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
+            LOGGER.log(Level.INFO, "Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
             level++;
         }
 

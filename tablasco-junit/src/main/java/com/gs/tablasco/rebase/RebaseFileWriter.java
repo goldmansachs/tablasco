@@ -20,35 +20,29 @@ import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.Metadata;
-import org.eclipse.collections.impl.factory.Sets;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.utility.ArrayIterate;
-import org.eclipse.collections.impl.utility.StringIterate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class RebaseFileWriter
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RebaseFileWriter.class);
+    private static final Logger LOGGER = Logger.getLogger(RebaseFileWriter.class.getSimpleName());
 
     // we create files first time for each test run, then append...
-    private static final Set<String> SEEN_FILES = UnifiedSet.newSet();
+    private static final Set<String> SEEN_FILES = new HashSet<>();
     private static final Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile("\"");
     private static final Pattern BACKSLASH_PATTERN = Pattern.compile("\\\\");
     private static final String DOUBLE_QUOTE_REPLACEMENT = Matcher.quoteReplacement("\\\"");
     private static final String BACKSLASH_REPLACEMENT = Matcher.quoteReplacement("\\\\");
-    private static final Set<String> SPECIAL_NUMBERS = Sets.fixedSize.of("" + '\u221E', "-" + '\u221E', "NaN");
+    private static final Set<String> SPECIAL_NUMBERS = new HashSet<>(Arrays.asList("" + '\u221E', "-" + '\u221E', "NaN"));
     private final Metadata metadata;
     private final String[] baselineHeaders;
     private final ColumnComparators columnComparators;
@@ -71,7 +65,7 @@ public final class RebaseFileWriter
         {
             throw new IllegalStateException("Unable to create results directory:" + parentDir);
         }
-        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile, true), "UTF-8"))))
+        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile, true), StandardCharsets.UTF_8))))
         {
             if (needsHeaderAndMetadata)
             {
@@ -123,12 +117,12 @@ public final class RebaseFileWriter
 
     private void printTable(PrintWriter printWriter, String methodName, String tableName, VerifiableTable verifiableTable)
     {
-        LOGGER.info("Writing results for '" + methodName + ' ' + tableName + "' to '" + this.outputFile + '\'');
+        LOGGER.log(Level.INFO, "Writing results for '" + methodName + ' ' + tableName + "' to '" + this.outputFile + '\'');
         printWriter.print("Section ");
         printWriter.print('"');
         printWriter.print(methodName);
         printWriter.print('"');
-        if (StringIterate.notEmpty(tableName))
+        if (tableName != null && !tableName.isEmpty())
         {
             printWriter.print(' ');
             printString(printWriter, tableName);
@@ -171,7 +165,7 @@ public final class RebaseFileWriter
 
     private void printHeaderAndMetadata(PrintWriter printWriter)
     {
-        if (ArrayIterate.notEmpty(this.baselineHeaders))
+        if (this.baselineHeaders != null && this.baselineHeaders.length > 0)
         {
             printWriter.println("/*");
             for (String baselineHeader : this.baselineHeaders)
