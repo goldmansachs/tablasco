@@ -66,13 +66,17 @@ public class SparkVerifier
         Set<String> groupKeyColumnSet = new LinkedHashSet<>(this.groupKeyColumns);
         DistributedTable actualDistributedTable = this.dataFormat.getDistributedTable(actualDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
         DistributedTable expectedDistributedTable = this.dataFormat.getDistributedTable(expectedDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
-        JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualDistributedTable.getDistributedRows();
-        JavaPairRDD<Integer, Iterable<List<Object>>> expectedGroups = expectedDistributedTable.getDistributedRows();
+        JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualDistributedTable.getRows()
+                .mapToPair(new GroupRowsFunction(actualDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
+                .groupByKey();
+        JavaPairRDD<Integer, Iterable<List<Object>>> expectedGroups = expectedDistributedTable.getRows()
+                .mapToPair(new GroupRowsFunction(expectedDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
+                .groupByKey();
         JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualGroups.fullOuterJoin(expectedGroups);
         VerifyGroupFunction verifyGroupFunction = new VerifyGroupFunction(
                 groupKeyColumnSet,
-                actualDistributedTable.getColumns(),
-                expectedDistributedTable.getColumns(),
+                actualDistributedTable.getHeaders(),
+                expectedDistributedTable.getHeaders(),
                 this.ignoreSurplusColumns,
                 this.columnComparatorsBuilder.build(),
                 this.columnsToIgnore);

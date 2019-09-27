@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
-public class AvroColumnsFunctionTest
+public class AvroHeadersFunctionTest
 {
     @Test
     public void test()
@@ -36,7 +36,7 @@ public class AvroColumnsFunctionTest
 
         assertEquals(Schema.Type.values().length, fields.size());
 
-        List<String> headers = new AvroColumnsFunction(new HashSet<>()).getColumns(fields);
+        List<String> headers = new AvroHeadersFunction(new HashSet<>()).getColumns(fields);
 
         assertEquals(
                 Stream.of("boolean", "string", "int", "long", "float", "bytes", "double", "null", "fixed", "enum", "union").sorted().collect(Collectors.toList()),
@@ -49,7 +49,7 @@ public class AvroColumnsFunctionTest
         List<Schema.Field> validColumns = Collections.singletonList(new Schema.Field("FieldA", Schema.create(Schema.Type.STRING), null, null));
         try
         {
-            new AvroColumnsFunction(new HashSet<>(Arrays.asList("FieldA", "FieldB"))).getColumns(validColumns);
+            new AvroHeadersFunction(new HashSet<>(Arrays.asList("FieldA", "FieldB"))).getColumns(validColumns);
             Assert.fail();
         } catch (IllegalArgumentException e)
         {

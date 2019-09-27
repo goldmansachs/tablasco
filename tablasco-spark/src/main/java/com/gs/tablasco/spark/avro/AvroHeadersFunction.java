@@ -10,11 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class AvroColumnsFunction implements Function<AvroWrapper, List<String>>
+class AvroHeadersFunction implements Function<AvroWrapper, List<String>>
 {
     private final Set<String> groupKeyColumns;
 
-    AvroColumnsFunction(Set<String> groupKeyColumns)
+    AvroHeadersFunction(Set<String> groupKeyColumns)
     {
         this.groupKeyColumns = groupKeyColumns;
     }

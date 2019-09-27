@@ -6,7 +6,7 @@ to create tests that are both comprehensive and easy to maintain.
 
 ### 1. Fast and efficient table verification algorithm
 Tablasco's table verification algorithm can process tens of thousands of table rows out-of-the-box, and many more with
-custom configuration. Verification can be configured to control behavior such as verifying row order, ignoring columns
+custom configuration. Verification can be configured to control behavior such as verifying row order, ignoring headers
 and applying tolerance to floating-point values.
 
 ### 2. Human readable HTML break reports

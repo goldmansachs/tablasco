@@ -1,28 +1,28 @@
 package com.gs.tablasco.spark;
 
-import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public class DistributedTable
 {
-    private final List<String> columns;
-    private final JavaPairRDD<Integer, Iterable<List<Object>>> distributedRows;
+    private final List<String> headers;
+    private final JavaRDD<List<Object>> rows;
 
-    public DistributedTable(List<String> columns, JavaPairRDD<Integer, Iterable<List<Object>>> distributedRows)
+    public DistributedTable(List<String> headers, JavaRDD<List<Object>> rows)
     {
-        this.columns = columns;
-        this.distributedRows = distributedRows;
+        this.headers = headers;
+        this.rows = rows;
     }
 
-    public List<String> getColumns()
+    public List<String> getHeaders()
     {
-        return columns;
+        return headers;
     }
 
-    public JavaPairRDD<Integer, Iterable<List<Object>>> getDistributedRows()
+    public JavaRDD<List<Object>> getRows()
     {
-        return distributedRows;
+        return rows;
     }
 }

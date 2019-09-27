@@ -7,6 +7,7 @@ import org.apache.avro.mapred.AvroWrapper;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.List;
@@ -27,11 +28,11 @@ public class AvroDataFormat implements DataFormat
     @Override
     public DistributedTable getDistributedTable(Path dataLocation, Set<String> groupKeyColumns, int maximumNumberOfGroups)
     {
-        JavaPairRDD<AvroWrapper, NullWritable> actualAvro = sparkContext.hadoopFile(dataLocation.toString(), AvroInputFormat.class, AvroWrapper.class, NullWritable.class);
+        JavaPairRDD<AvroWrapper, NullWritable> avroRdd = sparkContext.hadoopFile(dataLocation.toString(), AvroInputFormat.class, AvroWrapper.class, NullWritable.class);
         LOGGER.log(Level.INFO, "data location: {0}", dataLocation);
-        List<String> actualHeaders = actualAvro.keys().map(new AvroColumnsFunction(groupKeyColumns)).first();
-        LOGGER.log(Level.INFO, "data headers: {0}", actualHeaders);
-        JavaPairRDD<Integer, Iterable<List<Object>>> actualDataByShard = actualAvro.mapToPair(new AvroGroupKeyFunction(actualHeaders, groupKeyColumns, maximumNumberOfGroups)).groupByKey();
-        return new DistributedTable(actualHeaders, actualDataByShard);
+        List<String> headers = avroRdd.keys().map(new AvroHeadersFunction(groupKeyColumns)).first();
+        LOGGER.log(Level.INFO, "data headers: {0}", headers);
+        JavaRDD<List<Object>> rows = avroRdd.map(new AvroRowsFunction(headers));
+        return new DistributedTable(headers, rows);
     }
 }
