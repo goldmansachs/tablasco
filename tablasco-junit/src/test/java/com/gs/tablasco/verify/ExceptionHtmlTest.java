@@ -16,9 +16,6 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,7 +23,10 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 //import com.gs.fw.common.base.exception.CollectedException;
 
@@ -36,14 +36,14 @@ public class ExceptionHtmlTest
     public void testException() throws IOException
     {
         String stackTraceToString = ExceptionHtml.stackTraceToString(new RuntimeException(new IllegalArgumentException(new UnsupportedOperationException())));
-        List<Pair<String, List<String>>> stackTraces = getStackLineCount(stackTraceToString);
+        List<Map.Entry<String, List<String>>> stackTraces = getStackLineCount(stackTraceToString);
         Assert.assertEquals(3, stackTraces.size());
-        Assert.assertEquals(RuntimeException.class.getName() + ": " + IllegalArgumentException.class.getName() + ": " + UnsupportedOperationException.class.getName(), stackTraces.get(0).getOne());
-        Assert.assertTrue(stackTraces.get(0).getTwo().size() > 1);
-        Assert.assertEquals("Caused by: " + IllegalArgumentException.class.getName() + ": " + UnsupportedOperationException.class.getName(), stackTraces.get(1).getOne());
-        Assert.assertTrue(stackTraces.get(1).getTwo().size() > 1);
-        Assert.assertEquals("Caused by: " + UnsupportedOperationException.class.getName(), stackTraces.get(2).getOne());
-        Assert.assertTrue(stackTraces.get(2).getTwo().size() > 1);
+        Assert.assertEquals(RuntimeException.class.getName() + ": " + IllegalArgumentException.class.getName() + ": " + UnsupportedOperationException.class.getName(), stackTraces.get(0).getKey());
+        Assert.assertTrue(stackTraces.get(0).getValue().size() > 1);
+        Assert.assertEquals("Caused by: " + IllegalArgumentException.class.getName() + ": " + UnsupportedOperationException.class.getName(), stackTraces.get(1).getKey());
+        Assert.assertTrue(stackTraces.get(1).getValue().size() > 1);
+        Assert.assertEquals("Caused by: " + UnsupportedOperationException.class.getName(), stackTraces.get(2).getKey());
+        Assert.assertTrue(stackTraces.get(2).getValue().size() > 1);
     }
 
     /*
@@ -92,25 +92,25 @@ public class ExceptionHtmlTest
     }
     */
 
-    private static List<Pair<String, List<String>>> getStackLineCount(String string) throws IOException
+    private static List<Map.Entry<String, List<String>>> getStackLineCount(String string) throws IOException
     {
-        List<Pair<String, List<String>>> stackTraces = FastList.newList();
-        Pair<String, List<String>> stackTrace = null;
+        Map<String, List<String>> stackTraces = new LinkedHashMap<>();
+        List<String> stackTrace = null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(string.getBytes())));
         String line = reader.readLine();
         while (line != null)
         {
             if (line.startsWith("    "))
             {
-                stackTrace.getTwo().add(line);
+                stackTrace.add(line);
             }
             else
             {
-                stackTrace = Tuples.<String, List<String>>pair(line, FastList.<String>newList());
-                stackTraces.add(stackTrace);
+                stackTrace = new ArrayList<>();
+                stackTraces.put(line, stackTrace);
             }
             line = reader.readLine();
         }
-        return stackTraces;
+        return new ArrayList<>(stackTraces.entrySet());
     }
 }

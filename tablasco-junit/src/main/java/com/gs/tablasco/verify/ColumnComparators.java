@@ -16,52 +16,46 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.block.function.Function2;
-import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.map.MapIterable;
-import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.api.tuple.Twin;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.tuple.Tuples;
-
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ColumnComparators implements Serializable
 {
-    private final Twin<CellComparator> defaultCellComparator;
-    private final MapIterable<String, Twin<CellComparator>> comparatorsByColumn;
+    private final CellComparatorPair defaultCellComparator;
+    private final Map<String, CellComparatorPair> comparatorsByColumn;
 
-    private ColumnComparators(Double defaultTolerance, Double defaultVarianceThreshold, ImmutableMap<String, Builder.ToleranceVarianceValues> values)
+    private ColumnComparators(Double defaultTolerance, Double defaultVarianceThreshold, Map<String, Builder.ToleranceVarianceValues> values)
     {
-        this.defaultCellComparator = Tuples.twin(
+        this.defaultCellComparator = new CellComparatorPair(
                 getCellComparator(defaultTolerance, defaultVarianceThreshold),
                 new ToleranceCellComparator(getCellFormatter(defaultTolerance, false)));
 
-        this.comparatorsByColumn = values.collectValues(new Function2<String, Builder.ToleranceVarianceValues, Twin<CellComparator>>() {
-        @Override
-        public Twin<CellComparator> value(String columnName, Builder.ToleranceVarianceValues toleranceVarianceValues) {
-            return Tuples.twin(
+        this.comparatorsByColumn = values.keySet().stream().collect(Collectors.toMap(key -> key, key -> {
+            Builder.ToleranceVarianceValues toleranceVarianceValues = values.get(key);
+            return new CellComparatorPair(
                     getCellComparator(toleranceVarianceValues.tolerance, toleranceVarianceValues.varianceThreshold),
                     new ToleranceCellComparator(getCellFormatter(toleranceVarianceValues.tolerance, false)));
-        }
-    });
+        }));
     }
 
     public CellComparator getDefaultComparator()
     {
-        return this.defaultCellComparator.getOne();
+        return this.defaultCellComparator.getRunComparator();
     }
 
     public CellComparator getComparator(String columnName)
     {
-        Twin<CellComparator> cellComparators = this.comparatorsByColumn.get(columnName);
-        return cellComparators == null ? getDefaultComparator() : cellComparators.getOne();
+        CellComparatorPair cellComparators = this.comparatorsByColumn.get(columnName);
+        return cellComparators == null ? getDefaultComparator() : cellComparators.getRunComparator();
     }
 
     public CellComparator getComparatorForRebase(String columnName)
     {
-        Twin<CellComparator> cellComparators = this.comparatorsByColumn.get(columnName);
-        return cellComparators == null ? this.defaultCellComparator.getTwo() : cellComparators.getTwo();
+        CellComparatorPair cellComparators = this.comparatorsByColumn.get(columnName);
+        return cellComparators == null ? this.defaultCellComparator.getRebaseComparator() : cellComparators.getRebaseComparator();
     }
 
     private CellComparator getCellComparator(Double tolerance, Double varianceThreshold)
@@ -86,7 +80,7 @@ public class ColumnComparators implements Serializable
     {
         private Double defaultTolerance;
         private Double defaultVarianceThreshold;
-        private final MutableMap<String, ToleranceVarianceValues> toleranceVarianceValues = Maps.mutable.of();
+        private final Map<String, ToleranceVarianceValues> toleranceVarianceValues = new HashMap<>();
 
         public Builder withTolerance(double tolerance)
         {
@@ -114,7 +108,7 @@ public class ColumnComparators implements Serializable
 
         public ColumnComparators build()
         {
-            return new ColumnComparators(this.defaultTolerance, this.defaultVarianceThreshold, this.toleranceVarianceValues.toImmutable());
+            return new ColumnComparators(this.defaultTolerance, this.defaultVarianceThreshold, Collections.unmodifiableMap(this.toleranceVarianceValues));
         }
 
         private ToleranceVarianceValues toleranceVarianceValue(String columnName) {
@@ -136,6 +130,28 @@ public class ColumnComparators implements Serializable
                 this.varianceThreshold = varianceThreshold;
                 return this;
             }
+        }
+    }
+
+    public static class CellComparatorPair implements Serializable
+    {
+        private final CellComparator runComparator;
+        private final CellComparator rebaseComparator;
+
+        CellComparatorPair(CellComparator runComparator, CellComparator rebaseComparator)
+        {
+            this.runComparator = runComparator;
+            this.rebaseComparator = rebaseComparator;
+        }
+
+        CellComparator getRunComparator()
+        {
+            return runComparator;
+        }
+
+        CellComparator getRebaseComparator()
+        {
+            return rebaseComparator;
         }
     }
 }

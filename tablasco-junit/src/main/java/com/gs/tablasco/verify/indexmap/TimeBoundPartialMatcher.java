@@ -16,61 +16,48 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.eclipse.collections.api.list.MutableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TimeBoundPartialMatcher implements PartialMatcher
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TimeBoundPartialMatcher.class);
+    private static final Logger LOGGER = Logger.getLogger(TimeBoundPartialMatcher.class.getSimpleName());
 
     private final PartialMatcher delegate;
     private final long timeoutMillis;
 
-    public TimeBoundPartialMatcher(PartialMatcher delegate, long timeoutMillis)
+    TimeBoundPartialMatcher(PartialMatcher delegate, long timeoutMillis)
     {
         this.delegate = delegate;
         this.timeoutMillis = timeoutMillis;
     }
 
     @Override
-    public void match(final MutableList<UnmatchedIndexMap> allMissingRows, final MutableList<UnmatchedIndexMap> allSurplusRows, final MutableList<IndexMap> matchedColumns)
+    public void match(final List<UnmatchedIndexMap> allMissingRows, final List<UnmatchedIndexMap> allSurplusRows, final List<IndexMap> matchedColumns)
     {
-        LOGGER.debug("Starting partial match");
+        LOGGER.log(Level.FINE, "Starting partial match");
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<?> result = executorService.submit(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                TimeBoundPartialMatcher.this.delegate.match(allMissingRows, allSurplusRows, matchedColumns);
-            }
-        });
+        Future<?> result = executorService.submit(() -> TimeBoundPartialMatcher.this.delegate.match(allMissingRows, allSurplusRows, matchedColumns));
         try
         {
             result.get(this.timeoutMillis, TimeUnit.MILLISECONDS);
-            LOGGER.debug("Partial match complete");
+            LOGGER.log(Level.FINE, "Partial match complete");
         }
         catch (InterruptedException e)
         {
-            LOGGER.error("Partial match interrupted", e);
+            LOGGER.log(Level.SEVERE, "Partial match interrupted", e);
         }
         catch (ExecutionException e)
         {
-            LOGGER.error("Partial match exception", e);
+            LOGGER.log(Level.SEVERE, "Partial match exception", e);
             Throwable cause = e.getCause();
             throw cause instanceof RuntimeException ? (RuntimeException) cause : new RuntimeException(cause);
         }
         catch (TimeoutException e)
         {
-            LOGGER.error("Partial match timed out");
+            LOGGER.log(Level.SEVERE, "Partial match timed out");
             throw new RuntimeException(e);
         }
         finally

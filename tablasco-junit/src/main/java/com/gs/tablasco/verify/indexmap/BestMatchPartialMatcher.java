@@ -19,7 +19,8 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
-import org.eclipse.collections.api.list.MutableList;
+
+import java.util.List;
 
 public class BestMatchPartialMatcher implements PartialMatcher
 {
@@ -27,7 +28,7 @@ public class BestMatchPartialMatcher implements PartialMatcher
     private final VerifiableTable expectedData;
     private final ColumnComparators columnComparators;
 
-    public BestMatchPartialMatcher(VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators)
+    BestMatchPartialMatcher(VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators)
     {
         this.actualData = actualData;
         this.expectedData = expectedData;
@@ -35,7 +36,7 @@ public class BestMatchPartialMatcher implements PartialMatcher
     }
 
     @Override
-    public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
+    public void match(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> matchedColumns)
     {
         for (UnmatchedIndexMap expected : allMissingRows)
         {

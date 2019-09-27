@@ -17,7 +17,9 @@
 package com.gs.tablasco.verify;
 
 
-public class VarianceCellComparator extends CellComparator
+import java.io.Serializable;
+
+public class VarianceCellComparator extends CellComparator implements Serializable
 {
     private final double varianceThreshold;
 
@@ -38,7 +40,7 @@ public class VarianceCellComparator extends CellComparator
         return false;
     }
 
-    public static double getVariance(Object actual, Object expected)
+    static double getVariance(Object actual, Object expected)
     {
         double number1 = ((Number) actual).doubleValue();
         double number2 = ((Number) expected).doubleValue();

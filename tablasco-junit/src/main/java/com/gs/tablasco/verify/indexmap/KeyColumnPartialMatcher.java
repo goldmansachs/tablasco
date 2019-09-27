@@ -19,34 +19,24 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.KeyedVerifiableTable;
-import org.eclipse.collections.api.block.function.Function0;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.utility.Iterate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class KeyColumnPartialMatcher implements PartialMatcher
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeyColumnPartialMatcher.class);
-    public static final Function0<MutableList<UnmatchedIndexMap>> NEW_LIST = new Function0<MutableList<UnmatchedIndexMap>>()
-    {
-        @Override
-        public MutableList<UnmatchedIndexMap> value()
-        {
-            return FastList.newList(4);
-        }
-    };
+    private static final Logger LOGGER = Logger.getLogger(KeyColumnPartialMatcher.class.getSimpleName());
     private final KeyedVerifiableTable actualData;
     private final VerifiableTable expectedData;
     private final ColumnComparators columnComparators;
     private final PartialMatcher keyGroupPartialMatcher;
 
-    public KeyColumnPartialMatcher(KeyedVerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators, PartialMatcher keyGroupPartialMatcher)
+    KeyColumnPartialMatcher(KeyedVerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators, PartialMatcher keyGroupPartialMatcher)
     {
         this.actualData = actualData;
         this.expectedData = expectedData;
@@ -55,40 +45,40 @@ public class KeyColumnPartialMatcher implements PartialMatcher
     }
 
     @Override
-    public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
+    public void match(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> matchedColumns)
     {
         List<IndexMap> keyColumnIndices = this.getKeyColumnIndexMaps(matchedColumns);
         if (keyColumnIndices.isEmpty())
         {
-            LOGGER.warn("No key columns found!");
+            LOGGER.log(Level.WARNING, "No key columns found!");
             return;
         }
-        MutableMap<RowView, MutableList<UnmatchedIndexMap>> missingByKey = UnifiedMap.newMap(allMissingRows.size());
+        Map<RowView, List<UnmatchedIndexMap>> missingByKey = new HashMap<>(allMissingRows.size());
         for (UnmatchedIndexMap expected : allMissingRows)
         {
             ExpectedRowView expectedRowView = new ExpectedRowView(this.expectedData, keyColumnIndices, this.columnComparators, expected.getExpectedIndex());
-            missingByKey.getIfAbsentPut(expectedRowView, NEW_LIST).add(expected);
+            missingByKey.computeIfAbsent(expectedRowView, rowView -> new ArrayList<>(4)).add(expected);
         }
-        MutableMap<RowView, MutableList<UnmatchedIndexMap>> surplusByKey = UnifiedMap.newMap(allSurplusRows.size());
+        Map<RowView, List<UnmatchedIndexMap>> surplusByKey = new HashMap<>(allSurplusRows.size());
         for (UnmatchedIndexMap actual : allSurplusRows)
         {
             ActualRowView actualRowView = new ActualRowView(this.actualData, keyColumnIndices, this.columnComparators, actual.getActualIndex());
-            surplusByKey.getIfAbsentPut(actualRowView, NEW_LIST).add(actual);
+            surplusByKey.computeIfAbsent(actualRowView, rowView -> new ArrayList<>(4)).add(actual);
         }
-        for (RowView rowView : missingByKey.keysView())
+        missingByKey.forEach((rowView, unmatchedIndexMaps) ->
         {
-            MutableList<UnmatchedIndexMap> missing = missingByKey.get(rowView);
-            MutableList<UnmatchedIndexMap> surplus = surplusByKey.get(rowView);
-            if (Iterate.notEmpty(missing) && Iterate.notEmpty(surplus))
+            List<UnmatchedIndexMap> missing = missingByKey.get(rowView);
+            List<UnmatchedIndexMap> surplus = surplusByKey.get(rowView);
+            if (missing != null && !missing.isEmpty() && surplus != null && !surplus.isEmpty())
             {
-                this.keyGroupPartialMatcher.match(missing, surplus, matchedColumns);
+                keyGroupPartialMatcher.match(missing, surplus, matchedColumns);
             }
-        }
+        });
     }
 
     private List<IndexMap> getKeyColumnIndexMaps(List<IndexMap> columnIndices)
     {
-        List<IndexMap> keyColumns = FastList.newList(columnIndices.size());
+        List<IndexMap> keyColumns = new ArrayList<>(columnIndices.size());
         for (IndexMap columnIndexMap : columnIndices)
         {
             if (columnIndexMap.isMatched() && this.actualData.isKeyColumn(columnIndexMap.getActualIndex()))

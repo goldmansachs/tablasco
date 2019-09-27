@@ -16,22 +16,16 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.tuple.Tuples;
-
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Metadata
 {
     private static final Format DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static final String RECORDED_AT = "Recorded At";
+    private static final String RECORDED_AT = "Recorded At";
 
-    private final List<Pair<String, String>> data = FastList.newList();
+    private final Map<String, String> data = new LinkedHashMap<>();
 
     private Metadata()
     {
@@ -51,7 +45,7 @@ public class Metadata
 
     public void add(String key, String value)
     {
-        this.data.add(Tuples.pair(key, value));
+        this.data.put(key, value);
     }
 
     public void addDate(String key, Date date)
@@ -59,9 +53,9 @@ public class Metadata
         this.add(key, DATE_TIME_FORMATTER.format(date));
     }
 
-    public List<Pair<String, String>> getData()
+    public List<Map.Entry<String, String>> getData()
     {
-        return this.data;
+        return new ArrayList<>(this.data.entrySet());
     }
 
     @Override
@@ -79,11 +73,11 @@ public class Metadata
 
     private void makeString(StringBuilder builder, String stringQualifier)
     {
-        Iterator<Pair<String, String>> iterator = this.data.iterator();
+        Iterator<Map.Entry<String, String>> iterator = this.data.entrySet().iterator();
         while (iterator.hasNext())
         {
-            Pair<String, String> pair = iterator.next();
-            addData(pair.getOne(), pair.getTwo(), builder, stringQualifier);
+            Map.Entry<String, String> pair = iterator.next();
+            addData(pair.getKey(), pair.getValue(), builder, stringQualifier);
             if (iterator.hasNext())
             {
                 builder.append(',').append(' ');

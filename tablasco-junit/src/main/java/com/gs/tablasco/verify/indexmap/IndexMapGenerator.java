@@ -16,63 +16,57 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.list.mutable.FastList;
-
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IndexMapGenerator<T>
 {
     private final Iterator<T> actualIterator;
     private final Iterator<T> expectedIterator;
-    private MutableList<IndexMap> matched;
-    private MutableList<UnmatchedIndexMap> missing;
-    private MutableList<UnmatchedIndexMap> surplus;
+    private List<IndexMap> matched;
+    private List<UnmatchedIndexMap> missing;
+    private List<UnmatchedIndexMap> surplus;
     private final int initialIndex;
 
-    public IndexMapGenerator(Iterator<T> expectedIterator, Iterator<T> actualIterator, int initialIndex)
+    IndexMapGenerator(Iterator<T> expectedIterator, Iterator<T> actualIterator, int initialIndex)
     {
         this.actualIterator = actualIterator;
         this.expectedIterator = expectedIterator;
         this.initialIndex = initialIndex;
     }
 
-    public MutableList<IndexMap> getMatched()
+    public List<IndexMap> getMatched()
     {
         return this.matched;
     }
 
-    public MutableList<UnmatchedIndexMap> getMissing()
+    public List<UnmatchedIndexMap> getMissing()
     {
         return this.missing;
     }
 
-    public MutableList<UnmatchedIndexMap> getSurplus()
+    public List<UnmatchedIndexMap> getSurplus()
     {
         return this.surplus;
     }
 
-    public MutableList<IndexMap> getAll()
+    List<IndexMap> getAll()
     {
         Set<IndexMap> all = new TreeSet<>();
         all.addAll(this.matched);
         all.addAll(this.surplus);
         all.addAll(this.missing);
-        return FastList.newList(all);
+        return new ArrayList<>(all);
     }
 
-    public void generate()
+    void generate()
     {
-        this.matched = FastList.newList();
-        this.missing = FastList.newList();
-        this.surplus = FastList.newList();
+        this.matched = new ArrayList<>();
+        this.missing = new ArrayList<>();
+        this.surplus = new ArrayList<>();
 
-        Map<T, Object> actualIndices = new LinkedHashMap<T, Object>();
+        Map<T, Object> actualIndices = new LinkedHashMap<>();
         int ai = this.initialIndex;
 
         while (this.actualIterator.hasNext())
@@ -81,15 +75,15 @@ public class IndexMapGenerator<T>
             Object indexOrListOf = actualIndices.get(next);
             if (indexOrListOf == null)
             {
-                actualIndices.put(next, Integer.valueOf(ai));
+                actualIndices.put(next, ai);
             }
             else if (indexOrListOf instanceof Integer)
             {
-                actualIndices.put(next, FastList.newListWith((Integer) indexOrListOf, Integer.valueOf(ai)));
+                actualIndices.put(next, Stream.of((Integer) indexOrListOf, ai).collect(Collectors.toList()));
             }
             else
             {
-                ((List) indexOrListOf).add(Integer.valueOf(ai));
+                ((List) indexOrListOf).add(ai);
             }
             ai++;
         }

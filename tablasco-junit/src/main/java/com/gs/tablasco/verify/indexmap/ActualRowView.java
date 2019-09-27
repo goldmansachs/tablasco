@@ -23,7 +23,7 @@ import java.util.List;
 
 public class ActualRowView extends RowView
 {
-    public ActualRowView(VerifiableTable actualData, List<IndexMap> keyColumns, ColumnComparators columnComparators, int rowIndex)
+    ActualRowView(VerifiableTable actualData, List<IndexMap> keyColumns, ColumnComparators columnComparators, int rowIndex)
     {
         super(actualData, keyColumns, columnComparators, rowIndex);
     }

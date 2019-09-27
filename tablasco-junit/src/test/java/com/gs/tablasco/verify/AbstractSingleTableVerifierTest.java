@@ -22,7 +22,6 @@ import com.gs.tablasco.rebase.RebaseFileWriter;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsParser;
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -78,13 +77,13 @@ public abstract class AbstractSingleTableVerifierTest
     private void actualTable(List... headerAndRows)
     {
         Assert.assertNull(this.actual);
-        this.actual = new ListVerifiableTable(Arrays.<List<Object>>asList(headerAndRows));
+        this.actual = new ListVerifiableTable(Arrays.asList(headerAndRows));
     }
 
     private void expectedTable(List... headerAndRows)
     {
         Assert.assertNull(this.expected);
-        this.expected = new ListVerifiableTable(Arrays.<List<Object>>asList(headerAndRows));
+        this.expected = new ListVerifiableTable(Arrays.asList(headerAndRows));
     }
 
     private void assertVerification()
@@ -107,7 +106,7 @@ public abstract class AbstractSingleTableVerifierTest
         try
         {
             File rebaseFile = this.temporaryFolder.newFile("table.txt");
-            new RebaseFileWriter(Metadata.newWithRecordedAt(), null, new ColumnComparators.Builder().build(), rebaseFile).writeRebasedResults("method", Maps.fixedSize.of("table", this.expected));
+            new RebaseFileWriter(Metadata.newWithRecordedAt(), null, new ColumnComparators.Builder().build(), rebaseFile).writeRebasedResults("method", Collections.singletonMap("table", this.expected));
             ExpectedResults expectedResults = new ExpectedResultsParser(new FileSystemExpectedResultsLoader(), rebaseFile).parse();
             return expectedResults.getTable("method", "table");
         }
@@ -124,8 +123,8 @@ public abstract class AbstractSingleTableVerifierTest
     private void writeResults(String tableName, List<List<ResultCell>> verify)
     {
         File outputFile = new File(TableTestUtils.getOutputDirectory(), this.getClass().getSimpleName() + ".html");
-        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.<String>emptySet()));
-        htmlFormatter.appendResults(this.testName.getMethodName(), Maps.fixedSize.of(tableName, new ResultTable(new boolean[verify.get(0).size()], verify)), Metadata.newEmpty());
+        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet()));
+        htmlFormatter.appendResults(this.testName.getMethodName(), Collections.singletonMap(tableName, new ResultTable(new boolean[verify.get(0).size()], verify)), Metadata.newEmpty());
     }
 
     protected static <T> List<T> row(T... values)

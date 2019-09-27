@@ -16,12 +16,12 @@
 
 package com.gs.tablasco;
 
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class OutputEncodingSecurityTest
 {
@@ -35,14 +35,7 @@ public class OutputEncodingSecurityTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(1, "Col", "<script language=\"javascript\">alert(\"boo\")</script>", "<script language=\"javascript\">alert(\"boo\")</script>");
         final VerifiableTable table2 = TableTestUtils.createTable(1, "Col", "<script language=\"javascript\">alert(\"boo\")</script>", "<script language=\"javascript\">alert(\"foo\")</script>");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +

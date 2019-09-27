@@ -16,7 +16,6 @@
 
 package com.gs.tablasco;
 
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,12 +53,7 @@ public class SummarisedResultsTest {
                 "e", "x",
                 "e", "x"
         );
-        TableTestUtils.assertAssertionError(new Runnable() {
-            @Override
-            public void run() {
-                tableVerifier.verify(Maps.fixedSize.of("name1", table1, "name2", table1), Maps.fixedSize.of("name1", table2, "name2", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(TableTestUtils.doubletonMap("name1", table1, "name2", table1), TableTestUtils.doubletonMap("name1", table2, "name2", table2)));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +

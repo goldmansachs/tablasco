@@ -18,19 +18,19 @@ package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
-import org.eclipse.collections.api.list.MutableList;
 
 import java.util.Iterator;
+import java.util.List;
 
 public abstract class RowIterator implements Iterator<RowView>
 {
     private final VerifiableTable table;
-    private final MutableList<IndexMap> columns;
+    private final List<IndexMap> columns;
     private final ColumnComparators columnComparators;
     private int rowIndex;
     private final int lastUnMatchedOffset;
 
-    protected RowIterator(VerifiableTable table, MutableList<IndexMap> columns, ColumnComparators columnComparators, int initialIndex, int lastUnMatchedOffset)
+    RowIterator(VerifiableTable table, List<IndexMap> columns, ColumnComparators columnComparators, int initialIndex, int lastUnMatchedOffset)
     {
         this.table = table;
         this.columns = columns;
@@ -66,7 +66,7 @@ public abstract class RowIterator implements Iterator<RowView>
         return this.table;
     }
 
-    protected MutableList<IndexMap> getColumns()
+    protected List<IndexMap> getColumns()
     {
         return this.columns;
     }

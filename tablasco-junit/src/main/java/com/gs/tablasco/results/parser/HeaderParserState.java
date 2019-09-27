@@ -22,7 +22,7 @@ import java.text.ParseException;
 
 public class HeaderParserState extends ParserState
 {
-    protected HeaderParserState(ExpectedResultsParser parserState)
+    HeaderParserState(ExpectedResultsParser parserState)
     {
         super(parserState);
     }

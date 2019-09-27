@@ -19,10 +19,6 @@ package com.gs.tablasco.verify;
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.w3c.dom.Document;
@@ -30,8 +26,7 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class MultiTableVerifierTest
 {
@@ -97,50 +92,50 @@ public class MultiTableVerifierTest
     public void noExpectedColumns()
     {
         this.verifyTables(
-                Maps.fixedSize.of("table", TableTestUtils.createTable(1, "Col")),
-                Maps.fixedSize.of("table", TableTestUtils.createTable(0)));
+                Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
+                Collections.singletonMap("table", TableTestUtils.createTable(0)));
     }
 
     @Test(expected = IllegalStateException.class)
     public void noActualColumns()
     {
         this.verifyTables(
-                Maps.fixedSize.of("table", TableTestUtils.createTable(0)),
-                Maps.fixedSize.of("table", TableTestUtils.createTable(1, "Col")));
+                Collections.singletonMap("table", TableTestUtils.createTable(0)),
+                Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")));
     }
 
     private Map<String, ResultTable> verifyTables(Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults)
     {
         Map<String, ResultTable> results = this.verifier.verifyTables(expectedResults, actualResults);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.<String>emptySet()));
+        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet()));
         htmlFormatter.appendResults(this.testName.getMethodName(), results, null);
         return results;
     }
 
-    private MutableList<MutableList<ResultCell>> newMissingTable()
+    private List<List<ResultCell>> newMissingTable()
     {
-        return FastList.<MutableList<ResultCell>>newListWith(
-                FastList.newListWith(ResultCell.createMissingCell(CELL_COMPARATOR.getFormatter(), "Heading")),
-                FastList.newListWith(ResultCell.createMissingCell(CELL_COMPARATOR.getFormatter(), "Value")));
+        return Arrays.asList(
+                Collections.singletonList(ResultCell.createMissingCell(CELL_COMPARATOR.getFormatter(), "Heading")),
+                Collections.singletonList(ResultCell.createMissingCell(CELL_COMPARATOR.getFormatter(), "Value")));
     }
 
-    private MutableList<MutableList<ResultCell>> newSurplusTable()
+    private List<List<ResultCell>> newSurplusTable()
     {
-        return FastList.<MutableList<ResultCell>>newListWith(
-                FastList.newListWith(ResultCell.createSurplusCell(CELL_COMPARATOR.getFormatter(), "Heading")),
-                FastList.newListWith(ResultCell.createSurplusCell(CELL_COMPARATOR.getFormatter(), "Value")));
+        return Arrays.asList(
+                Collections.singletonList(ResultCell.createSurplusCell(CELL_COMPARATOR.getFormatter(), "Heading")),
+                Collections.singletonList(ResultCell.createSurplusCell(CELL_COMPARATOR.getFormatter(), "Value")));
     }
 
-    private static FastList<MutableList<ResultCell>> newPassTable()
+    private static List<List<ResultCell>> newPassTable()
     {
-        return FastList.<MutableList<ResultCell>>newListWith(
-                FastList.newListWith(ResultCell.createMatchedCell(CELL_COMPARATOR, "Heading", "Heading")),
-                FastList.newListWith(ResultCell.createMatchedCell(CELL_COMPARATOR, "Value", "Value")));
+        return Arrays.asList(
+                Collections.singletonList(ResultCell.createMatchedCell(CELL_COMPARATOR, "Heading", "Heading")),
+                Collections.singletonList(ResultCell.createMatchedCell(CELL_COMPARATOR, "Value", "Value")));
     }
 
     private static Map<String, VerifiableTable> createTables(String... names)
     {
-        Map<String, VerifiableTable> tables = UnifiedMap.newMap();
+        Map<String, VerifiableTable> tables = new HashMap<>();
         for (String name : names)
         {
             tables.put(name, new VerifiableTable()

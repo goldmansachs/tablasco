@@ -19,31 +19,24 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
-import org.eclipse.collections.api.block.function.Function;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.multimap.list.MutableListMultimap;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.block.factory.Comparators;
-import org.eclipse.collections.impl.block.factory.Functions;
-import org.eclipse.collections.impl.factory.Lists;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.tuple.Tuples;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class AdaptivePartialMatcher implements PartialMatcher
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdaptivePartialMatcher.class);
+    private static final Logger LOGGER = Logger.getLogger(AdaptivePartialMatcher.class.getSimpleName());
 
     private final VerifiableTable actualData;
     private final VerifiableTable expectedData;
     private final ColumnComparators columnComparators;
     private final long bestMatchThreshold;
 
-    public AdaptivePartialMatcher(VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators, int bestMatchThreshold)
+    AdaptivePartialMatcher(VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators, int bestMatchThreshold)
     {
         this.actualData = actualData;
         this.expectedData = expectedData;
@@ -52,102 +45,136 @@ public class AdaptivePartialMatcher implements PartialMatcher
     }
 
     @Override
-    public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
+    public void match(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> matchedColumns)
     {
         this.groupAndMatch(allMissingRows, allSurplusRows, matchedColumns, null, 0);
     }
 
-    private void groupAndMatch(MutableList<UnmatchedIndexMap> missingRows, MutableList<UnmatchedIndexMap> surplusRows, MutableList<IndexMap> matchedColumns, MutableList<IndexMap> columnsOrderedBySelectivity, int columnIndex)
+    private void groupAndMatch(List<UnmatchedIndexMap> missingRows, List<UnmatchedIndexMap> surplusRows, List<IndexMap> matchedColumns, List<IndexMap> columnsOrderedBySelectivity, int columnIndex)
     {
         if ((long) missingRows.size() * (long) surplusRows.size() <= this.bestMatchThreshold)
         {
-            LOGGER.debug("Matching {} missing and {} surplus rows using best-match algorithm", missingRows.size(), surplusRows.size());
+            LOGGER.log(Level.FINE, "Matching {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
             new BestMatchPartialMatcher(this.actualData, this.expectedData, this.columnComparators).match(missingRows, surplusRows, matchedColumns);
             return;
         }
-        MutableList<IndexMap> initializedColumnsOrderedBySelectivity = columnsOrderedBySelectivity;
-        if (columnIndex == 0)
-        {
-            initializedColumnsOrderedBySelectivity = getColumnsOrderedBySelectivity(missingRows, surplusRows, matchedColumns);
-        }
+        final List<IndexMap> initializedColumnsOrderedBySelectivity = columnIndex == 0 ?
+                getColumnsOrderedBySelectivity(missingRows, surplusRows, matchedColumns) :
+                columnsOrderedBySelectivity;
         if (columnIndex >= initializedColumnsOrderedBySelectivity.size())
         {
-            LOGGER.info("Matching remaining {} missing and {} surplus rows using best-match algorithm", missingRows.size(), surplusRows.size());
+            LOGGER.log(Level.INFO, "Matching remaining {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
             new BestMatchPartialMatcher(this.actualData, this.expectedData, this.columnComparators).match(missingRows, surplusRows, matchedColumns);
             return;
         }
         IndexMap column = initializedColumnsOrderedBySelectivity.get(columnIndex);
-        LOGGER.info("Grouping by '{}' column", this.actualData.getColumnName(column.getActualIndex()));
+        LOGGER.log(Level.INFO, "Grouping by '{0}' column", this.actualData.getColumnName(column.getActualIndex()));
+
         CellComparator expectedComparator = this.columnComparators.getComparator(expectedData.getColumnName(column.getExpectedIndex()));
-        MutableListMultimap<String, UnmatchedIndexMap> missingRowsByColumn = missingRows.groupBy(Functions.chain(expectedValueFunction(column), expectedComparator.getFormatter()));
+        Map<String, List<UnmatchedIndexMap>> missingRowsByColumn = new HashMap<>();
+        missingRows.forEach(unmatchedIndexMap -> {
+            String formatted = getFormattedExpected(column, expectedComparator, unmatchedIndexMap);
+            missingRowsByColumn.compute(formatted, addToRows(unmatchedIndexMap));
+        });
+
         CellComparator actualComparator = this.columnComparators.getComparator(actualData.getColumnName(column.getActualIndex()));
-        MutableListMultimap<String, UnmatchedIndexMap> surplusRowsByColumn = surplusRows.groupBy(Functions.chain(actualValueFunction(column), actualComparator.getFormatter()));
-        for (String key : missingRowsByColumn.keysView())
+        Map<String, List<UnmatchedIndexMap>> surplusRowsByColumn = new HashMap<>();
+        surplusRows.forEach(unmatchedIndexMap -> {
+            Object actual = this.actualData.getValueAt(unmatchedIndexMap.getActualIndex(), column.getActualIndex());
+            String formatted = actualComparator.getFormatter().format(actual);
+            surplusRowsByColumn.compute(formatted, addToRows(unmatchedIndexMap));
+        });
+
+        missingRowsByColumn.forEach((key, unmatchedIndexMaps) ->
         {
-            LOGGER.debug("Matching '{}'", key);
-            MutableList<UnmatchedIndexMap> missingByKey = missingRowsByColumn.get(key);
-            MutableList<UnmatchedIndexMap> surplusByKey = surplusRowsByColumn.get(key);
+            LOGGER.log(Level.FINE, "Matching '{0}'", key);
+            List<UnmatchedIndexMap> missingByKey = missingRowsByColumn.get(key);
+            List<UnmatchedIndexMap> surplusByKey = surplusRowsByColumn.get(key);
             if (surplusByKey != null)
             {
                 groupAndMatch(missingByKey, surplusByKey, matchedColumns, initializedColumnsOrderedBySelectivity, columnIndex + 1);
             }
-        }
+        });
+    }
+
+    private String getFormattedExpected(IndexMap column, CellComparator expectedComparator, UnmatchedIndexMap unmatchedIndexMap)
+    {
+        Object expected = this.expectedData.getValueAt(unmatchedIndexMap.getExpectedIndex(), column.getExpectedIndex());
+        return expectedComparator.getFormatter().format(expected);
+    }
+
+    private static BiFunction<String, List<UnmatchedIndexMap>, List<UnmatchedIndexMap>> addToRows(UnmatchedIndexMap unmatchedIndexMap)
+    {
+        return (key, unmatchedIndexMaps) ->
+        {
+            unmatchedIndexMaps = unmatchedIndexMaps == null ? new ArrayList<>() : unmatchedIndexMaps;
+            unmatchedIndexMaps.add(unmatchedIndexMap);
+            return unmatchedIndexMaps;
+        };
     }
 
     private Function<UnmatchedIndexMap, Object> actualValueFunction(final IndexMap column)
     {
-        return new Function<UnmatchedIndexMap, Object>()
-        {
-            @Override
-            public Object valueOf(UnmatchedIndexMap object)
-            {
-                return AdaptivePartialMatcher.this.actualData.getValueAt(object.getActualIndex(), column.getActualIndex());
-            }
-        };
+        return unmatchedIndexMap -> AdaptivePartialMatcher.this.actualData.getValueAt(unmatchedIndexMap.getActualIndex(), column.getActualIndex());
     }
 
     private Function<UnmatchedIndexMap, Object> expectedValueFunction(final IndexMap column)
     {
-        return new Function<UnmatchedIndexMap, Object>()
-        {
-            @Override
-            public Object valueOf(UnmatchedIndexMap object)
-            {
-                return AdaptivePartialMatcher.this.expectedData.getValueAt(object.getExpectedIndex(), column.getExpectedIndex());
-            }
-        };
+        return unmatchedIndexMap -> AdaptivePartialMatcher.this.expectedData.getValueAt(unmatchedIndexMap.getExpectedIndex(), column.getExpectedIndex());
     }
 
-    private MutableList<IndexMap> getColumnsOrderedBySelectivity(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> columnIndices)
+    private List<IndexMap> getColumnsOrderedBySelectivity(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> columnIndices)
     {
-        LOGGER.info("Calculating column selectivity");
-        MutableList<Pair<IndexMap, Integer>> columnSelectivities = Lists.mutable.of();
+        LOGGER.log(Level.INFO, "Calculating column selectivity");
+        List<ColumnSelectivity> columnSelectivities = new ArrayList<>();
         for (IndexMap column : columnIndices)
         {
             CellComparator expectedComparator = this.columnComparators.getComparator(expectedData.getColumnName(column.getExpectedIndex()));
-            Set<String> expectedValues = getColumnValues(allMissingRows, Functions.chain(expectedValueFunction(column), expectedComparator.getFormatter()));
+            Set<String> expectedValues = getColumnValues(allMissingRows, expectedValueFunction(column).andThen(expectedComparator.getFormatter()));
             CellComparator actualComparator = this.columnComparators.getComparator(actualData.getColumnName(column.getActualIndex()));
-            Set<String> actualValues = getColumnValues(allSurplusRows, Functions.chain(actualValueFunction(column), actualComparator.getFormatter()));
+            Set<String> actualValues = getColumnValues(allSurplusRows, actualValueFunction(column).andThen(actualComparator.getFormatter()));
             actualValues.retainAll(expectedValues);
             int selectivity = actualValues.size();
             if (selectivity > 0)
             {
-                columnSelectivities.add(Tuples.pair(column, Integer.valueOf(selectivity)));
+                columnSelectivities.add(new ColumnSelectivity(column, selectivity));
             }
         }
-        return columnSelectivities
-                .sortThis(Comparators.reverse(Comparators.byFunction(Functions.<Integer>secondOfPair())))
-                .collect(Functions.<IndexMap>firstOfPair());
+        return columnSelectivities.stream()
+                .sorted(Comparator.comparing(ColumnSelectivity::getSelectivity).reversed())
+                .map(ColumnSelectivity::getColumn)
+                .collect(Collectors.toList());
     }
 
-    private static Set<String> getColumnValues(MutableList<UnmatchedIndexMap> rows, Function<UnmatchedIndexMap, String> valueFunction)
+    private static Set<String> getColumnValues(List<UnmatchedIndexMap> rows, Function<UnmatchedIndexMap, String> valueFunction)
     {
-        if (!CellComparator.isFloatingPoint(valueFunction.valueOf(rows.getFirst())))
+        if (!CellComparator.isFloatingPoint(valueFunction.apply(rows.get(0))))
         {
-            Set<String> values = UnifiedSet.newSet();
-            rows.collect(valueFunction, values);
-            return values;
+            return rows.stream().map(valueFunction).collect(Collectors.toSet());
         }
+        // todo: is this ever hit?
         return Collections.emptySet();
+    }
+
+    private static class ColumnSelectivity
+    {
+        private final IndexMap column;
+        private final int selectivity;
+
+        ColumnSelectivity(IndexMap column, int selectivity)
+        {
+            this.column = column;
+            this.selectivity = selectivity;
+        }
+
+        public IndexMap getColumn()
+        {
+            return column;
+        }
+
+        int getSelectivity()
+        {
+            return selectivity;
+        }
     }
 }

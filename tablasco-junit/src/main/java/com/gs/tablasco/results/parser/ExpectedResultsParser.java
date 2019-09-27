@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 public class ExpectedResultsParser
@@ -106,7 +107,7 @@ public class ExpectedResultsParser
         this.results = new ExpectedResults();
         try (InputStream inputStream = this.loader.load(this.file))
         {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             parse(reader);
             return this.results;
         }
@@ -120,7 +121,7 @@ public class ExpectedResultsParser
         }
     }
 
-    private Void parse(Reader reader) throws ParseException, IOException
+    private void parse(Reader reader) throws ParseException, IOException
     {
         StreamTokenizer st = new StreamTokenizer(reader);
         st.eolIsSignificant(true);
@@ -137,6 +138,5 @@ public class ExpectedResultsParser
         {
             currentState = currentState.parse(st);
         }
-        return null;
     }
 }

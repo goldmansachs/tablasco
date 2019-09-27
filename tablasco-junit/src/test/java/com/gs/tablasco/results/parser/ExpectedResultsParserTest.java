@@ -20,11 +20,11 @@ import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -46,8 +46,8 @@ public class ExpectedResultsParserTest
         Assert.assertEquals(1, drillDown.getRowCount());
 
         Assert.assertEquals(2, results.getMetadata().getData().size());
-        Assert.assertEquals(Tuples.pair("Recorded At", "2013-06-26 12:00:00"), results.getMetadata().getData().get(0));
-        Assert.assertEquals(Tuples.pair("App Server URL", "http://test"), results.getMetadata().getData().get(1));
+        Assert.assertEquals(Collections.singletonMap("Recorded At", "2013-06-26 12:00:00").entrySet().iterator().next(), results.getMetadata().getData().get(0));
+        Assert.assertEquals(Collections.singletonMap("App Server URL", "http://test").entrySet().iterator().next(), results.getMetadata().getData().get(1));
     }
 
     @Test

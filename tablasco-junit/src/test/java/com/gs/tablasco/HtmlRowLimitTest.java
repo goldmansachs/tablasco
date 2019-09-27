@@ -16,12 +16,12 @@
 
 package com.gs.tablasco;
 
-import org.eclipse.collections.impl.factory.Maps;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class HtmlRowLimitTest
 {
@@ -35,7 +35,7 @@ public class HtmlRowLimitTest
     public void tablesMatch() throws IOException
     {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
-        this.tableVerifier.verify(Maps.fixedSize.of("name", table), Maps.fixedSize.of("name", table));
+        this.tableVerifier.verify(Collections.singletonMap("name", table), Collections.singletonMap("name", table));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -65,14 +65,7 @@ public class HtmlRowLimitTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "DX", "E1", "E2");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                         "<tr>\n" +
@@ -102,14 +95,7 @@ public class HtmlRowLimitTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "AX", "B1", "B2", "C1", "C2", "D1", "DX", "E1", "E2");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withHideMatchedRows(true).verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withHideMatchedRows(true).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -142,14 +128,7 @@ public class HtmlRowLimitTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "CX", "D1", "DX");
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                tableVerifier.withHtmlRowLimit(1).withHideMatchedRows(true).verify(Maps.fixedSize.of("name", table1), Maps.fixedSize.of("name", table2));
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withHtmlRowLimit(1).withHideMatchedRows(true).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                         "<tr>\n" +

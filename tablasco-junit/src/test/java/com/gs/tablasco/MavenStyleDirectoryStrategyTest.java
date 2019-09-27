@@ -18,11 +18,10 @@ package com.gs.tablasco;
 
 import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
 import com.gs.tablasco.verify.ListVerifiableTable;
-import org.eclipse.collections.impl.factory.Lists;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class MavenStyleDirectoryStrategyTest
 {
@@ -40,10 +39,10 @@ public class MavenStyleDirectoryStrategyTest
     @Test
     public void testMavenStyleDirectoryStrategy()
     {
-        this.tableVerifier.verify("maven", new ListVerifiableTable(Lists.fixedSize.<List<Object>>of(
-                Lists.fixedSize.<Object>of("h1", "h2"),
-                Lists.fixedSize.<Object>of("r11", "r12"),
-                Lists.fixedSize.<Object>of("r21", "r22")
+        this.tableVerifier.verify("maven", new ListVerifiableTable(Arrays.asList(
+                Arrays.asList("h1", "h2"),
+                Arrays.asList("r11", "r12"),
+                Arrays.asList("r21", "r22")
         )));
     }
 }

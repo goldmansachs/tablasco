@@ -18,22 +18,22 @@ package com.gs.tablasco.adapters;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-import org.eclipse.collections.api.block.predicate.Predicate;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
+import java.util.function.Predicate;
 
 class ColumnFilterAdapter extends DefaultVerifiableTableAdapter
 {
-    private final IntArrayList indexMap;
+    private final int[] indexMap;
+    private int columnCount = 0;
 
     ColumnFilterAdapter(VerifiableTable delegate, Predicate<String> columnFilter)
     {
         super(delegate);
-        this.indexMap = new IntArrayList(delegate.getColumnCount());
+        this.indexMap = new int[delegate.getColumnCount()];
         for (int i = 0; i < delegate.getColumnCount(); i++)
         {
-            if (columnFilter.accept(delegate.getColumnName(i)))
+            if (columnFilter.test(delegate.getColumnName(i)))
             {
-                indexMap.add(i);
+                indexMap[this.columnCount++] = i;
             }
         }
     }
@@ -41,18 +41,18 @@ class ColumnFilterAdapter extends DefaultVerifiableTableAdapter
     @Override
     public int getColumnCount()
     {
-        return this.indexMap.size();
+        return this.columnCount;
     }
 
     @Override
     public String getColumnName(int columnIndex)
     {
-        return super.getColumnName(this.indexMap.get(columnIndex));
+        return super.getColumnName(this.indexMap[columnIndex]);
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        return super.getValueAt(rowIndex, this.indexMap.get(columnIndex));
+        return super.getValueAt(rowIndex, this.indexMap[columnIndex]);
     }
 }

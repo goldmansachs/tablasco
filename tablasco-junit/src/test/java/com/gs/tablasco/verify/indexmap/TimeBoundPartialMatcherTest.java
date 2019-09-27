@@ -16,7 +16,6 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.eclipse.collections.api.list.MutableList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,18 +30,7 @@ public class TimeBoundPartialMatcherTest
     {
         try
         {
-            PartialMatcher endlessMatcher = new PartialMatcher()
-            {
-                @Override
-                public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
-                {
-                    boolean breakLoop = false;
-                    while (!breakLoop)
-                    {
-                        breakLoop = "foo".equals("bar");
-                    }
-                }
-            };
+            PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> { while (true); };
             new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null);
             Assert.fail("timeout expected");
         }
@@ -55,27 +43,16 @@ public class TimeBoundPartialMatcherTest
     @Test(expected = IndexOutOfBoundsException.class)
     public void matchingExceptionPropagates()
     {
-        PartialMatcher dyingMatcher = new PartialMatcher()
-        {
-            @Override
-            public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
-            {
-                Collections.singletonList("foo").get(2);
-            }
-        };
+        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> Collections.singletonList("foo").get(2);
         new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
     }
 
     @Test
     public void matchingErrorPropagates()
     {
-        PartialMatcher dyingMatcher = new PartialMatcher()
+        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) ->
         {
-            @Override
-            public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
-            {
-                throw new NoSuchMethodError();
-            }
+            throw new NoSuchMethodError();
         };
         try
         {
@@ -92,14 +69,7 @@ public class TimeBoundPartialMatcherTest
     public void successfulMatch()
     {
         final AtomicBoolean matched = new AtomicBoolean(false);
-        PartialMatcher matcher = new PartialMatcher()
-        {
-            @Override
-            public void match(MutableList<UnmatchedIndexMap> allMissingRows, MutableList<UnmatchedIndexMap> allSurplusRows, MutableList<IndexMap> matchedColumns)
-            {
-                matched.set(true);
-            }
-        };
+        PartialMatcher matcher = (allMissingRows, allSurplusRows, matchedColumns) -> matched.set(true);
         new TimeBoundPartialMatcher(matcher, Long.MAX_VALUE).match(null, null, null);
         Assert.assertTrue(matched.get());
     }

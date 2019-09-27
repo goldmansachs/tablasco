@@ -17,8 +17,8 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
-import org.eclipse.collections.impl.list.mutable.FastList;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class MultiTableVerifier
     public Map<String, ResultTable> verifyTables(Map<String, ? extends VerifiableTable> expectedResults, Map<String, ? extends VerifiableTable> actualResults)
     {
         Map<String, ResultTable> results = new LinkedHashMap<>();
-        List<String> allTableNames = FastList.newList(expectedResults.keySet());
+        List<String> allTableNames = new ArrayList<>(expectedResults.keySet());
         for (String actualTable : actualResults.keySet())
         {
             if (!expectedResults.containsKey(actualTable))

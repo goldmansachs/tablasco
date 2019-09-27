@@ -16,23 +16,13 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.block.function.Function;
-import org.eclipse.collections.api.block.function.Function0;
-import org.eclipse.collections.api.block.procedure.Procedure;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.factory.Lists;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.utility.Iterate;
-import org.eclipse.collections.impl.utility.ListIterate;
 import org.w3c.dom.Element;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SummaryResultTable implements FormattableTable, Serializable
 {
@@ -40,8 +30,6 @@ public class SummaryResultTable implements FormattableTable, Serializable
     private int passedCellCount;
     private int totalCellCount;
     private List<ResultCell> headers;
-
-    public SummaryResultTable() {}
 
     public SummaryResultTable(ResultTable resultTable)
     {
@@ -177,58 +165,48 @@ public class SummaryResultTable implements FormattableTable, Serializable
     public void appendTo(final String testName, final String tableName, final Element table, final HtmlOptions htmlOptions)
     {
         HtmlFormatter.appendHeaderRow(table, this, htmlOptions);
-        Iterate.forEachWithIndex(this.getResultsByKey().keySet(), new ObjectIntProcedure<String>()
-        {
-            @Override
-            public void value(String key, int index)
-            {
-                SummaryResult summaryResult = getResultsByKey().get(key);
-                HtmlFormatter.appendSpanningRow(table, SummaryResultTable.this, "blank_row", null, null);
+        int index = 0;
+        for (String key : this.getResultsByKey().keySet()) {
+            SummaryResult summaryResult = getResultsByKey().get(key);
+            HtmlFormatter.appendSpanningRow(table, SummaryResultTable.this, "blank_row", null, null);
 
-                for (List<ResultCell> resultCells : summaryResult.getFirstFewRows())
-                {
-                    HtmlFormatter.appendDataRow(table, SummaryResultTable.this, null, null, resultCells, htmlOptions);
-                }
-                int remainingRows = summaryResult.getRemainingRowCount();
-                if (remainingRows > 0)
-                {
-                    String summaryRowId = HtmlFormatter.toHtmlId(testName, tableName) + ".summaryRow" + index;
-                    String summaryText;
-                    if ("0".equals(key))
-                    {
-                        summaryText = ResultCell.adaptOnCount(remainingRows, " more matched row");
-                    }
-                    else
-                    {
-                        summaryText = ResultCell.adaptOnCount(remainingRows, " more break") + " like this";
-                    }
-                    HtmlFormatter.appendSpanningRow(table, SummaryResultTable.this, "summary", NumberFormat.getInstance().format(remainingRows) + summaryText + "...", "toggleVisibility('" + summaryRowId + "')");
-                    HtmlFormatter.appendDataRow(table, SummaryResultTable.this, summaryRowId, "display:none", summaryResult.getSummaryCardinalityRow(), htmlOptions);
-                }
+            for (List<ResultCell> resultCells : summaryResult.getFirstFewRows())
+            {
+                HtmlFormatter.appendDataRow(table, SummaryResultTable.this, null, null, resultCells, htmlOptions);
             }
-        });
+            int remainingRows = summaryResult.getRemainingRowCount();
+            if (remainingRows > 0)
+            {
+                String summaryRowId = HtmlFormatter.toHtmlId(testName, tableName) + ".summaryRow" + index;
+                String summaryText;
+                if ("0".equals(key))
+                {
+                    summaryText = ResultCell.adaptOnCount(remainingRows, " more matched row");
+                }
+                else
+                {
+                    summaryText = ResultCell.adaptOnCount(remainingRows, " more break") + " like this";
+                }
+                HtmlFormatter.appendSpanningRow(table, SummaryResultTable.this, "summary", NumberFormat.getInstance().format(remainingRows) + summaryText + "...", "toggleVisibility('" + summaryRowId + "')");
+                HtmlFormatter.appendDataRow(table, SummaryResultTable.this, summaryRowId, "display:none", summaryResult.getSummaryCardinalityRow(), htmlOptions);
+            }
+            index++;
+        }
     }
 
     private static class SummaryResult implements Serializable
     {
         private static final int MAX_NUMBER_OF_FIRST_FEW_ROWS = 3;
         private static final int MAXIMUM_CARDINALITY_TO_COUNT = 20;
-        private final List<List<ResultCell>> firstFew = FastList.newList();
+        private final List<List<ResultCell>> firstFew = new ArrayList<>();
         private int totalRows;
         private final String key;
-        private final MutableList<ColumnCardinality> columnCardinalityList;
+        private final List<ColumnCardinality> columnCardinalityList;
 
         private SummaryResult(String key, int numberOfColumns)
         {
             this.key = key;
-            this.columnCardinalityList = Lists.mutable.withNValues(numberOfColumns, new Function0<ColumnCardinality>()
-            {
-                @Override
-                public ColumnCardinality value()
-                {
-                    return createColumnCardinality();
-                }
-            });
+            this.columnCardinalityList = IntStream.rangeClosed(1, numberOfColumns).mapToObj(value -> createColumnCardinality()).collect(Collectors.toList());
         }
 
         private SummaryResult(SummaryResult summaryResult)
@@ -249,26 +227,20 @@ public class SummaryResultTable implements FormattableTable, Serializable
 
         void addCardinality(List<ResultCell> verifiedRow)
         {
-            ListIterate.forEachWithIndex(verifiedRow, new ObjectIntProcedure<ResultCell>()
+            for (int rowIndex = 0; rowIndex < verifiedRow.size(); rowIndex++)
             {
-                @Override
-                public void value(ResultCell resultCell, int index)
-                {
-                    SummaryResult.this.columnCardinalityList.get(index).add(resultCell.getSummary());
-                }
-            });
+                ResultCell resultCell = verifiedRow.get(rowIndex);
+                SummaryResult.this.columnCardinalityList.get(rowIndex).addOccurrence(resultCell.getSummary());
+            }
         }
 
         void mergeCardinalities(final List<ColumnCardinality> columnCardinalities)
         {
-            ListIterate.forEachWithIndex(columnCardinalities, new ObjectIntProcedure<ColumnCardinality>()
+            for (int columnIndex = 0; columnIndex < columnCardinalities.size(); columnIndex++)
             {
-                @Override
-                public void value(ColumnCardinality columnCardinality, final int index)
-                {
-                    SummaryResult.this.columnCardinalityList.get(index).merge(columnCardinality);
-                }
-            });
+                ColumnCardinality columnCardinality = columnCardinalities.get(columnIndex);
+                SummaryResult.this.columnCardinalityList.get(columnIndex).merge(columnCardinality);
+            }
         }
 
         private List<List<ResultCell>> getFirstFewRows()
@@ -281,22 +253,14 @@ public class SummaryResultTable implements FormattableTable, Serializable
             return this.totalRows - this.firstFew.size();
         }
 
-        private MutableList<ColumnCardinality> getRemainingCardinalities()
+        private List<ColumnCardinality> getRemainingCardinalities()
         {
-            final MutableList<ColumnCardinality> remainingCardinalities = this.columnCardinalityList.clone();
-            ListIterate.forEach(this.firstFew, new Procedure<List<ResultCell>>()
-            {
-                @Override
-                public void value(List<ResultCell> row)
+            final List<ColumnCardinality> remainingCardinalities = new ArrayList<>(this.columnCardinalityList);
+            this.firstFew.forEach(row -> {
+                for (int index = 0; index < row.size(); index++)
                 {
-                    ListIterate.forEachWithIndex(row, new ObjectIntProcedure<ResultCell>()
-                    {
-                        @Override
-                        public void value(ResultCell cell, int index)
-                        {
-                            remainingCardinalities.get(index).remove(cell.getSummary());
-                        }
-                    });
+                    ResultCell cell = row.get(index);
+                    remainingCardinalities.get(index).removeOccurrence(cell.getSummary());
                 }
             });
             return remainingCardinalities;
@@ -304,20 +268,19 @@ public class SummaryResultTable implements FormattableTable, Serializable
 
         private List<ResultCell> getSummaryCardinalityRow()
         {
-            return ListIterate.collect(getRemainingCardinalities(), new Function<ColumnCardinality, ResultCell>()
-            {
-                @Override
-                public ResultCell valueOf(final ColumnCardinality columnCardinality)
-                {
-                    return ResultCell.createSummaryCell(MAXIMUM_CARDINALITY_TO_COUNT, columnCardinality);
-                }
-            });
+            return getRemainingCardinalities()
+                    .stream()
+                    .map(columnCardinality -> ResultCell.createSummaryCell(MAXIMUM_CARDINALITY_TO_COUNT, columnCardinality))
+                    .collect(Collectors.toList());
         }
 
         @Override
         public String toString()
         {
-            return Maps.fixedSize.of("firstFew", this.firstFew.size(), "totalRows", this.totalRows).toString();
+            Map<Object, Object> map = new LinkedHashMap<>();
+            map.put("firstFew", this.firstFew.size());
+            map.put("totalRows", this.totalRows);
+            return map.toString();
         }
 
         private ColumnCardinality createColumnCardinality()

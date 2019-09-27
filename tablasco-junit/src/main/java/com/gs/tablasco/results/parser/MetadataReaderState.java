@@ -26,7 +26,7 @@ import java.text.ParseException;
  */
 public class MetadataReaderState extends ParserState
 {
-    protected MetadataReaderState(ExpectedResultsParser parser)
+    MetadataReaderState(ExpectedResultsParser parser)
     {
         super(parser);
     }

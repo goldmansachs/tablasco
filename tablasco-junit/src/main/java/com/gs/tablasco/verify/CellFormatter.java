@@ -16,14 +16,14 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.block.function.Function;
-
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.Function;
 
-public class CellFormatter implements Function<Object, String>
+public class CellFormatter implements Function<Object, String>, Serializable
 {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final NumberFormat numberFormat;
@@ -44,7 +44,7 @@ public class CellFormatter implements Function<Object, String>
     }
 
     @Override
-    public String valueOf(Object object)
+    public String apply(Object object)
     {
         return this.format(object);
     }
@@ -132,17 +132,12 @@ public class CellFormatter implements Function<Object, String>
         return str.length() > index && str.charAt(index) == ch;
     }
 
-    public NumberFormat getNumberFormat()
-    {
-        return this.numberFormat;
-    }
-
-    public double getTolerance()
+    double getTolerance()
     {
         return this.tolerance;
     }
 
-    public static boolean isNumber(Object value)
+    static boolean isNumber(Object value)
     {
         return value instanceof Number;
     }

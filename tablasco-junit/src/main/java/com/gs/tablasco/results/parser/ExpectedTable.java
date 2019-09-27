@@ -17,23 +17,23 @@
 package com.gs.tablasco.results.parser;
 
 import com.gs.tablasco.VerifiableTable;
-import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.io.StreamTokenizer;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExpectedTable implements VerifiableTable
 {
-    private final List<String> headers = FastList.newList();
-    private final List<List<?>> rowValues = FastList.newList();
+    private final List<String> headers = new ArrayList<>();
+    private final List<List<?>> rowValues = new ArrayList<>();
 
-    public void addColumnHeader(String header)
+    void addColumnHeader(String header)
     {
         this.headers.add(header);
     }
 
-    public void parseData(StreamTokenizer st, int currentNumber, List<Object> rowValue) throws ParseException
+    void parseData(StreamTokenizer st, int currentNumber, List<Object> rowValue) throws ParseException
     {
         if (currentNumber >= this.headers.size())
         {
@@ -49,7 +49,7 @@ public class ExpectedTable implements VerifiableTable
         }
     }
 
-    public void addRowToList(List<Object> rowValue)
+    void addRowToList(List<Object> rowValue)
     {
         this.rowValues.add(rowValue);
     }

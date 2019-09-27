@@ -19,15 +19,16 @@ package com.gs.tablasco.rebase;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.Metadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.File;
 import java.util.Map;
 
 public class Rebaser
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger("Rebaser");
+    private static final Logger LOGGER = Logger.getLogger(Rebaser.class.getSimpleName());
     private static Boolean rebaseMode;
     private final ColumnComparators columnComparators;
     private final Metadata metadata;
@@ -59,14 +60,14 @@ public class Rebaser
         Boolean rebaseEnabled = Boolean.valueOf(System.getProperty("rebase", "false"));
         if (rebaseEnabled)
         {
-            LOGGER.warn("Stand back from the platform edge - here comes the");
-            LOGGER.warn("        ___    ___    ___    ___    ___    ___   _  _    ___    ");
-            LOGGER.warn("       | _ \\  | __|  | _ )  /   \\  / __|  |_ _| | \\| |  / __|");
-            LOGGER.warn("       |   /  | _|   | _ \\  | - |  \\__ \\   | |  | .` | | (_ |");
-            LOGGER.warn("       |_|_\\  |___|  |___/  |_|_|  |___/  |___| |_|\\_|  \\___|");
-            LOGGER.warn("     _|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|");
-            LOGGER.warn("      `-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'");
-            LOGGER.warn("train.... ");
+            LOGGER.log(Level.WARNING, "Stand back from the platform edge - here comes the");
+            LOGGER.log(Level.WARNING, "        ___    ___    ___    ___    ___    ___   _  _    ___    ");
+            LOGGER.log(Level.WARNING, "       | _ \\  | __|  | _ )  /   \\  / __|  |_ _| | \\| |  / __|");
+            LOGGER.log(Level.WARNING, "       |   /  | _|   | _ \\  | - |  \\__ \\   | |  | .` | | (_ |");
+            LOGGER.log(Level.WARNING, "       |_|_\\  |___|  |___/  |_|_|  |___/  |___| |_|\\_|  \\___|");
+            LOGGER.log(Level.WARNING, "     _|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|");
+            LOGGER.log(Level.WARNING, "      `-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'");
+            LOGGER.log(Level.WARNING, "train.... ");
         }
         return rebaseEnabled;
     }

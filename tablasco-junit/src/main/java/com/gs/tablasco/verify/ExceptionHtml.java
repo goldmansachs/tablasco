@@ -35,6 +35,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 public class ExceptionHtml
 {
@@ -85,13 +86,13 @@ public class ExceptionHtml
         trans.setOutputProperty(OutputKeys.METHOD, "xml");
         trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         trans.setOutputProperty(OutputKeys.INDENT, "yes");
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(resultsFile), "UTF-8")))
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(resultsFile), StandardCharsets.UTF_8)))
         {
             trans.transform(new DOMSource(document), new StreamResult(writer));
         }
     }
 
-    static Element createNodeWithText(Document document, String tagName, String content)
+    private static Element createNodeWithText(Document document, String tagName, String content)
     {
         Element element = document.createElement(tagName);
         element.appendChild(document.createTextNode(content));

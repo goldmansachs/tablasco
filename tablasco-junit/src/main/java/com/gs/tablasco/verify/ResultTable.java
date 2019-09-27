@@ -16,9 +16,7 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.block.predicate.Predicate;
-import org.eclipse.collections.impl.block.factory.Predicates;
-import org.eclipse.collections.impl.utility.Iterate;
+import java.util.function.Predicate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -36,21 +34,21 @@ public class ResultTable implements FormattableTable
     {
         this.tableCells = tableCells;
         List<ResultCell> headers = tableCells.get(0);
-        boolean[] matchedColumns = tableCells.size() > 0 ? new boolean[headers.size()] : new boolean[0];
+        boolean[] matchedColumns = new boolean[headers.size()];
         Arrays.fill(matchedColumns, true);
         int total = 0;
         int passed = 0;
         Predicate<ResultCell> isMatched = ResultCell.IS_PASSED_CELL;
-        Predicate<ResultCell> dataIsMatched = Predicates.not(ResultCell.IS_FAILED_CELL);
+        Predicate<ResultCell> dataIsMatched = ResultCell.IS_FAILED_CELL.negate();
         for (List<ResultCell> row : tableCells)
         {
             for (int col = 0; col < row.size(); col++)
             {
                 ResultCell cell = row.get(col);
                 total++;
-                boolean isPassed = ResultCell.IS_PASSED_CELL.accept(cell);
+                boolean isPassed = ResultCell.IS_PASSED_CELL.test(cell);
                 passed += isPassed ? 1 : 0;
-                matchedColumns[col] &= !keyColumns[col] && isMatched.accept(cell);
+                matchedColumns[col] &= !keyColumns[col] && isMatched.test(cell);
             }
             isMatched = dataIsMatched;
         }
@@ -130,8 +128,8 @@ public class ResultTable implements FormattableTable
             List<ResultCell> row = results.get(dataRowIndex);
             if (htmlOptions.isHideMatchedRowsFor(tableName))
             {
-                int failedCount = Iterate.count(row, ResultCell.IS_FAILED_CELL);
-                int passedCount = Iterate.count(row, ResultCell.IS_PASSED_CELL);
+                int failedCount = (int) row.stream().filter(ResultCell.IS_FAILED_CELL).count();
+                int passedCount = (int) row.stream().filter(ResultCell.IS_PASSED_CELL).count();
                 if (failedCount == 0 && passedCount > 0)
                 {
                     matchedRows++;
@@ -175,6 +173,5 @@ public class ResultTable implements FormattableTable
             td.appendChild(document.createTextNode(remainingRows + (remainingRows > 1 ? " more rows..." : " more row...")));
             tr.appendChild(td);
         }
-
     }
 }

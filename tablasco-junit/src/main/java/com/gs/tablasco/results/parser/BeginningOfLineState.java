@@ -22,13 +22,13 @@ import java.text.ParseException;
 
 public class BeginningOfLineState extends ParserState
 {
-    protected BeginningOfLineState(ExpectedResultsParser parserState)
+    BeginningOfLineState(ExpectedResultsParser parserState)
     {
         super(parserState);
     }
 
     @Override
-    public ParserState parse(StreamTokenizer st) throws IOException, ParseException
+    public ParserState parse(StreamTokenizer st) throws IOException
     {
         ParserState nextState = null;
         while (nextState == null && st.ttype != StreamTokenizer.TT_EOF)

@@ -16,7 +16,6 @@
 
 package com.gs.tablasco.legal;
 
-import org.eclipse.collections.impl.factory.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CopyrightTest
@@ -31,7 +31,7 @@ public class CopyrightTest
     @Test
     public void test() throws IOException
     {
-        List<File> javaSource = Lists.mutable.of();
+        List<File> javaSource = new ArrayList<>();
         scan(new File("src"), javaSource);
         Assert.assertFalse(javaSource.isEmpty());
         for (File file : javaSource)

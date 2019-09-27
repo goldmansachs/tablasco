@@ -17,12 +17,7 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.adapters.TableAdapters;
-import com.gs.tablasco.files.DirectoryStrategy;
-import com.gs.tablasco.files.FilePerClassStrategy;
-import com.gs.tablasco.files.FilePerMethodStrategy;
-import com.gs.tablasco.files.FilenameStrategy;
-import com.gs.tablasco.files.FixedDirectoryStrategy;
-import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
+import com.gs.tablasco.files.*;
 import com.gs.tablasco.investigation.Investigation;
 import com.gs.tablasco.investigation.Sherlock;
 import com.gs.tablasco.lifecycle.DefaultExceptionHandler;
@@ -34,40 +29,20 @@ import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.ExpectedResultsLoader;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsCache;
-import com.gs.tablasco.verify.ColumnComparators;
-import com.gs.tablasco.verify.FormattableTable;
-import com.gs.tablasco.verify.HtmlFormatter;
-import com.gs.tablasco.verify.HtmlOptions;
-import com.gs.tablasco.verify.Metadata;
-import com.gs.tablasco.verify.MultiTableVerifier;
-import com.gs.tablasco.verify.ResultTable;
-import com.gs.tablasco.verify.SingleTableVerifier;
-import com.gs.tablasco.verify.SummaryResultTable;
+import com.gs.tablasco.verify.*;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
-import org.eclipse.collections.api.block.function.Function;
-import org.eclipse.collections.api.block.predicate.Predicate;
-import org.eclipse.collections.api.block.procedure.Procedure2;
-import org.eclipse.collections.impl.block.factory.Functions;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.factory.Sets;
-import org.eclipse.collections.impl.list.fixed.ArrayAdapter;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.utility.MapIterate;
 import org.junit.Assert;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A JUnit <tt>Rule</tt> that can be included in JUnit 4 tests and used for verifying tabular data represented as
@@ -78,7 +53,7 @@ import java.util.concurrent.ThreadFactory;
  * <p>
  * In rebase mode actual results provided by the test are saved in the configured expected results directory. No
  * verification is performed and the test always fails to ensure that rebase is not enabled accidentally. Rebase mode
- * can be enabled by setting the system property <ii>rebase</ii> to <ii>true</ii> or by calling <ii>.withRebase()</ii>.
+ * can be enabled by setting the system property <i>rebase</i> to <i>true</i> or by calling <i>.withRebase()</i>.
  * <p>
  * In the default verify mode expected results are read from the filesystem and compared with the actual results
  * provided by the test. If the actual and expected tables match the test passes, otherwise the test fails. The
@@ -93,18 +68,14 @@ import java.util.concurrent.ThreadFactory;
  * <tt>TableVerfier</tt>.
  * <p>
  */
+@SuppressWarnings("WeakerAccess")
 public final class TableVerifier extends TestWatcher
 {
-    private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactory()
-    {
-        @Override
-        public Thread newThread(Runnable runnable)
-        {
-            Thread thread = new Thread(runnable);
-            thread.setName("Expected Results Loader");
-            thread.setDaemon(true);
-            return thread;
-        }
+    private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("Expected Results Loader");
+        thread.setDaemon(true);
+        return thread;
     });
 
     private File fixedExpectedDir;
@@ -125,24 +96,17 @@ public final class TableVerifier extends TestWatcher
     private boolean ignoreMissingRows = false;
     private boolean ignoreSurplusColumns = false;
     private boolean ignoreMissingColumns = false;
-    private Function<VerifiableTable, VerifiableTable> actualAdapter = Functions.getPassThru();
-    private Function<VerifiableTable, VerifiableTable> expectedAdapter = Functions.getPassThru();
+    private Function<VerifiableTable, VerifiableTable> actualAdapter = verifiableTable -> verifiableTable;
+    private Function<VerifiableTable, VerifiableTable> expectedAdapter = verifiableTable -> verifiableTable;
     private String[] baselineHeaders = null;
     private long partialMatchTimeoutMillis = IndexMapTableVerifier.DEFAULT_PARTIAL_MATCH_TIMEOUT_MILLIS;
 
     private final Metadata metadata = Metadata.newWithRecordedAt();
     private Map<String, VerifiableTable> expectedTables;
     private Metadata expectedMetadata;
-    private Set<String> tablesToAlwaysShowMatchedRowsFor = UnifiedSet.newSet();
-    private Set<String> tablesNotToAdapt = UnifiedSet.newSet();
-    private Predicate<String> tableFilter = new Predicate<String>()
-    {
-        @Override
-        public boolean accept(String s)
-        {
-            return true;
-        }
-    };
+    private Set<String> tablesToAlwaysShowMatchedRowsFor = new HashSet<>();
+    private Set<String> tablesNotToAdapt = new HashSet<>();
+    private Predicate<String> tableFilter = s -> true;
     private ExpectedResultsLoader expectedResultsLoader = new FileSystemExpectedResultsLoader();
     private Future<ExpectedResults> expectedResultsFuture;
     private int verifyCount = 0;
@@ -404,7 +368,7 @@ public final class TableVerifier extends TestWatcher
      */
     public final TableVerifier withAlwaysShowMatchedRowsFor(String... tableNames)
     {
-        this.tablesToAlwaysShowMatchedRowsFor.addAll(ArrayAdapter.adapt(tableNames));
+        this.tablesToAlwaysShowMatchedRowsFor.addAll(Arrays.asList(tableNames));
         return this;
     }
 
@@ -433,7 +397,7 @@ public final class TableVerifier extends TestWatcher
      */
     public final TableVerifier withTablesNotToAdapt(String... tableNames)
     {
-        this.tablesNotToAdapt.addAll(ArrayAdapter.adapt(tableNames));
+        this.tablesNotToAdapt.addAll(Arrays.asList(tableNames));
         return this;
     }
 
@@ -467,6 +431,7 @@ public final class TableVerifier extends TestWatcher
      * Returns the same instance of <tt>TableVerifier</tt> configured to create a text file of the actual results in the
      * verification output directory. This can be useful for analysis and manual rebasing.
      *
+     * @param createActualResults create actual results file
      * @return this
      */
     public final TableVerifier withCreateActualResults(boolean createActualResults)
@@ -594,15 +559,8 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withIgnoreColumns(String... columnsToIgnore)
     {
-        final Set<String> columnSet = Sets.immutable.of(columnsToIgnore).castToSet();
-        return this.withColumnFilter(new Predicate<String>()
-        {
-            @Override
-            public boolean accept(String s)
-            {
-                return !columnSet.contains(s);
-            }
-        });
+        final Set<String> columnSet = new HashSet<>(Arrays.asList(columnsToIgnore));
+        return this.withColumnFilter(s -> !columnSet.contains(s));
     }
 
     /**
@@ -614,14 +572,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withColumnFilter(final Predicate<String> columnFilter)
     {
-        Function<VerifiableTable, VerifiableTable> adapter = new Function<VerifiableTable, VerifiableTable>()
-        {
-            @Override
-            public VerifiableTable valueOf(VerifiableTable table)
-            {
-                return TableAdapters.withColumns(table, columnFilter);
-            }
-        };
+        Function<VerifiableTable, VerifiableTable> adapter = verifiableTable -> TableAdapters.withColumns(verifiableTable, columnFilter);
         return this.withActualAdapter(adapter).withExpectedAdapter(adapter);
     }
 
@@ -634,15 +585,8 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withIgnoreTables(String... tableNames)
     {
-        final Set<String> tableNameSet = UnifiedSet.newSetWith(tableNames);
-        return this.withTableFilter(new Predicate<String>()
-        {
-            @Override
-            public boolean accept(String s)
-            {
-                return !tableNameSet.contains(s);
-            }
-        });
+        final Set<String> tableNameSet = new HashSet<>(Arrays.asList(tableNames));
+        return this.withTableFilter(s -> !tableNameSet.contains(s));
     }
 
     /**
@@ -746,14 +690,7 @@ public final class TableVerifier extends TestWatcher
         this.description = description;
         if (!this.isRebasing)
         {
-            this.expectedResultsFuture = EXPECTED_RESULTS_LOADER_EXECUTOR.submit(new Callable<ExpectedResults>()
-            {
-                @Override
-                public ExpectedResults call() throws Exception
-                {
-                    return ExpectedResultsCache.getExpectedResults(expectedResultsLoader, getExpectedFile());
-                }
-            });
+            this.expectedResultsFuture = EXPECTED_RESULTS_LOADER_EXECUTOR.submit(() -> ExpectedResultsCache.getExpectedResults(expectedResultsLoader, getExpectedFile()));
         }
         this.lifecycleEventHandler.onStarted(description);
     }
@@ -763,9 +700,9 @@ public final class TableVerifier extends TestWatcher
     {
         try
         {
-            if (MapIterate.notEmpty(this.expectedTables))
+            if (this.expectedTables != null && !this.expectedTables.isEmpty())
             {
-                this.verifyTables(this.expectedTables, Maps.fixedSize.<String, VerifiableTable>of(), this.expectedMetadata);
+                this.verifyTables(this.expectedTables, new HashMap<>(), this.expectedMetadata);
             }
         }
         catch (AssertionError assertionError)
@@ -783,7 +720,7 @@ public final class TableVerifier extends TestWatcher
     @Override
     public final void failed(Throwable e, Description description)
     {
-        if (!AssertionError.class.isInstance(e))
+        if (!(e instanceof AssertionError))
         {
             this.exceptionHandler.onException(this.getOutputFile(), e);
         }
@@ -831,7 +768,7 @@ public final class TableVerifier extends TestWatcher
      */
     public final void verify(String tableName, VerifiableTable actualTable)
     {
-        this.verify(Maps.fixedSize.of(tableName, actualTable));
+        this.verify(Collections.singletonMap(tableName, actualTable));
     }
 
     /**
@@ -853,7 +790,7 @@ public final class TableVerifier extends TestWatcher
             if (this.expectedTables == null)
             {
                 ExpectedResults expectedResults = getExpectedResults();
-                this.expectedTables = UnifiedMap.newMap(expectedResults.getTables(this.description.getMethodName()));
+                this.expectedTables = new HashMap<>(expectedResults.getTables(this.description.getMethodName()));
                 this.expectedMetadata = expectedResults.getMetadata();
             }
             Map<String, VerifiableTable> expectedTablesToVerify = new LinkedHashMap<>(actualTables.size());
@@ -901,14 +838,7 @@ public final class TableVerifier extends TestWatcher
         Map<String, VerifiableTable> adaptedExpectedTables = adaptAndFilterTables(expectedTables, this.expectedAdapter);
         Map<String, VerifiableTable> adaptedActualTables = adaptAndFilterTables(actualTables, this.actualAdapter);
         Map<String, FormattableTable> allResults = getVerifiedResults(adaptedExpectedTables, adaptedActualTables);
-        boolean verificationSuccess = MapIterate.allSatisfy(allResults, new Predicate<FormattableTable>()
-        {
-            @Override
-            public boolean accept(FormattableTable verifiedTable)
-            {
-                return verifiedTable.isSuccess();
-            }
-        });
+        boolean verificationSuccess = allResults.values().stream().allMatch(FormattableTable::isSuccess);
         boolean createActual = this.createActualResults;
         if (this.createActualResultsOnFailure)
         {
@@ -949,21 +879,16 @@ public final class TableVerifier extends TestWatcher
     private Map<String, VerifiableTable> adaptAndFilterTables(final Map<String, VerifiableTable> tables, final Function<VerifiableTable, VerifiableTable> adapter)
     {
         final Map<String, VerifiableTable> target = new LinkedHashMap<>(tables.size());
-        MapIterate.forEachKeyValue(tables, new Procedure2<String, VerifiableTable>()
-        {
-            @Override
-            public void value(String name, VerifiableTable table)
+        tables.forEach((name, table) -> {
+            if (tableFilter.test(name))
             {
-                if (tableFilter.accept(name))
+                if (TableVerifier.this.tablesNotToAdapt.contains(name))
                 {
-                    if (TableVerifier.this.tablesNotToAdapt.contains(name))
-                    {
-                        target.put(name, table);
-                    }
-                    else
-                    {
-                        target.put(name, adapter.valueOf(table));
-                    }
+                    target.put(name, table);
+                }
+                else
+                {
+                    target.put(name, adapter.apply(table));
                 }
             }
         });

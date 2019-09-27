@@ -36,7 +36,7 @@ public class ExpectedResults
     public Map<String, VerifiableTable> getTables(String testName)
     {
         Map<String, VerifiableTable> tables = this.tablesByTestName.get(testName);
-        return tables == null ? Collections.<String, VerifiableTable>emptyMap() : tables;
+        return tables == null ? Collections.emptyMap() : tables;
     }
 
     public VerifiableTable getTable(String testName, String tableName)
@@ -46,12 +46,7 @@ public class ExpectedResults
 
     public void addTable(String testName, String tableName, VerifiableTable table)
     {
-        Map<String, VerifiableTable> tables = this.tablesByTestName.get(testName);
-        if (tables == null)
-        {
-            tables = new LinkedHashMap<>();
-            this.tablesByTestName.put(testName, tables);
-        }
+        Map<String, VerifiableTable> tables = this.tablesByTestName.computeIfAbsent(testName, k -> new LinkedHashMap<>());
         String key = translateTableName(tableName);
         if (tables.containsKey(key))
         {

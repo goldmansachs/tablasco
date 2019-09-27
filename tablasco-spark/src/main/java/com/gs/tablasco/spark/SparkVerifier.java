@@ -1,24 +1,19 @@
 package com.gs.tablasco.spark;
 
-import com.google.common.base.Optional;
-import com.gs.tablasco.verify.ColumnComparators;
-import com.gs.tablasco.verify.FormattableTable;
-import com.gs.tablasco.verify.HtmlFormatter;
-import com.gs.tablasco.verify.HtmlOptions;
-import com.gs.tablasco.verify.Metadata;
-import com.gs.tablasco.verify.SummaryResultTable;
+import com.gs.tablasco.verify.*;
 import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.factory.Sets;
+import org.apache.spark.api.java.Optional;
 import scala.Tuple2;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("WeakerAccess")
 public class SparkVerifier
 {
     private final List<String> groupKeyColumns;
@@ -69,25 +64,30 @@ public class SparkVerifier
     public SparkResult verify(String dataName, Path actualDataLocation, Path expectedDataLocation)
     {
         Set<String> groupKeyColumnSet = new LinkedHashSet<>(this.groupKeyColumns);
-        Pair<List<String>, JavaPairRDD<Integer, Iterable<List<Object>>>> actualHeadersAndGroups = this.dataFormat.readHeadersAndGroups(actualDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
-        Pair<List<String>, JavaPairRDD<Integer, Iterable<List<Object>>>> expectedHeadersAndGroups = this.dataFormat.readHeadersAndGroups(expectedDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
-        JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualHeadersAndGroups.getTwo()
-                .fullOuterJoin(expectedHeadersAndGroups.getTwo());
+        DistributedTable actualDistributedTable = this.dataFormat.getDistributedTable(actualDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
+        DistributedTable expectedDistributedTable = this.dataFormat.getDistributedTable(expectedDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
+        JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualDistributedTable.getRows()
+                .mapToPair(new GroupRowsFunction(actualDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
+                .groupByKey();
+        JavaPairRDD<Integer, Iterable<List<Object>>> expectedGroups = expectedDistributedTable.getRows()
+                .mapToPair(new GroupRowsFunction(expectedDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
+                .groupByKey();
+        JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualGroups.fullOuterJoin(expectedGroups);
         VerifyGroupFunction verifyGroupFunction = new VerifyGroupFunction(
                 groupKeyColumnSet,
-                actualHeadersAndGroups.getOne(),
-                expectedHeadersAndGroups.getOne(),
+                actualDistributedTable.getHeaders(),
+                expectedDistributedTable.getHeaders(),
                 this.ignoreSurplusColumns,
                 this.columnComparatorsBuilder.build(),
                 this.columnsToIgnore);
         SummaryResultTable summaryResultTable = joinedRdd.map(verifyGroupFunction).reduce(new SummaryResultTableReducer());
-        HtmlOptions htmlOptions = new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Sets.fixedSize.<String>of());
+        HtmlOptions htmlOptions = new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet());
         HtmlFormatter htmlFormatter = new HtmlFormatter(null, htmlOptions);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try
         {
-            htmlFormatter.appendResults(dataName, Maps.fixedSize.<String, FormattableTable>of("Summary", summaryResultTable), metadata, 1, null, bytes);
-            return new SparkResult(summaryResultTable.isSuccess(), new String(bytes.toByteArray(), "UTF-8"));
+            htmlFormatter.appendResults(dataName, Collections.singletonMap("Summary", summaryResultTable), metadata, 1, null, bytes);
+            return new SparkResult(summaryResultTable.isSuccess(), new String(bytes.toByteArray(), StandardCharsets.UTF_8));
         }
         catch (Exception e)
         {

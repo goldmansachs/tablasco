@@ -16,9 +16,9 @@
 
 package com.gs.tablasco.verify;
 
-import org.eclipse.collections.api.block.HashingStrategy;
+import java.io.Serializable;
 
-public abstract class CellComparator implements HashingStrategy
+public abstract class CellComparator implements Serializable
 {
     private final CellFormatter formatter;
 
@@ -39,7 +39,6 @@ public abstract class CellComparator implements HashingStrategy
         return object instanceof Double || object instanceof Float;
     }
 
-    @Override
     public boolean equals(Object actual, Object expected)
     {
         String formattedActual = this.getFormatter().format(actual);
@@ -47,7 +46,6 @@ public abstract class CellComparator implements HashingStrategy
         return formattedActual.equals(formattedExpected) || compare(actual, expected);
     }
 
-    @Override
     public int computeHashCode(Object object)
     {
         return this.formatter.format(object).hashCode();

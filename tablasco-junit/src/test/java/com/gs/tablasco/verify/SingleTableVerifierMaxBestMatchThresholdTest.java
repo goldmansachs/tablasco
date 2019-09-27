@@ -17,12 +17,12 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class SingleTableVerifierMaxBestMatchThresholdTest extends AbstractSingle
     static final Map<String, List<List<ResultCell>>> MAX_BEST_MATCH_THRESHOLD;
     static
     {
-        MAX_BEST_MATCH_THRESHOLD = UnifiedMap.newMap();
+        MAX_BEST_MATCH_THRESHOLD = new HashMap<>();
         addVerification("columnHeadersMatch",
                 row(pass("Entity"), pass("Account"), pass("Notional"))
                 );
