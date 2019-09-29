@@ -6,19 +6,10 @@ import org.apache.avro.mapred.AvroWrapper;
 import org.apache.spark.api.java.function.Function;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 class AvroHeadersFunction implements Function<AvroWrapper, List<String>>
 {
-    private final Set<String> groupKeyColumns;
-
-    AvroHeadersFunction(Set<String> groupKeyColumns)
-    {
-        this.groupKeyColumns = groupKeyColumns;
-    }
-
     @Override
     public List<String> call(AvroWrapper avroWrapper)
     {
@@ -37,21 +28,8 @@ class AvroHeadersFunction implements Function<AvroWrapper, List<String>>
                 case ARRAY:
                     break;
                 default:
-                    if (!groupKeyColumns.contains(field.name()))
-                    {
-                        columns.add(field.name());
-                    }
-                    else
-                    {
-                        columns.add(0, field.name());
-                    }
+                    columns.add(field.name());
             }
-        }
-        Set<String> invalidGroupKeyColumns = new HashSet<>(this.groupKeyColumns);
-        invalidGroupKeyColumns.removeAll(columns);
-        if (!invalidGroupKeyColumns.isEmpty())
-        {
-            throw new IllegalArgumentException("Invalid group key columns: " + invalidGroupKeyColumns);
         }
         return columns;
     }

@@ -4,68 +4,139 @@ import com.gs.tablasco.verify.*;
 import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.Optional;
+import org.apache.spark.partial.BoundedDouble;
+import org.apache.spark.partial.PartialResult;
 import scala.Tuple2;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
+/**
+ * Spark calculation that compares two HDFS datasets and produces a detailed yet compact HTML break report. The
+ * comparison is distributed by grouping rows based on a set of group keys provided by the caller and comparing the
+ * groups independently. The group key(s) do not have to be unique primary keys (although a unique primary key is
+ * ideal) but they should be sufficient to distribute the data fairly evenly across many buckets. For example given a
+ * dataset containing all people in the USA 'town' would not be an appropriate group key (New York City vs a small
+ * village in upstate NY) but a combination of 'surname' and 'zip code' would probably be fine.
+ *
+ * The result of the calculation contains a self-contained (CSS, etc) HTML result; It is up to the caller to publish
+ * this somewhere to be reviewed.
+ */
 @SuppressWarnings("WeakerAccess")
 public class SparkVerifier
 {
+    private static final Logger LOGGER = Logger.getLogger(SparkVerifier.class.getSimpleName());
     private final List<String> groupKeyColumns;
-    private final int maximumNumberOfGroups;
     private final DataFormat dataFormat;
     private final Metadata metadata = Metadata.newEmpty();
     private final ColumnComparators.Builder columnComparatorsBuilder = new ColumnComparators.Builder();
     private boolean ignoreSurplusColumns;
     private Set<String> columnsToIgnore;
+    private int maxGroupSize = 10_000;
 
-    public SparkVerifier(List<String> groupKeyColumns, int maximumNumberOfGroups, DataFormat dataFormat)
+    /**
+     * Creates a new SparkVerifier
+     * @param groupKeyColumns a list of group keys to distribute the data
+     * @param dataFormat a DataFormat instance that can load the HDFS path
+     */
+    public SparkVerifier(List<String> groupKeyColumns, DataFormat dataFormat)
     {
         this.groupKeyColumns = groupKeyColumns;
-        this.maximumNumberOfGroups = maximumNumberOfGroups;
         this.dataFormat = dataFormat;
     }
 
+    /**
+     * Adds metadata to include in the HTML report
+     * @param name metadata name
+     * @param value metadata value
+     * @return this same SparkVerifier
+     */
     public final SparkVerifier withMetadata(String name, String value)
     {
         this.metadata.add(name, value);
         return this;
     }
 
+    /**
+     * Controls whether verification fails in the presence of surplus columns in the actual data
+     * @param ignoreSurplusColumns whether to ignore surplus columns or not
+     * @return this same SparkVerifier
+     */
     public SparkVerifier withIgnoreSurplusColumns(boolean ignoreSurplusColumns)
     {
         this.ignoreSurplusColumns = ignoreSurplusColumns;
         return this;
     }
 
+    /**
+     * Tells this SparkVerifier to ignore certain columns
+     * @param columnsToIgnore the set of columns to ignore
+     * @return this same SparkVerifier
+     */
     public SparkVerifier withColumnsToIgnore(Set<String> columnsToIgnore)
     {
         this.columnsToIgnore = columnsToIgnore;
         return this;
     }
 
+    /**
+     * Sets a global tolerance to apply when comparing doubles
+     * @param tolerance the tolerance
+     * @return this same SparkVerifier
+     */
     public SparkVerifier withTolerance(double tolerance)
     {
         this.columnComparatorsBuilder.withTolerance(tolerance);
         return this;
     }
 
+    /**
+     * Sets a tolerance to apply to a single column only
+     * @param columnName the column name
+     * @param tolerance the tolerance
+     * @return this same SparkVerifier
+     */
     public SparkVerifier withTolerance(String columnName, double tolerance)
     {
         this.columnComparatorsBuilder.withTolerance(columnName, tolerance);
         return this;
     }
 
+    /**
+     * A hint as to the maximum size of groups to be compared together. The default size is 10,000.
+     * @param maxGroupSize the maximum group size
+     * @return this same SparkVerifier
+     */
+    public SparkVerifier withMaxGroupSize(int maxGroupSize)
+    {
+        this.maxGroupSize = maxGroupSize;
+        return this;
+    }
+
+    /**
+     * Compares two HDFS datasets and produces a detailed yet compact HTML break report
+     * @param dataName the name to use in the output HTML
+     * @param actualDataLocation the actual data
+     * @param expectedDataLocation the expected data
+     * @return a SparkResult containing pass/fail and the HTML report
+     */
     public SparkResult verify(String dataName, Path actualDataLocation, Path expectedDataLocation)
     {
+        DistributedTable actualDistributedTable = this.dataFormat.getDistributedTable(actualDataLocation);
+        if (!new HashSet<>(actualDistributedTable.getHeaders()).containsAll(this.groupKeyColumns)) {
+            throw new IllegalArgumentException("Actual data does not contain all group key columns: " + this.groupKeyColumns);
+        }
+        DistributedTable expectedDistributedTable = this.dataFormat.getDistributedTable(expectedDataLocation);
+        if (!new HashSet<>(expectedDistributedTable.getHeaders()).containsAll(this.groupKeyColumns)) {
+            throw new IllegalArgumentException("Expected data does not contain all group key columns: " + this.groupKeyColumns);
+        }
+        PartialResult<BoundedDouble> countApproxPartialResult = expectedDistributedTable.getRows().countApprox(TimeUnit.SECONDS.toMillis(5), 0.9);
+        int maximumNumberOfGroups = getMaximumNumberOfGroups(countApproxPartialResult.getFinalValue(), maxGroupSize);
+        LOGGER.info("Maximum number of groups : " + maximumNumberOfGroups);
         Set<String> groupKeyColumnSet = new LinkedHashSet<>(this.groupKeyColumns);
-        DistributedTable actualDistributedTable = this.dataFormat.getDistributedTable(actualDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
-        DistributedTable expectedDistributedTable = this.dataFormat.getDistributedTable(expectedDataLocation, groupKeyColumnSet, this.maximumNumberOfGroups);
         JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualDistributedTable.getRows()
                 .mapToPair(new GroupRowsFunction(actualDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
                 .groupByKey();
@@ -95,4 +166,15 @@ public class SparkVerifier
         }
     }
 
+    static int getMaximumNumberOfGroups(BoundedDouble approxCountBoundedDouble, int maxGroupSize)
+    {
+        long countApprox = Math.round(approxCountBoundedDouble.mean());
+        LOGGER.info("Approximate count of expected results: " + countApprox);
+        LOGGER.info("Maximum group size: " + maxGroupSize);
+        long maximumNumberOfGroups = Math.max(1, countApprox / maxGroupSize);
+        if (maximumNumberOfGroups > Integer.MAX_VALUE) {
+            throw new IllegalStateException("Invalid max group size: " + maximumNumberOfGroups);
+        }
+        return (int) maximumNumberOfGroups;
+    }
 }

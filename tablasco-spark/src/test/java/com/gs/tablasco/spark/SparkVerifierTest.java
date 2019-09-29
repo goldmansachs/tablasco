@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.Path;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.partial.BoundedDouble;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,19 +95,29 @@ public class SparkVerifierTest
     @Test
     public void runTestFail() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Arrays.asList("k2", "k1"), 100));
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Arrays.asList("k2", "k1"))
+                .withMaxGroupSize(2));
     }
 
     @Test
     public void runTestPass() throws IOException
     {
-        runTest(AVRO, AVRO, true, newSparkVerifier(Collections.<String>emptyList(), 10));
+        runTest(AVRO, AVRO, true, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(2));
     }
 
     @Test
     public void runTestWithSingleShardColumn() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("k2"), 100));
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("k2"))
+                .withMaxGroupSize(2));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void runTestWithInvalidShardColumn() throws IOException
+    {
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("foo"))
+                .withMaxGroupSize(2));
     }
 
     @Test
@@ -117,7 +128,8 @@ public class SparkVerifierTest
         {
             data.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(data, data, true, newSparkVerifier(Collections.singletonList("k1"), 100));
+        runTest(data, data, true, newSparkVerifier(Collections.singletonList("k1"))
+                .withMaxGroupSize(10_000));
     }
 
     @Test
@@ -133,7 +145,8 @@ public class SparkVerifierTest
         {
             expected.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(actual, expected, false, newSparkVerifier(Collections.singletonList("k1"), 100));
+        runTest(actual, expected, false, newSparkVerifier(Collections.singletonList("k1"))
+                .withMaxGroupSize(10_000));
     }
 
     @Test
@@ -152,7 +165,8 @@ public class SparkVerifierTest
         {
             expected.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(actual, expected, false, newSparkVerifier(Collections.<String>emptyList(), 100));
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(10_000));
     }
 
     @Test
@@ -175,26 +189,32 @@ public class SparkVerifierTest
         {
             expected.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(actual, expected, false, newSparkVerifier(Collections.<String>emptyList(), 100));
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(10_000));
     }
 
     @Test
     public void ignoreSurplusColumns() throws IOException
     {
-        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.<String>emptyList(), 10).withIgnoreSurplusColumns(true));
+        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(2)
+                .withIgnoreSurplusColumns(true));
     }
 
     @Test
     public void ignoreSurplusColumnsBug() throws IOException
     {
-        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.<String>emptyList(), 10)
-                .withIgnoreSurplusColumns(true).withColumnsToIgnore(new HashSet<>(Collections.singletonList("foo"))));
+        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(2)
+                .withIgnoreSurplusColumns(true)
+                .withColumnsToIgnore(new HashSet<>(Collections.singletonList("foo"))));
     }
 
     @Test
     public void ignoreColumns() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.<String>emptyList(), 10)
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(2)
                 .withColumnsToIgnore(new HashSet<>(Arrays.asList("k2", "v2"))));
     }
 
@@ -223,7 +243,9 @@ public class SparkVerifierTest
                 row(schema, 12301, "123012", 12302, 123012.19, 123022.19),
                 row(schema, 12301, "123013", 12303, 123012.95, 123022.95),
                 row(schema, 12302, "123021", 12301, 123020.75, 123030.75));
-        runTest(actual, expected, false, newSparkVerifier(Collections.<String>emptyList(), 10).withTolerance("v2", 0.01));
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(2)
+                .withTolerance("v2", 0.01));
     }
 
     @Test
@@ -241,7 +263,17 @@ public class SparkVerifierTest
                 row(AVSC, 12301, "123013", 12303, 123012.79),
                 row(AVSC, 12302, "123021", 12301, 123020.91)
         );
-        runTest(actual, expected, false, newSparkVerifier(Collections.<String>emptyList(), 10).withTolerance(0.1));
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
+                .withMaxGroupSize(2)
+                .withTolerance(0.1));
+    }
+
+    @Test
+    public void getMaximumNumberOfGroups()
+    {
+        Assert.assertEquals(1, SparkVerifier.getMaximumNumberOfGroups(new BoundedDouble(100.0, 50.0, 0.0, 200.0), 10_000));
+        Assert.assertEquals(5, SparkVerifier.getMaximumNumberOfGroups(new BoundedDouble(100.0, 50.0, 0.0, 200.0), 20));
+        Assert.assertEquals(100, SparkVerifier.getMaximumNumberOfGroups(new BoundedDouble(100.0, 50.0, 0.0, 200.0), 1));
     }
 
     private void runTest(List<GenericRecord> actual, List<GenericRecord> expected, boolean passed, SparkVerifier sparkVerifier) throws IOException
@@ -275,9 +307,10 @@ public class SparkVerifierTest
                 .replaceAll("/ [\\d\\.-]+%", "###%");
     }
 
-    private SparkVerifier newSparkVerifier(List<String> groupKeyColumns, int maximumNumberOfGroups)
+    private SparkVerifier newSparkVerifier(List<String> groupKeyColumns)
     {
-        return new SparkVerifier(groupKeyColumns, maximumNumberOfGroups, new AvroDataFormat(JAVA_SPARK_CONTEXT)).withMetadata("meta:", "data");
+        return new SparkVerifier(groupKeyColumns, new AvroDataFormat(JAVA_SPARK_CONTEXT))
+                .withMetadata("meta:", "data");
     }
 
     private static void writeAvroData(List<GenericRecord> data, File avroFile) throws IOException

@@ -11,7 +11,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,11 +25,11 @@ public class AvroDataFormat implements DataFormat
     }
 
     @Override
-    public DistributedTable getDistributedTable(Path dataLocation, Set<String> groupKeyColumns, int maximumNumberOfGroups)
+    public DistributedTable getDistributedTable(Path dataLocation)
     {
         JavaPairRDD<AvroWrapper, NullWritable> avroRdd = sparkContext.hadoopFile(dataLocation.toString(), AvroInputFormat.class, AvroWrapper.class, NullWritable.class);
         LOGGER.log(Level.INFO, "data location: {0}", dataLocation);
-        List<String> headers = avroRdd.keys().map(new AvroHeadersFunction(groupKeyColumns)).first();
+        List<String> headers = avroRdd.keys().map(new AvroHeadersFunction()).first();
         LOGGER.log(Level.INFO, "data headers: {0}", headers);
         JavaRDD<List<Object>> rows = avroRdd.map(new AvroRowsFunction(headers));
         return new DistributedTable(headers, rows);

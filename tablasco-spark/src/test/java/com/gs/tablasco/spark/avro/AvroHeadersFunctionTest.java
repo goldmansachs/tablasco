@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,24 +35,10 @@ public class AvroHeadersFunctionTest
 
         assertEquals(Schema.Type.values().length, fields.size());
 
-        List<String> headers = new AvroHeadersFunction(new HashSet<>()).getColumns(fields);
+        List<String> headers = new AvroHeadersFunction().getColumns(fields);
 
         assertEquals(
                 Stream.of("boolean", "string", "int", "long", "float", "bytes", "double", "null", "fixed", "enum", "union").sorted().collect(Collectors.toList()),
                 headers.stream().sorted().collect(Collectors.toList()));
-    }
-
-    @Test
-    public void testInvalidShardColumn()
-    {
-        List<Schema.Field> validColumns = Collections.singletonList(new Schema.Field("FieldA", Schema.create(Schema.Type.STRING), null, null));
-        try
-        {
-            new AvroHeadersFunction(new HashSet<>(Arrays.asList("FieldA", "FieldB"))).getColumns(validColumns);
-            Assert.fail();
-        } catch (IllegalArgumentException e)
-        {
-            Assert.assertEquals("Invalid group key columns: [FieldB]", e.getMessage());
-        }
     }
 }
