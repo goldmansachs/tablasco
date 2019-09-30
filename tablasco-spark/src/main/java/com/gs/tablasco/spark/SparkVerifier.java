@@ -1,7 +1,6 @@
 package com.gs.tablasco.spark;
 
 import com.gs.tablasco.verify.*;
-import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.Optional;
 import org.apache.spark.partial.BoundedDouble;
@@ -12,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 /**
@@ -30,7 +30,6 @@ public class SparkVerifier
 {
     private static final Logger LOGGER = Logger.getLogger(SparkVerifier.class.getSimpleName());
     private final List<String> groupKeyColumns;
-    private final DataFormat dataFormat;
     private final Metadata metadata = Metadata.newEmpty();
     private final ColumnComparators.Builder columnComparatorsBuilder = new ColumnComparators.Builder();
     private boolean ignoreSurplusColumns;
@@ -40,12 +39,10 @@ public class SparkVerifier
     /**
      * Creates a new SparkVerifier
      * @param groupKeyColumns a list of group keys to distribute the data
-     * @param dataFormat a DataFormat instance that can load the HDFS path
      */
-    public SparkVerifier(List<String> groupKeyColumns, DataFormat dataFormat)
+    public SparkVerifier(List<String> groupKeyColumns)
     {
         this.groupKeyColumns = groupKeyColumns;
-        this.dataFormat = dataFormat;
     }
 
     /**
@@ -119,17 +116,17 @@ public class SparkVerifier
     /**
      * Compares two HDFS datasets and produces a detailed yet compact HTML break report
      * @param dataName the name to use in the output HTML
-     * @param actualDataLocation the actual data
-     * @param expectedDataLocation the expected data
+     * @param actualDataSupplier the actual data supplier
+     * @param expectedDataSupplier the expected data supplier
      * @return a SparkResult containing pass/fail and the HTML report
      */
-    public SparkResult verify(String dataName, Path actualDataLocation, Path expectedDataLocation)
+    public SparkResult verify(String dataName, Supplier<DistributedTable> actualDataSupplier, Supplier<DistributedTable> expectedDataSupplier)
     {
-        DistributedTable actualDistributedTable = this.dataFormat.getDistributedTable(actualDataLocation);
+        DistributedTable actualDistributedTable = actualDataSupplier.get();
         if (!new HashSet<>(actualDistributedTable.getHeaders()).containsAll(this.groupKeyColumns)) {
             throw new IllegalArgumentException("Actual data does not contain all group key columns: " + this.groupKeyColumns);
         }
-        DistributedTable expectedDistributedTable = this.dataFormat.getDistributedTable(expectedDataLocation);
+        DistributedTable expectedDistributedTable = expectedDataSupplier.get();
         if (!new HashSet<>(expectedDistributedTable.getHeaders()).containsAll(this.groupKeyColumns)) {
             throw new IllegalArgumentException("Expected data does not contain all group key columns: " + this.groupKeyColumns);
         }
