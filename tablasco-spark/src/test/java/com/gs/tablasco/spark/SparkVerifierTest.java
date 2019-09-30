@@ -1,6 +1,6 @@
 package com.gs.tablasco.spark;
 
-import com.gs.tablasco.spark.avro.AvroDataFormat;
+import com.gs.tablasco.spark.avro.AvroDataSupplier;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericData;
@@ -283,7 +283,9 @@ public class SparkVerifierTest
         writeAvroData(actual, actualData);
         File expectedDate = root.resolve("expected.avro").toFile();
         writeAvroData(expected, expectedDate);
-        SparkResult sparkResult = sparkVerifier.verify("data", new Path(actualData.toURI().toString()), new Path(expectedDate.toURI().toString()));
+        SparkResult sparkResult = sparkVerifier.verify("data",
+                new AvroDataSupplier(JAVA_SPARK_CONTEXT, new Path(actualData.toURI().toString())),
+                new AvroDataSupplier(JAVA_SPARK_CONTEXT, new Path(expectedDate.toURI().toString())));
         String html = sparkResult.getHtml();
         java.nio.file.Path baselineFile = Paths.get("src", "test", "resources", "baseline", this.testName.getMethodName() + ".html");
         if (REBASE)
@@ -309,8 +311,7 @@ public class SparkVerifierTest
 
     private SparkVerifier newSparkVerifier(List<String> groupKeyColumns)
     {
-        return new SparkVerifier(groupKeyColumns, new AvroDataFormat(JAVA_SPARK_CONTEXT))
-                .withMetadata("meta:", "data");
+        return new SparkVerifier(groupKeyColumns).withMetadata("meta:", "data");
     }
 
     private static void writeAvroData(List<GenericRecord> data, File avroFile) throws IOException
