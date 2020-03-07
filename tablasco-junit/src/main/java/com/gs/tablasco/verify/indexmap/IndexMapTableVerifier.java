@@ -18,17 +18,17 @@ package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class IndexMapTableVerifier implements SingleTableVerifier
 {
-    private static final Logger LOGGER = Logger.getLogger(IndexMapTableVerifier.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexMapTableVerifier.class);
     public static final int DEFAULT_BEST_MATCH_THRESHOLD = 1000000;
     public static final long DEFAULT_PARTIAL_MATCH_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(5L);
     private final ColumnComparators columnComparators;
@@ -74,9 +74,9 @@ public class IndexMapTableVerifier implements SingleTableVerifier
             return new ResultTable(new boolean[actualData.getColumnCount()], toListOfRows(actualData, (columnName, value) -> ResultCell.createSurplusCell(columnComparators.getComparator(columnName).getFormatter(), value)));
         }
 
-        LOGGER.log(Level.INFO, "Verifying {0} col {1} row actual and {2} col {3} row expected tables", new Object[] { actualData.getColumnCount(), actualData.getRowCount(), expectedData.getColumnCount(), expectedData.getRowCount() });
+        LOGGER.info("Verifying {0} col {1} row actual and {2} col {3} row expected tables", actualData.getColumnCount(), actualData.getRowCount(), expectedData.getColumnCount(), expectedData.getRowCount());
 
-        LOGGER.log(Level.FINE, "Generating column indices");
+        LOGGER.debug("Generating column indices");
         List<IndexMap> columnIndices = getColumnIndices(actualData, expectedData, columnComparators.getDefaultComparator());
         identifyOutOfOrderIndices(columnIndices, 0);
 
@@ -89,35 +89,35 @@ public class IndexMapTableVerifier implements SingleTableVerifier
         List<List<ResultCell>> results = new ArrayList<>(actualData.getRowCount() + 1);
         verifyHeaders(columnIndices, results, actualData, expectedData, columnComparators.getDefaultComparator());
 
-        LOGGER.log(Level.FINE, "Starting Happy Path");
+        LOGGER.debug("Starting Happy Path");
         collectMatchingRows(columnIndices, results, actualData, expectedData, columnComparators);
         int happyPathSize = results.size() - 1; // minus headers
         if (happyPathSize == actualData.getRowCount() && happyPathSize == expectedData.getRowCount())
         {
-            LOGGER.log(Level.FINE, "(Happily) Done!");
+            LOGGER.debug("(Happily) Done!");
             return new ResultTable(keyColumns, results);
         }
-        LOGGER.log(Level.FINE, "Matched {0} rows happily", happyPathSize);
+        LOGGER.debug("Matched {0} rows happily", happyPathSize);
         int firstUnMatchedIndex = happyPathSize;
 
-        LOGGER.log(Level.FINE, "Starting Reverse Happy Path (tm)");
+        LOGGER.debug("Starting Reverse Happy Path (tm)");
         List<List<ResultCell>> reversePathResults = new ArrayList<>(actualData.getRowCount() - happyPathSize);
         collectReverseMatchingRows(columnIndices, reversePathResults, actualData, expectedData, columnComparators, firstUnMatchedIndex);
         int lastUnMatchedOffset = reversePathResults.size();
-        LOGGER.log(Level.FINE, "Matched {0} rows reverse-happily", lastUnMatchedOffset);
+        LOGGER.debug("Matched {0} rows reverse-happily", lastUnMatchedOffset);
 
-        LOGGER.log(Level.FINE, "Generating row indices from index " + firstUnMatchedIndex + '.');
+        LOGGER.debug("Generating row indices from index " + firstUnMatchedIndex + '.');
         ActualRowIterator actualRowIterator = new ActualRowIterator(actualData, columnIndices, columnComparators, firstUnMatchedIndex, lastUnMatchedOffset);
         ExpectedRowIterator expectedRowIterator = new ExpectedRowIterator(expectedData, columnIndices, columnComparators, firstUnMatchedIndex, lastUnMatchedOffset);
         IndexMapGenerator<RowView> rowGenerator = new IndexMapGenerator<>(expectedRowIterator, actualRowIterator, firstUnMatchedIndex);
         rowGenerator.generate();
         List<IndexMap> allMatchedRows = rowGenerator.getMatched();
-        LOGGER.log(Level.FINE, "Matched a further {0} rows using row hashing", allMatchedRows.size());
+        LOGGER.debug("Matched a further {0} rows using row hashing", allMatchedRows.size());
         List<UnmatchedIndexMap> allMissingRows = rowGenerator.getMissing();
         List<UnmatchedIndexMap> allSurplusRows = rowGenerator.getSurplus();
 
         List<IndexMap> matchedColumns = columnIndices.stream().filter(IndexMap::isMatched).collect(Collectors.toList());
-        LOGGER.log(Level.FINE, "Partial-matching {0} missing and {1} surplus rows", new Object[] { allMissingRows.size(), allSurplusRows.size() });
+        LOGGER.debug("Partial-matching {0} missing and {1} surplus rows", new Object[] { allMissingRows.size(), allSurplusRows.size() });
         PartialMatcher partialMatcher = new AdaptivePartialMatcher(actualData, expectedData, columnComparators, this.bestMatchThreshold);
         if (actualData instanceof KeyedVerifiableTable)
         {
@@ -129,7 +129,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier
         }
         partialMatcher.match(allMissingRows, allSurplusRows, matchedColumns);
 
-        LOGGER.log(Level.FINE, "Merging partial-matches and remaining missing/surplus");
+        LOGGER.debug("Merging partial-matches and remaining missing/surplus");
         List<IndexMap> finalRowIndices = allMatchedRows;
         mergePartialMatches(finalRowIndices, allMissingRows, allSurplusRows);
 
@@ -137,13 +137,13 @@ public class IndexMapTableVerifier implements SingleTableVerifier
         finalRowIndices = new ArrayList<>(new TreeSet<>(finalRowIndices));
         if (this.verifyRowOrder)
         {
-            LOGGER.log(Level.FINE, "Looking for out of order rows");
+            LOGGER.debug("Looking for out of order rows");
             identifyOutOfOrderIndices(finalRowIndices, firstUnMatchedIndex);
         }
 
-        LOGGER.log(Level.FINE, "Generating final results");
+        LOGGER.debug("Generating final results");
         buildResults(columnIndices, finalRowIndices, results, reversePathResults, actualData, expectedData, columnComparators);
-        LOGGER.log(Level.FINE, "Done");
+        LOGGER.debug("Done");
 
         return new ResultTable(keyColumns, results);
     }

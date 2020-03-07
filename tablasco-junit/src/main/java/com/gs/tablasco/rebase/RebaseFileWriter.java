@@ -20,6 +20,8 @@ import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -27,14 +29,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class RebaseFileWriter
 {
-    private static final Logger LOGGER = Logger.getLogger(RebaseFileWriter.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RebaseFileWriter.class);
 
     // we create files first time for each test run, then append...
     private static final Set<String> SEEN_FILES = new HashSet<>();
@@ -117,7 +117,7 @@ public final class RebaseFileWriter
 
     private void printTable(PrintWriter printWriter, String methodName, String tableName, VerifiableTable verifiableTable)
     {
-        LOGGER.log(Level.INFO, "Writing results for '" + methodName + ' ' + tableName + "' to '" + this.outputFile + '\'');
+        LOGGER.info("Writing results for '" + methodName + ' ' + tableName + "' to '" + this.outputFile + '\'');
         printWriter.print("Section ");
         printWriter.print('"');
         printWriter.print(methodName);

@@ -37,6 +37,9 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 import java.io.File;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -850,7 +853,19 @@ public final class TableVerifier extends TestWatcher
         }
         HtmlFormatter htmlFormatter = newHtmlFormatter();
         htmlFormatter.appendResults(this.description.getMethodName(), allResults, metadata, ++this.verifyCount);
-        Assert.assertTrue("Some tests failed. Check test results file " + this.getOutputFile().getAbsolutePath() + " for more details.", verificationSuccess);
+        Assert.assertTrue("Some tests failed. See " + getOutputFileUrl() + " for more details.", verificationSuccess);
+    }
+
+    private URL getOutputFileUrl()
+    {
+        try
+        {
+            return this.getOutputFile().toURI().toURL();
+        }
+        catch (MalformedURLException e)
+        {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public HtmlFormatter newHtmlFormatter()

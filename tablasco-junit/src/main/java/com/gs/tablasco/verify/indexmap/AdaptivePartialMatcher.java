@@ -19,17 +19,17 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class AdaptivePartialMatcher implements PartialMatcher
 {
-    private static final Logger LOGGER = Logger.getLogger(AdaptivePartialMatcher.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdaptivePartialMatcher.class);
 
     private final VerifiableTable actualData;
     private final VerifiableTable expectedData;
@@ -54,7 +54,7 @@ public class AdaptivePartialMatcher implements PartialMatcher
     {
         if ((long) missingRows.size() * (long) surplusRows.size() <= this.bestMatchThreshold)
         {
-            LOGGER.log(Level.FINE, "Matching {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
+            LOGGER.debug("Matching {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
             new BestMatchPartialMatcher(this.actualData, this.expectedData, this.columnComparators).match(missingRows, surplusRows, matchedColumns);
             return;
         }
@@ -63,12 +63,12 @@ public class AdaptivePartialMatcher implements PartialMatcher
                 columnsOrderedBySelectivity;
         if (columnIndex >= initializedColumnsOrderedBySelectivity.size())
         {
-            LOGGER.log(Level.INFO, "Matching remaining {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
+            LOGGER.info("Matching remaining {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
             new BestMatchPartialMatcher(this.actualData, this.expectedData, this.columnComparators).match(missingRows, surplusRows, matchedColumns);
             return;
         }
         IndexMap column = initializedColumnsOrderedBySelectivity.get(columnIndex);
-        LOGGER.log(Level.INFO, "Grouping by '{0}' column", this.actualData.getColumnName(column.getActualIndex()));
+        LOGGER.info("Grouping by '{0}' column", this.actualData.getColumnName(column.getActualIndex()));
 
         CellComparator expectedComparator = this.columnComparators.getComparator(expectedData.getColumnName(column.getExpectedIndex()));
         Map<String, List<UnmatchedIndexMap>> missingRowsByColumn = new HashMap<>();
@@ -87,7 +87,7 @@ public class AdaptivePartialMatcher implements PartialMatcher
 
         missingRowsByColumn.forEach((key, unmatchedIndexMaps) ->
         {
-            LOGGER.log(Level.FINE, "Matching '{0}'", key);
+            LOGGER.debug("Matching '{0}'", key);
             List<UnmatchedIndexMap> missingByKey = missingRowsByColumn.get(key);
             List<UnmatchedIndexMap> surplusByKey = surplusRowsByColumn.get(key);
             if (surplusByKey != null)
@@ -125,7 +125,7 @@ public class AdaptivePartialMatcher implements PartialMatcher
 
     private List<IndexMap> getColumnsOrderedBySelectivity(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> columnIndices)
     {
-        LOGGER.log(Level.INFO, "Calculating column selectivity");
+        LOGGER.info("Calculating column selectivity");
         List<ColumnSelectivity> columnSelectivities = new ArrayList<>();
         for (IndexMap column : columnIndices)
         {

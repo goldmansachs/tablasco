@@ -5,6 +5,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.Optional;
 import org.apache.spark.partial.BoundedDouble;
 import org.apache.spark.partial.PartialResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
 import java.io.ByteArrayOutputStream;
@@ -12,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 /**
  * Spark calculation that compares two HDFS datasets and produces a detailed yet compact HTML break report. The
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
 @SuppressWarnings("WeakerAccess")
 public class SparkVerifier
 {
-    private static final Logger LOGGER = Logger.getLogger(SparkVerifier.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(SparkVerifier.class);
     private final List<String> groupKeyColumns;
     private final Metadata metadata = Metadata.newEmpty();
     private final ColumnComparators.Builder columnComparatorsBuilder = new ColumnComparators.Builder();

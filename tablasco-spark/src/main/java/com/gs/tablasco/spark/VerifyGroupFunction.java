@@ -6,18 +6,18 @@ import com.gs.tablasco.verify.*;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class VerifyGroupFunction implements Function<Tuple2<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>>, SummaryResultTable>
 {
-    private static final Logger LOGGER = Logger.getLogger(VerifyGroupFunction.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(VerifyGroupFunction.class);
 
     private final Set<String> groupKeyColumns;
     private final List<String> actualColumns;
@@ -56,7 +56,7 @@ public class VerifyGroupFunction implements Function<Tuple2<Integer, Tuple2<Opti
                 false,
                 0);
         ResultTable resultTable = singleSingleTableVerifier.verify(actualTable, expectedTable);
-        LOGGER.log(Level.INFO, "Verification of shard {0} {1}", new Object[] { shardNumber, resultTable.isSuccess() ? "PASSED" : "FAILED" });
+        LOGGER.info("Verification of shard {0} {1}", new Object[] { shardNumber, resultTable.isSuccess() ? "PASSED" : "FAILED" });
         return new SummaryResultTable(resultTable);
     }
 
