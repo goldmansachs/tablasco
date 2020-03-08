@@ -24,8 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Description;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
@@ -195,8 +193,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
         this.verifier.succeeded(this.description.get());
     }
 
@@ -205,8 +203,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
     }
 
     @Test(expected = AssertionError.class)
@@ -214,8 +212,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
     }
 
     @Test(expected = AssertionError.class)
@@ -223,8 +221,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                Collections.singletonMap("table1", TableTestUtils.ACTUAL));
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL));
     }
 
     @Test(expected = AssertionError.class)
@@ -232,8 +230,8 @@ public class TableVerifierTest
     {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
-                Collections.singletonMap("table1", TableTestUtils.ACTUAL),
-                TableTestUtils.doubletonMap("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL),
+                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
     }
 
     @Test
@@ -291,8 +289,7 @@ public class TableVerifierTest
     public void withoutPartialMatchTimeout()
     {
         this.verifier.starting(this.description.get());
-        this.verifier.withoutPartialMatchTimeout()
-                .verify(Collections.singletonMap("table1", TableTestUtils.ACTUAL), Collections.singletonMap("table1", TableTestUtils.ACTUAL));
+        this.verifier.withoutPartialMatchTimeout().verify("table1", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 
@@ -321,11 +318,7 @@ public class TableVerifierTest
     public void actualAdapterWithTableNotToAdapt()
     {
         this.verifier.starting(this.description.get());
-        LinkedHashMap<String, VerifiableTable> tableMap = new LinkedHashMap<>();
-        tableMap.put("table1", TableTestUtils.ACTUAL);
-        tableMap.put("table2", TableTestUtils.ACTUAL_2);
-        this.verifier.withActualAdapter(ACTUAL_ADAPTER).withTablesNotToAdapt("table1")
-                .verify(tableMap);
+        this.verifier.withActualAdapter(ACTUAL_ADAPTER).withTablesNotToAdapt("table1").verify(TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
         this.verifier.succeeded(this.description.get());
     }
 
@@ -336,7 +329,7 @@ public class TableVerifierTest
         this.verifier.withActualAdapter(actual -> {
             Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
             return TableTestUtils.ACTUAL;
-        }).verify(Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL), Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2));
+        }).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL, TableTestUtils.ACTUAL_2);
         this.verifier.succeeded(this.description.get());
     }
 
@@ -365,11 +358,8 @@ public class TableVerifierTest
     public void expectedAdapterWithTableNotToAdapt()
     {
         this.verifier.starting(this.description.get());
-        LinkedHashMap<String, VerifiableTable> tableMap = new LinkedHashMap<>();
-        tableMap.put("table1", TableTestUtils.ACTUAL);
-        tableMap.put("table2", TableTestUtils.ACTUAL_2);
         this.verifier.withExpectedAdapter(EXPECTED_ADAPTER).withTablesNotToAdapt("table1")
-          .verify(tableMap);
+                .verify(TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
         this.verifier.succeeded(this.description.get());
     }
 
@@ -380,7 +370,7 @@ public class TableVerifierTest
         this.verifier.withExpectedAdapter(actual -> {
             Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
             return TableTestUtils.ACTUAL;
-        }).verify(Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2), Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
+        }).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 

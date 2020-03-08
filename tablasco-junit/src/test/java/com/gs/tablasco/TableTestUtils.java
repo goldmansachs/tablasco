@@ -27,13 +27,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class TableTestUtils
 {
@@ -124,19 +123,25 @@ public class TableTestUtils
         return new File("src/test/resources");
     }
 
-    static Map<String, VerifiableTable> doubletonMap(String n1, VerifiableTable t1, String n2, VerifiableTable t2) {
-
-        Map<String, VerifiableTable> map = new LinkedHashMap<>();
-        map.put(n1, t1);
-        map.put(n2, t2);
-        return map;
+    static List<NamedTable> toNamedTables(String n1, VerifiableTable t1)
+    {
+        List<NamedTable> list = new ArrayList<>();
+        list.add(new NamedTable(n1, t1));
+        return list;
     }
 
-    static Map<String, VerifiableTable> tripletonMap(String n1, VerifiableTable t1, String n2, VerifiableTable t2, String n3, VerifiableTable t3)
+    static List<NamedTable> toNamedTables(String n1, VerifiableTable t1, String n2, VerifiableTable t2)
     {
-        Map<String, VerifiableTable> map = doubletonMap(n1, t1, n2, t2);
-        map.put(n3, t3);
-        return map;
+        List<NamedTable> list = toNamedTables(n1, t1);
+        list.add(new NamedTable(n2, t2));
+        return list;
+    }
+
+    static List<NamedTable> toNamedTables(String n1, VerifiableTable t1, String n2, VerifiableTable t2, String n3, VerifiableTable t3)
+    {
+        List<NamedTable> list = toNamedTables(n1, t1, n2, t2);
+        list.add(new NamedTable(n3, t3));
+        return list;
     }
 
     public static class TestDescription extends TestWatcher

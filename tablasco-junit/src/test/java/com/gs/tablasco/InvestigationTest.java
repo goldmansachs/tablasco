@@ -72,8 +72,8 @@ public class InvestigationTest
                         TableTestUtils.createTable(2, "C", "K", "5", "K5", "6", "K6"))),
                 Arrays.asList(
                         null,
-                        Arrays.<Object>asList("K1"),
-                        Arrays.<Object>asList("K3", "K4")),
+                        Arrays.asList("K1"),
+                        Arrays.asList("K3", "K4")),
                 100);
         try
         {
@@ -189,9 +189,9 @@ public class InvestigationTest
                                 "C1", "K"))),
                 Arrays.asList(
                         null,
-                        Arrays.<Object>asList("K1", "K3"),
-                        Arrays.<Object>asList("K1", "K3"),
-                        Arrays.<Object>asList("K1")),
+                        Arrays.asList("K1", "K3"),
+                        Arrays.asList("K1", "K3"),
+                        Arrays.asList("K1")),
                 100);
         try
         {
@@ -366,7 +366,7 @@ public class InvestigationTest
                         TableTestUtils.createTable(1, "K", "K1"))),
                 Arrays.asList(
                         null,
-                        Arrays.<Object>asList(1, 2, 9, 4, 5)),
+                        Arrays.asList(1, 2, 9, 4, 5)),
                 100);
         try
         {
@@ -459,7 +459,7 @@ public class InvestigationTest
                         TableTestUtils.createTable(1, "K", "K1"))),
                 Arrays.asList(
                         null,
-                        Arrays.<Object>asList("K1", "K2")),
+                        Arrays.asList("K1", "K2")),
                         2);
         try
         {
@@ -538,7 +538,7 @@ public class InvestigationTest
                         TableTestUtils.createTable(1, "K", "K9"))),
                 Arrays.asList(
                         null,
-                        Arrays.<Object>asList("K1", "K9")),
+                        Arrays.asList("K1", "K9")),
                 100);
         try
         {

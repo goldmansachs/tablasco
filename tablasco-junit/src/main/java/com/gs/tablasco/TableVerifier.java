@@ -771,14 +771,36 @@ public final class TableVerifier extends TestWatcher
      */
     public final void verify(String tableName, VerifiableTable actualTable)
     {
-        this.verify(Collections.singletonMap(tableName, actualTable));
+        this.verify(new NamedTable(tableName, actualTable));
     }
 
     /**
+     * Verifies a list of actual named tables against expected baseline.
+     *
+     * @param actualTables - actual tables
+     */
+    public final void verify(NamedTable... actualTables)
+    {
+        this.verify(Arrays.asList(actualTables));
+    }
+
+    /**
+     * Verifies a list of actual named tables against expected baseline.
+     *
+     * @param actualTables - actual tables
+     */
+    public final void verify(List<NamedTable> actualTables)
+    {
+        this.verify(toMap(actualTables));
+    }
+
+    /**
+     * @deprecated replaced by {@link #verify(List)}}
      * Verifies a map of table names to actual tables.
      *
      * @param actualTables - actual tables by name
      */
+    @Deprecated
     public final void verify(Map<String, VerifiableTable> actualTables)
     {
         this.runPreVerifyChecks();
@@ -823,10 +845,40 @@ public final class TableVerifier extends TestWatcher
     }
 
     /**
+     * Verifies an expected table with an actual table.
+     * @param name - table name
+     * @param expectedTable - expected table
+     * @param actualTable - actual table
+     */
+    public final void verify(String name, VerifiableTable expectedTable, VerifiableTable actualTable)
+    {
+        this.verify(Collections.singletonList(new NamedTable(name, expectedTable)), Collections.singletonList(new NamedTable(name, actualTable)));
+    }
+
+    /**
+     * Verifies a list of named expected tables with a list of named actual tables.
+     * @param expectedTables - expected tables
+     * @param actualTables - actual tables
+     */
+    public final void verify(List<NamedTable> expectedTables, List<NamedTable> actualTables)
+    {
+        this.verify(toMap(expectedTables), toMap(actualTables));
+    }
+
+    private Map<String, VerifiableTable> toMap(List<NamedTable> namedTables)
+    {
+        Map<String, VerifiableTable> map = new LinkedHashMap<>();
+        namedTables.forEach(namedTable -> map.put(namedTable.getName(), namedTable.getTable()));
+        return map;
+    }
+
+    /**
+     * @deprecated replaced by {@link #verify(List, List)}}
      * Verifies a map of table names to expected tables with a map of table names to actual tables.
      * @param expectedTables - expected tables by name
      * @param actualTables - actual tables by name
      */
+    @Deprecated
     public final void verify(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables)
     {
         this.runPreVerifyChecks();

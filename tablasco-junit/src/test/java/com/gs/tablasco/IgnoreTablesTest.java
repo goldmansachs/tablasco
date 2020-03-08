@@ -35,8 +35,8 @@ public class IgnoreTablesTest
         VerifiableTable tableA = TableTestUtils.createTable(1, "Col 1", "A");
         VerifiableTable tableX = TableTestUtils.createTable(1, "Col 1", "X");
         this.tableVerifier.withIgnoreTables("table1", "table3").verify(
-                TableTestUtils.tripletonMap("table1", tableA, "table2", tableA, "table3", tableX),
-                TableTestUtils.tripletonMap("table1", tableX, "table2", tableA, "table3", tableA));
+                TableTestUtils.toNamedTables("table1", tableA, "table2", tableA, "table3", tableX),
+                TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
 
         Assert.assertEquals(
                 "<body>\n" +

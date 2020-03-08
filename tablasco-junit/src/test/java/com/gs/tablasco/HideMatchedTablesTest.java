@@ -24,7 +24,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public class HideMatchedTablesTest
 {
@@ -37,14 +36,14 @@ public class HideMatchedTablesTest
     @Test
     public void matchedTablesAreHidden() throws IOException
     {
-        final VerifiableTable matchTable = new ListVerifiableTable(Collections.<Object>singletonList("Col"), Collections.<List<Object>>singletonList(Collections.<Object>singletonList("A")));
-        final VerifiableTable outOfOrderTableExpected = new ListVerifiableTable(Arrays.<Object>asList("Col 1", "Col 2"), Collections.<List<Object>>singletonList(Arrays.<Object>asList("A", "B")));
-        final VerifiableTable outOfOrderTableActual = new ListVerifiableTable(Arrays.<Object>asList("Col 2", "Col 1"), Collections.<List<Object>>singletonList(Arrays.<Object>asList("B", "A")));
-        final VerifiableTable breakTableExpected = new ListVerifiableTable(Collections.<Object>singletonList("Col"), Collections.<List<Object>>singletonList(Collections.<Object>singletonList("A")));
-        final VerifiableTable breakTableActual = new ListVerifiableTable(Collections.<Object>singletonList("Col"), Collections.<List<Object>>singletonList(Collections.<Object>singletonList("B")));
+        final VerifiableTable matchTable = new ListVerifiableTable(Collections.<Object>singletonList("Col"), Collections.singletonList(Collections.singletonList("A")));
+        final VerifiableTable outOfOrderTableExpected = new ListVerifiableTable(Arrays.<Object>asList("Col 1", "Col 2"), Collections.singletonList(Arrays.asList("A", "B")));
+        final VerifiableTable outOfOrderTableActual = new ListVerifiableTable(Arrays.<Object>asList("Col 2", "Col 1"), Collections.singletonList(Arrays.asList("B", "A")));
+        final VerifiableTable breakTableExpected = new ListVerifiableTable(Collections.<Object>singletonList("Col"), Collections.singletonList(Collections.singletonList("A")));
+        final VerifiableTable breakTableActual = new ListVerifiableTable(Collections.<Object>singletonList("Col"), Collections.singletonList(Collections.singletonList("B")));
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify(
-                TableTestUtils.tripletonMap("match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
-                TableTestUtils.tripletonMap("match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual)));
+                TableTestUtils.toNamedTables("match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
+                TableTestUtils.toNamedTables("match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual)));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +

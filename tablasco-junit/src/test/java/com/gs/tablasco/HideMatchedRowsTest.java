@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class HideMatchedRowsTest
 {
@@ -35,7 +34,7 @@ public class HideMatchedRowsTest
     public void allRowsMatch() throws IOException
     {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
-        this.tableVerifier.verify(Collections.singletonMap("name", table), Collections.singletonMap("name", table));
+        this.tableVerifier.verify("name", table, table);
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -53,8 +52,8 @@ public class HideMatchedRowsTest
     {
         final VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withAlwaysShowMatchedRowsFor("name2").verify(
-                TableTestUtils.tripletonMap("name", table, "name2", table, "name3", table),
-                TableTestUtils.tripletonMap("name", table, "name2", table, "name4", table)));
+                TableTestUtils.toNamedTables("name", table, "name2", table, "name3", table),
+                TableTestUtils.toNamedTables("name", table, "name2", table, "name4", table)));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +
@@ -142,7 +141,7 @@ public class HideMatchedRowsTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "B1", "B2", "A1", "A2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -166,7 +165,7 @@ public class HideMatchedRowsTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -193,7 +192,7 @@ public class HideMatchedRowsTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3");
         final VerifiableTable table2 = TableTestUtils.createTable(3, "Col 3", "Col 4", "Col 1", "A3", "A2", "A1", "B3", "B2", "B9", "C3", "C2", "C1");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -230,7 +229,7 @@ public class HideMatchedRowsTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2", "H1", "H2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "X2", "C1", "C2", "D1", "D2", "E1", "X2", "F1", "F2", "G1", "G2", "H1", "H2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +

@@ -135,7 +135,7 @@ public class LifecycleTest
         public void test()
         {
             assumeInnerTestExecution();
-            this.verifier.verify(Collections.singletonMap("table", TableTestUtils.ACTUAL), Collections.singletonMap("table", TableTestUtils.ACTUAL));
+            this.verifier.verify("table", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL);
         }
     }
 
@@ -148,7 +148,7 @@ public class LifecycleTest
         public void test()
         {
             assumeInnerTestExecution();
-            this.verifier.verify(Collections.singletonMap("table", TableTestUtils.ACTUAL), Collections.singletonMap("table", TableTestUtils.ACTUAL_2));
+            this.verifier.verify("table", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL_2);
         }
     }
 
@@ -204,7 +204,7 @@ public class LifecycleTest
         public void test()
         {
             assumeInnerTestExecution();
-            this.verifier.verify(TableTestUtils.doubletonMap("table_1", TableTestUtils.ACTUAL, "table_2", TableTestUtils.ACTUAL_2));
+            this.verifier.verify(TableTestUtils.toNamedTables("table_1", TableTestUtils.ACTUAL, "table_2", TableTestUtils.ACTUAL_2));
         }
     }
 
