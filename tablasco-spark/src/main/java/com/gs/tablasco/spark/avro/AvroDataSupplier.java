@@ -30,9 +30,9 @@ public class AvroDataSupplier implements Supplier<DistributedTable>
     public DistributedTable get()
     {
         JavaPairRDD<AvroWrapper, NullWritable> avroRdd = this.sparkContext.hadoopFile(this.dataPath.toString(), AvroInputFormat.class, AvroWrapper.class, NullWritable.class);
-        LOGGER.info("data location: {0}", this.dataPath);
+        LOGGER.info("data location: {}", this.dataPath);
         List<String> headers = avroRdd.keys().map(new AvroHeadersFunction()).first();
-        LOGGER.info("data headers: {0}", headers);
+        LOGGER.info("data headers: {}", headers);
         JavaRDD<List<Object>> rows = avroRdd.map(new AvroRowsFunction(headers));
         return new DistributedTable(headers, rows);
     }

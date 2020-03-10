@@ -54,7 +54,7 @@ public class AdaptivePartialMatcher implements PartialMatcher
     {
         if ((long) missingRows.size() * (long) surplusRows.size() <= this.bestMatchThreshold)
         {
-            LOGGER.debug("Matching {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
+            LOGGER.debug("Matching {} missing and {} surplus rows using best-match algorithm", missingRows.size(), surplusRows.size());
             new BestMatchPartialMatcher(this.actualData, this.expectedData, this.columnComparators).match(missingRows, surplusRows, matchedColumns);
             return;
         }
@@ -63,12 +63,12 @@ public class AdaptivePartialMatcher implements PartialMatcher
                 columnsOrderedBySelectivity;
         if (columnIndex >= initializedColumnsOrderedBySelectivity.size())
         {
-            LOGGER.info("Matching remaining {0} missing and {1} surplus rows using best-match algorithm", new Object[] { missingRows.size(), surplusRows.size() });
+            LOGGER.info("Matching remaining {} missing and {} surplus rows using best-match algorithm", missingRows.size(), surplusRows.size());
             new BestMatchPartialMatcher(this.actualData, this.expectedData, this.columnComparators).match(missingRows, surplusRows, matchedColumns);
             return;
         }
         IndexMap column = initializedColumnsOrderedBySelectivity.get(columnIndex);
-        LOGGER.info("Grouping by '{0}' column", this.actualData.getColumnName(column.getActualIndex()));
+        LOGGER.info("Grouping by '{}' column", this.actualData.getColumnName(column.getActualIndex()));
 
         CellComparator expectedComparator = this.columnComparators.getComparator(expectedData.getColumnName(column.getExpectedIndex()));
         Map<String, List<UnmatchedIndexMap>> missingRowsByColumn = new HashMap<>();
@@ -87,7 +87,7 @@ public class AdaptivePartialMatcher implements PartialMatcher
 
         missingRowsByColumn.forEach((key, unmatchedIndexMaps) ->
         {
-            LOGGER.debug("Matching '{0}'", key);
+            LOGGER.debug("Matching '{}'", key);
             List<UnmatchedIndexMap> missingByKey = missingRowsByColumn.get(key);
             List<UnmatchedIndexMap> surplusByKey = surplusRowsByColumn.get(key);
             if (surplusByKey != null)

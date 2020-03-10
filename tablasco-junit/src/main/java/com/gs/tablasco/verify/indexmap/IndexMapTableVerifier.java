@@ -74,7 +74,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier
             return new ResultTable(new boolean[actualData.getColumnCount()], toListOfRows(actualData, (columnName, value) -> ResultCell.createSurplusCell(columnComparators.getComparator(columnName).getFormatter(), value)));
         }
 
-        LOGGER.info("Verifying {0} col {1} row actual and {2} col {3} row expected tables", actualData.getColumnCount(), actualData.getRowCount(), expectedData.getColumnCount(), expectedData.getRowCount());
+        LOGGER.info("Verifying {} col {} row actual and {} col {} row expected tables", actualData.getColumnCount(), actualData.getRowCount(), expectedData.getColumnCount(), expectedData.getRowCount());
 
         LOGGER.debug("Generating column indices");
         List<IndexMap> columnIndices = getColumnIndices(actualData, expectedData, columnComparators.getDefaultComparator());
@@ -97,14 +97,14 @@ public class IndexMapTableVerifier implements SingleTableVerifier
             LOGGER.debug("(Happily) Done!");
             return new ResultTable(keyColumns, results);
         }
-        LOGGER.debug("Matched {0} rows happily", happyPathSize);
+        LOGGER.debug("Matched {} rows", happyPathSize);
         int firstUnMatchedIndex = happyPathSize;
 
         LOGGER.debug("Starting Reverse Happy Path (tm)");
         List<List<ResultCell>> reversePathResults = new ArrayList<>(actualData.getRowCount() - happyPathSize);
         collectReverseMatchingRows(columnIndices, reversePathResults, actualData, expectedData, columnComparators, firstUnMatchedIndex);
         int lastUnMatchedOffset = reversePathResults.size();
-        LOGGER.debug("Matched {0} rows reverse-happily", lastUnMatchedOffset);
+        LOGGER.debug("Matched {} rows", lastUnMatchedOffset);
 
         LOGGER.debug("Generating row indices from index " + firstUnMatchedIndex + '.');
         ActualRowIterator actualRowIterator = new ActualRowIterator(actualData, columnIndices, columnComparators, firstUnMatchedIndex, lastUnMatchedOffset);
@@ -112,12 +112,12 @@ public class IndexMapTableVerifier implements SingleTableVerifier
         IndexMapGenerator<RowView> rowGenerator = new IndexMapGenerator<>(expectedRowIterator, actualRowIterator, firstUnMatchedIndex);
         rowGenerator.generate();
         List<IndexMap> allMatchedRows = rowGenerator.getMatched();
-        LOGGER.debug("Matched a further {0} rows using row hashing", allMatchedRows.size());
+        LOGGER.debug("Matched a further {} rows using row hashing", allMatchedRows.size());
         List<UnmatchedIndexMap> allMissingRows = rowGenerator.getMissing();
         List<UnmatchedIndexMap> allSurplusRows = rowGenerator.getSurplus();
 
         List<IndexMap> matchedColumns = columnIndices.stream().filter(IndexMap::isMatched).collect(Collectors.toList());
-        LOGGER.debug("Partial-matching {0} missing and {1} surplus rows", new Object[] { allMissingRows.size(), allSurplusRows.size() });
+        LOGGER.debug("Partial-matching {} missing and {} surplus rows", new Object[] { allMissingRows.size(), allSurplusRows.size() });
         PartialMatcher partialMatcher = new AdaptivePartialMatcher(actualData, expectedData, columnComparators, this.bestMatchThreshold);
         if (actualData instanceof KeyedVerifiableTable)
         {

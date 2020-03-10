@@ -31,24 +31,17 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class TableTestUtils
 {
-    static final VerifiableTable ACTUAL = new ListVerifiableTable(
-            Arrays.<Object>asList("First", "Last", "Age"),
-            Arrays.asList(
-                    Arrays.asList("Barry", "White", 21.3),
-                    Arrays.asList("Oscar", "White", 7.6)));
-    static final VerifiableTable ACTUAL_2 = new ListVerifiableTable(
-            Arrays.<Object>asList("First", "Last", "Age"),
-            Collections.singletonList(
-                    Arrays.asList("Elliot", "White", 3.8)));
-    static final VerifiableTable ACTUAL_3 = new ListVerifiableTable(
-            Arrays.<Object>asList("Name", "Age", "Weight", "Height"),
-            Collections.singletonList(
-                    Arrays.asList("Elliot", 1.1, 1.02, 1.5)));
+    static final VerifiableTable ACTUAL = new TestTable("First", "Last", "Age")
+            .withRow("Barry", "White", 21.3)
+            .withRow("Oscar", "White", 7.6);
+    static final VerifiableTable ACTUAL_2 = new TestTable("First", "Last", "Age")
+            .withRow("Elliot", "White", 3.8);
+    static final VerifiableTable ACTUAL_3 = new TestTable("Name", "Age", "Weight", "Height")
+            .withRow("Elliot", 1.1, 1.02, 1.5);
     static final String TABLE_NAME = "peopleTable";
     private static final DocumentBuilder DOCUMENT_BUILDER;
     static
@@ -92,6 +85,10 @@ public class TableTestUtils
         return null;
     }
 
+    /**
+     * @deprecated use TestTable instead
+     */
+    @Deprecated
     public static VerifiableTable createTable(int cols, Object... values)
     {
         List<List<Object>> headersAndRows = new ArrayList<>();

@@ -56,7 +56,7 @@ public class VerifyGroupFunction implements Function<Tuple2<Integer, Tuple2<Opti
                 false,
                 0);
         ResultTable resultTable = singleSingleTableVerifier.verify(actualTable, expectedTable);
-        LOGGER.info("Verification of shard {0} {1}", new Object[] { shardNumber, resultTable.isSuccess() ? "PASSED" : "FAILED" });
+        LOGGER.info("Verification of shard {} {}", shardNumber, resultTable.isSuccess() ? "PASSED" : "FAILED");
         return new SummaryResultTable(resultTable);
     }
 

@@ -17,11 +17,8 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
-import com.gs.tablasco.verify.ListVerifiableTable;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 public class MavenStyleDirectoryStrategyTest
 {
@@ -32,17 +29,11 @@ public class MavenStyleDirectoryStrategyTest
                     new MavenStyleDirectoryStrategy()
                             .withAnchorFile("pom.xml")
                             .withExpectedSubDir("maven_input")
-                            .withOutputSubDir("maven_output")
-            );
-
+                            .withOutputSubDir("maven_output"));
 
     @Test
     public void testMavenStyleDirectoryStrategy()
     {
-        this.tableVerifier.verify("maven", new ListVerifiableTable(Arrays.asList(
-                Arrays.asList("h1", "h2"),
-                Arrays.asList("r11", "r12"),
-                Arrays.asList("r21", "r22")
-        )));
+        this.tableVerifier.verify("maven", new TestTable("h1", "h2").withRow("r11", "r12").withRow("r21", "r22"));
     }
 }
