@@ -7,10 +7,10 @@
     <parent>
         <groupId>com.goldmansachs.tablasco</groupId>
         <artifactId>tablasco</artifactId>
-        <version>2.4.0</version>
+        <version>2.5.0</version>
     </parent>
     <artifactId>tablasco-spark</artifactId>
-    <version>2.4.0</version>
+    <version>2.5.0</version>
 
     <name>Tablasco Spark</name>
     <description>Distributed verification of large data sets using Tablasco and Spark</description>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.goldmansachs.tablasco</groupId>
             <artifactId>tablasco-junit</artifactId>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
