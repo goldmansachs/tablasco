@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class HtmlFormattingTest
 {
@@ -35,7 +34,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -62,7 +61,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 10.123);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 20.456);
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -84,7 +83,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 390.0);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", "A2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withVarianceThreshold(5.0d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withVarianceThreshold(5.0d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -105,7 +104,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", "A1");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 48.0);
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.1d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.1d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -126,7 +125,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", "A2", "A1");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -147,7 +146,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", "A3", "A1");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -170,7 +169,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 30.78, 25);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", 25, 30.78);
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -191,7 +190,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 30.78, 25);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", 25.3, 30.78);
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -214,7 +213,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 4", "Col 1", "A2", "A1");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -240,7 +239,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 30.78, 25);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 4", "Col 1", 26, 30.78);
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -266,7 +265,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -294,7 +293,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 345.66, 13.0, 56.44, 45.01);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", 345.63, 12.8, 56.65, 45.31);
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.1d).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withTolerance(0.1d).verify("name", table1, table2));
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
                 "<tr>\n" +
@@ -327,7 +326,7 @@ public class HtmlFormattingTest
     public void assertionSummaryWithSuccess() throws IOException
     {
         VerifiableTable table = TableTestUtils.createTable(1, "Col 1", "A1");
-        this.tableVerifier.withAssertionSummary(true).verify(Collections.singletonMap("name", table), Collections.singletonMap("name", table));
+        this.tableVerifier.withAssertionSummary(true).verify("name", table, table);
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +
@@ -359,7 +358,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withAssertionSummary(true).verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withAssertionSummary(true).verify("name", table1, table2));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +
@@ -401,8 +400,8 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table1 = TableTestUtils.createTable(1, "Col 1", "A1");
         final VerifiableTable table2 = TableTestUtils.createTable(1, "Col 1", "A2");
-        this.tableVerifier.withAssertionSummary(true).verify(Collections.singletonMap("name1", table1), Collections.singletonMap("name1", table1));
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withAssertionSummary(true).verify(Collections.singletonMap("name2", table1), Collections.singletonMap("name2", table2)));
+        this.tableVerifier.withAssertionSummary(true).verify("name1", table1, table1);
+        TableTestUtils.assertAssertionError(() -> tableVerifier.withAssertionSummary(true).verify("name2", table1, table2));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +
@@ -458,7 +457,7 @@ public class HtmlFormattingTest
     {
         final VerifiableTable table = TableTestUtils.createTable(1, "Col 1", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withAssertionSummary(true).verify(
-                TableTestUtils.doubletonMap("name", table, "name2", table), TableTestUtils.doubletonMap("name", table, "name3", table)));
+                TableTestUtils.toNamedTables("name", table, "name2", table), TableTestUtils.toNamedTables("name", table, "name3", table)));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +
@@ -519,7 +518,7 @@ public class HtmlFormattingTest
         TableTestUtils.assertAssertionError(() -> tableVerifier
                 .withAssertionSummary(true)
                 .withHideMatchedRows(true)
-                .verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2)));
+                .verify("name", table1, table2));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +

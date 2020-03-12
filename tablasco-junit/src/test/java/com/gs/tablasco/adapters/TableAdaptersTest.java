@@ -22,8 +22,6 @@ import com.gs.tablasco.VerifiableTable;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Collections;
-
 public class TableAdaptersTest
 {
     @Rule
@@ -97,6 +95,6 @@ public class TableAdaptersTest
 
     private void verify(VerifiableTable expected, VerifiableTable adaptedActual)
     {
-        this.verifier.verify(Collections.singletonMap("table", adaptedActual), Collections.singletonMap("table", expected));
+        this.verifier.verify("table", adaptedActual, expected);
     }
 }

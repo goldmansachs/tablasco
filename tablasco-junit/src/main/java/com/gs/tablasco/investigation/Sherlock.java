@@ -16,10 +16,11 @@
 
 package com.gs.tablasco.investigation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Compares results from two environments and drills down on breaks in multiple
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class Sherlock
 {
-    private static final Logger LOGGER = Logger.getLogger(Sherlock.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Sherlock.class);
 
     public void handle(Investigation investigation, File outputFile)
     {
@@ -36,16 +37,16 @@ public class Sherlock
         List<Object> drilldownKeys = watson.assist("Initial Results", currentLevel, investigation.getRowKeyLimit());
         if (drilldownKeys == null || drilldownKeys.isEmpty())
         {
-            LOGGER.log(Level.INFO, "No breaks found :)");
+            LOGGER.info("No breaks found :)");
             return;
         }
 
-        LOGGER.log(Level.INFO, "Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
+        LOGGER.info("Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
         int level = 1;
         while (!drilldownKeys.isEmpty() && (currentLevel = investigation.getNextLevel(drilldownKeys)) != null)
         {
             drilldownKeys = watson.assist("Investigation Level " + level + " (Top " + investigation.getRowKeyLimit() + ')', currentLevel, investigation.getRowKeyLimit());
-            LOGGER.log(Level.INFO, "Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
+            LOGGER.info("Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
             level++;
         }
 

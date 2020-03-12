@@ -53,7 +53,7 @@ public class SummarisedResultsTest {
                 "e", "x",
                 "e", "x"
         );
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(TableTestUtils.doubletonMap("name1", table1, "name2", table1), TableTestUtils.doubletonMap("name1", table2, "name2", table2)));
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(TableTestUtils.toNamedTables("name1", table1, "name2", table1), TableTestUtils.toNamedTables("name1", table2, "name2", table2)));
         Assert.assertEquals(
                 "<body>\n" +
                 "<div class=\"metadata\"/>\n" +

@@ -27,29 +27,21 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TableTestUtils
 {
-    static final VerifiableTable ACTUAL = new ListVerifiableTable(
-            Arrays.<Object>asList("First", "Last", "Age"),
-            Arrays.asList(
-                    Arrays.asList("Barry", "White", 21.3),
-                    Arrays.asList("Oscar", "White", 7.6)));
-    static final VerifiableTable ACTUAL_2 = new ListVerifiableTable(
-            Arrays.<Object>asList("First", "Last", "Age"),
-            Collections.singletonList(
-                    Arrays.asList("Elliot", "White", 3.8)));
-    static final VerifiableTable ACTUAL_3 = new ListVerifiableTable(
-            Arrays.<Object>asList("Name", "Age", "Weight", "Height"),
-            Collections.singletonList(
-                    Arrays.asList("Elliot", 1.1, 1.02, 1.5)));
+    static final VerifiableTable ACTUAL = new TestTable("First", "Last", "Age")
+            .withRow("Barry", "White", 21.3)
+            .withRow("Oscar", "White", 7.6);
+    static final VerifiableTable ACTUAL_2 = new TestTable("First", "Last", "Age")
+            .withRow("Elliot", "White", 3.8);
+    static final VerifiableTable ACTUAL_3 = new TestTable("Name", "Age", "Weight", "Height")
+            .withRow("Elliot", 1.1, 1.02, 1.5);
     static final String TABLE_NAME = "peopleTable";
     private static final DocumentBuilder DOCUMENT_BUILDER;
     static
@@ -93,6 +85,10 @@ public class TableTestUtils
         return null;
     }
 
+    /**
+     * @deprecated use TestTable instead
+     */
+    @Deprecated
     public static VerifiableTable createTable(int cols, Object... values)
     {
         List<List<Object>> headersAndRows = new ArrayList<>();
@@ -124,19 +120,25 @@ public class TableTestUtils
         return new File("src/test/resources");
     }
 
-    static Map<String, VerifiableTable> doubletonMap(String n1, VerifiableTable t1, String n2, VerifiableTable t2) {
-
-        Map<String, VerifiableTable> map = new LinkedHashMap<>();
-        map.put(n1, t1);
-        map.put(n2, t2);
-        return map;
+    static List<NamedTable> toNamedTables(String n1, VerifiableTable t1)
+    {
+        List<NamedTable> list = new ArrayList<>();
+        list.add(new NamedTable(n1, t1));
+        return list;
     }
 
-    static Map<String, VerifiableTable> tripletonMap(String n1, VerifiableTable t1, String n2, VerifiableTable t2, String n3, VerifiableTable t3)
+    static List<NamedTable> toNamedTables(String n1, VerifiableTable t1, String n2, VerifiableTable t2)
     {
-        Map<String, VerifiableTable> map = doubletonMap(n1, t1, n2, t2);
-        map.put(n3, t3);
-        return map;
+        List<NamedTable> list = toNamedTables(n1, t1);
+        list.add(new NamedTable(n2, t2));
+        return list;
+    }
+
+    static List<NamedTable> toNamedTables(String n1, VerifiableTable t1, String n2, VerifiableTable t2, String n3, VerifiableTable t3)
+    {
+        List<NamedTable> list = toNamedTables(n1, t1, n2, t2);
+        list.add(new NamedTable(n3, t3));
+        return list;
     }
 
     public static class TestDescription extends TestWatcher

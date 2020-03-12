@@ -19,9 +19,8 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.KeyedVerifiableTable;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import java.util.Map;
 
 public class KeyColumnPartialMatcher implements PartialMatcher
 {
-    private static final Logger LOGGER = Logger.getLogger(KeyColumnPartialMatcher.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyColumnPartialMatcher.class);
     private final KeyedVerifiableTable actualData;
     private final VerifiableTable expectedData;
     private final ColumnComparators columnComparators;
@@ -50,7 +49,7 @@ public class KeyColumnPartialMatcher implements PartialMatcher
         List<IndexMap> keyColumnIndices = this.getKeyColumnIndexMaps(matchedColumns);
         if (keyColumnIndices.isEmpty())
         {
-            LOGGER.log(Level.WARNING, "No key columns found!");
+            LOGGER.warn("No key columns found!");
             return;
         }
         Map<RowView, List<UnmatchedIndexMap>> missingByKey = new HashMap<>(allMissingRows.size());

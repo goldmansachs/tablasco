@@ -16,9 +16,9 @@
 
 package com.gs.tablasco.verify.indexmap;
 
+import com.gs.tablasco.TestTable;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
-import com.gs.tablasco.verify.ListVerifiableTable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,19 +29,15 @@ import java.util.List;
 
 public class PartialMatcherTest
 {
-    private static final VerifiableTable MISSING = new ListVerifiableTable(
-            Arrays.asList("Entity", "Null-1", "Null-2", "Account", "Net", "MV", "Quantity"),
-            Arrays.asList(
-                    Arrays.asList("GSIL", null, "", "71000", 100.0, 1000.0, 10.0),
-                    Arrays.asList("GSCO", null, "", "91001", 500.0, 5000.0, 50.0),
-                    Arrays.asList("GSCO", null, "", "91001", 500.0, 5000.0, 58.0)));
-    private static final VerifiableTable SURPLUS = new ListVerifiableTable(
-            Arrays.asList("Entity", "String", "Account", "Net", "MV", "Quantity"),
-            Arrays.asList(
-                    Arrays.asList("GSIL", "", null, "71000", 100.0, 9000.0, 90.0),
-                    Arrays.asList("GSIL", "", null, "71000", 100.0, 9000.0, 10.0),
-                    Arrays.asList("GSCO", "", "", "91001", 505.0, 5064.0, 58.0),
-                    Arrays.asList("GSCO", "", null, "91001", 500.0, 5064.0, 58.0)));
+    private static final VerifiableTable MISSING = new TestTable("Entity", "Null-1", "Null-2", "Account", "Net", "MV", "Quantity")
+            .withRow("GSIL", null, "", "71000", 100.0, 1000.0, 10.0)
+            .withRow("GSCO", null, "", "91001", 500.0, 5000.0, 50.0)
+            .withRow("GSCO", null, "", "91001", 500.0, 5000.0, 58.0);
+    private static final VerifiableTable SURPLUS = new TestTable("Entity", "Null-1", "Null-2", "Account", "Net", "MV", "Quantity")
+            .withRow("GSIL", "", null, "71000", 100.0, 9000.0, 90.0)
+            .withRow("GSIL", "", null, "71000", 100.0, 9000.0, 10.0)
+            .withRow("GSCO", "", "", "91001", 505.0, 5064.0, 58.0)
+            .withRow("GSCO", "", null, "91001", 500.0, 5064.0, 58.0);
     private static final List<IndexMap> COLUMNS = Arrays.asList(
             new IndexMap(0, 0), new IndexMap(1, 1), new IndexMap(2, 2), new IndexMap(3, 3), new IndexMap(4, 4), new IndexMap(5, 5), new IndexMap(6, 6));
 

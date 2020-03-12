@@ -55,28 +55,14 @@ public class CreateActualResultsOnFailureTest
     @Test
     public void testTrueFail()
     {
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                verifier.withCreateActualResultsOnFailure(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> verifier.withCreateActualResultsOnFailure(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
     public void testFalseFail()
     {
-        TableTestUtils.assertAssertionError(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                verifier.withCreateActualResultsOnFailure(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-            }
-        });
+        TableTestUtils.assertAssertionError(() -> verifier.withCreateActualResultsOnFailure(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 }

@@ -27,34 +27,34 @@ public class CellFormatterTest
     public void formatNumbers()
     {
         CellFormatter formatter = new CellFormatter(0.01, true);
-        Assert.assertEquals("1", formatter.format(new Double(1.0d)));
-        Assert.assertEquals("1.1", formatter.format(new Double(1.10d)));
-        Assert.assertEquals("1.11", formatter.format(new Double(1.11d)));
-        Assert.assertEquals("1.11", formatter.format(new Double(1.111d)));
-        Assert.assertEquals("1.12", formatter.format(new Double(1.116d)));
-        Assert.assertEquals("-1.12", formatter.format(new Double(-1.116d)));
-        Assert.assertEquals("-1,000.12", formatter.format(new Double(-1000.116d)));
+        Assert.assertEquals("1", formatter.format(1.0d));
+        Assert.assertEquals("1.1", formatter.format(1.10d));
+        Assert.assertEquals("1.11", formatter.format(1.11d));
+        Assert.assertEquals("1.11", formatter.format(1.111d));
+        Assert.assertEquals("1.12", formatter.format(1.116d));
+        Assert.assertEquals("-1.12", formatter.format(-1.116d));
+        Assert.assertEquals("-1,000.12", formatter.format(-1000.116d));
 
-        Assert.assertEquals("-1,000.12", formatter.format(new Float(-1000.116f)));
-        Assert.assertEquals("1,000", formatter.format(Integer.valueOf(1000)));
-        Assert.assertEquals("-1,000", formatter.format(Long.valueOf(-1000)));
+        Assert.assertEquals("-1,000.12", formatter.format(-1000.116f));
+        Assert.assertEquals("1,000", formatter.format(1000));
+        Assert.assertEquals("-1,000", formatter.format((long) -1000));
 
         Assert.assertEquals("NaN", formatter.format(Double.NaN));
         Assert.assertEquals("NaN", formatter.format(Float.NaN));
 
-        Assert.assertEquals("0", formatter.format(new Double(-0.0d)));
-        Assert.assertEquals("0", formatter.format(Integer.valueOf(-0)));
-        Assert.assertEquals("0", formatter.format(new Double(-0.0001)));
+        Assert.assertEquals("0", formatter.format(-0.0d));
+        Assert.assertEquals("0", formatter.format(-0));
+        Assert.assertEquals("0", formatter.format(-0.0001));
     }
 
     @Test
     public void formatNegativeZero()
     {
         CellFormatter formatter = new CellFormatter(0.0001, true);
-        Assert.assertEquals("0", formatter.format(new Double(-0.0d)));
-        Assert.assertEquals("0", formatter.format(Integer.valueOf(-0)));
-        Assert.assertEquals("0", formatter.format(new Double(-0.00001)));
-        Assert.assertEquals("-0.0001", formatter.format(new Double(-0.0001)));
+        Assert.assertEquals("0", formatter.format(-0.0d));
+        Assert.assertEquals("0", formatter.format(-0));
+        Assert.assertEquals("0", formatter.format(-0.00001));
+        Assert.assertEquals("-0.0001", formatter.format(-0.0001));
 
         Assert.assertFalse(CellFormatter.isNegativeZero("-01"));
         Assert.assertTrue(CellFormatter.isNegativeZero("-0.000000"));

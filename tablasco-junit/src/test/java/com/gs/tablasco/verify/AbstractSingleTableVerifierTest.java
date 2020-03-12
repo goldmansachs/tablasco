@@ -77,13 +77,13 @@ public abstract class AbstractSingleTableVerifierTest
     private void actualTable(List... headerAndRows)
     {
         Assert.assertNull(this.actual);
-        this.actual = new ListVerifiableTable(Arrays.asList(headerAndRows));
+        this.actual = ListVerifiableTable.create(Arrays.asList(headerAndRows));
     }
 
     private void expectedTable(List... headerAndRows)
     {
         Assert.assertNull(this.expected);
-        this.expected = new ListVerifiableTable(Arrays.asList(headerAndRows));
+        this.expected = ListVerifiableTable.create(Arrays.asList(headerAndRows));
     }
 
     private void assertVerification()
@@ -127,7 +127,7 @@ public abstract class AbstractSingleTableVerifierTest
         htmlFormatter.appendResults(this.testName.getMethodName(), Collections.singletonMap(tableName, new ResultTable(new boolean[verify.get(0).size()], verify)), Metadata.newEmpty());
     }
 
-    protected static <T> List<T> row(T... values)
+    protected static List row(Object... values)
     {
         return Arrays.asList(values);
     }

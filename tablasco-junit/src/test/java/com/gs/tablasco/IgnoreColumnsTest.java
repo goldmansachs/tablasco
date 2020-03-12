@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class IgnoreColumnsTest
 {
@@ -35,7 +34,7 @@ public class IgnoreColumnsTest
     {
         VerifiableTable table1 = TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "A2", "A3", "A4");
         VerifiableTable table2 = TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "XX", "A3", "XX");
-        this.tableVerifier.withIgnoreColumns("Col 2", "Col 4").verify(Collections.singletonMap("name", table1), Collections.singletonMap("name", table2));
+        this.tableVerifier.withIgnoreColumns("Col 2", "Col 4").verify("name", table1, table2);
 
         Assert.assertEquals(
                 "<table border=\"1\" cellspacing=\"0\">\n" +
