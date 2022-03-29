@@ -31,19 +31,49 @@ public class SparkVerifier
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SparkVerifier.class);
     private final List<String> groupKeyColumns;
+    private final boolean groupKeyIsPrimaryKey;
     private final Metadata metadata = Metadata.newEmpty();
     private final ColumnComparators.Builder columnComparatorsBuilder = new ColumnComparators.Builder();
     private boolean ignoreSurplusColumns;
     private Set<String> columnsToIgnore;
     private int maxGroupSize = 10_000;
 
+    public static SparkVerifier newWithGroupKeyColumns(List<String> groupKeyColumns, int maxGroupSize) {
+        return new SparkVerifier(groupKeyColumns, false).withMaxGroupSize(maxGroupSize);
+    }
+
+    public static SparkVerifier newWithPrimaryKeyColumns(List<String> primaryKeyColumns) {
+        return new SparkVerifier(primaryKeyColumns, true);
+    }
+
+    private SparkVerifier(List<String> groupKeyColumns, boolean groupKeyIsPrimaryKey)
+    {
+        this.groupKeyColumns = groupKeyColumns;
+        this.groupKeyIsPrimaryKey = groupKeyIsPrimaryKey;
+    }
+
     /**
      * Creates a new SparkVerifier
      * @param groupKeyColumns a list of group keys to distribute the data
+     * @deprecated use {@link #newWithGroupKeyColumns(java.util.List, int)}
      */
+    @Deprecated
     public SparkVerifier(List<String> groupKeyColumns)
     {
-        this.groupKeyColumns = groupKeyColumns;
+        this(groupKeyColumns, false);
+    }
+
+    /**
+     * A hint as to the maximum size of groups to be compared together. The default size is 10,000.
+     * @param maxGroupSize the maximum group size
+     * @return this same SparkVerifier
+     * @deprecated use {@link #newWithGroupKeyColumns(java.util.List, int)}
+     */
+    @Deprecated
+    public SparkVerifier withMaxGroupSize(int maxGroupSize)
+    {
+        this.maxGroupSize = maxGroupSize;
+        return this;
     }
 
     /**
@@ -104,17 +134,6 @@ public class SparkVerifier
     }
 
     /**
-     * A hint as to the maximum size of groups to be compared together. The default size is 10,000.
-     * @param maxGroupSize the maximum group size
-     * @return this same SparkVerifier
-     */
-    public SparkVerifier withMaxGroupSize(int maxGroupSize)
-    {
-        this.maxGroupSize = maxGroupSize;
-        return this;
-    }
-
-    /**
      * Compares two HDFS datasets and produces a detailed yet compact HTML break report
      * @param dataName the name to use in the output HTML
      * @param actualDataSupplier the actual data supplier
@@ -135,21 +154,40 @@ public class SparkVerifier
         int maximumNumberOfGroups = getMaximumNumberOfGroups(countApproxPartialResult.getFinalValue(), maxGroupSize);
         LOGGER.info("Maximum number of groups : " + maximumNumberOfGroups);
         Set<String> groupKeyColumnSet = new LinkedHashSet<>(this.groupKeyColumns);
-        JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualDistributedTable.getRows()
-                .mapToPair(new GroupRowsFunction(actualDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
-                .groupByKey();
-        JavaPairRDD<Integer, Iterable<List<Object>>> expectedGroups = expectedDistributedTable.getRows()
-                .mapToPair(new GroupRowsFunction(expectedDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
-                .groupByKey();
-        JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualGroups.fullOuterJoin(expectedGroups);
-        VerifyGroupFunction verifyGroupFunction = new VerifyGroupFunction(
-                groupKeyColumnSet,
-                actualDistributedTable.getHeaders(),
-                expectedDistributedTable.getHeaders(),
-                this.ignoreSurplusColumns,
-                this.columnComparatorsBuilder.build(),
-                this.columnsToIgnore);
-        SummaryResultTable summaryResultTable = joinedRdd.map(verifyGroupFunction).reduce(new SummaryResultTableReducer());
+
+        SummaryResultTable summaryResultTable;
+        if (this.groupKeyIsPrimaryKey)
+        {
+            JavaPairRDD<List<Object>, List<Object>> actualByPk = actualDistributedTable.getRows().mapToPair(new PrimaryKeyFunction(actualDistributedTable.getHeaders(), groupKeyColumnSet));
+            JavaPairRDD<List<Object>, List<Object>> expectedByPk = expectedDistributedTable.getRows().mapToPair(new PrimaryKeyFunction(expectedDistributedTable.getHeaders(), groupKeyColumnSet));
+            JavaPairRDD<List<Object>, Tuple2<Optional<List<Object>>, Optional<List<Object>>>> actualExpectedJoin = actualByPk.fullOuterJoin(expectedByPk);
+            VerifyPrimaryKeyPairFunction verifyPrimaryKeyPairFunction = new VerifyPrimaryKeyPairFunction(
+                    groupKeyColumnSet,
+                    actualDistributedTable.getHeaders(),
+                    expectedDistributedTable.getHeaders(),
+                    this.ignoreSurplusColumns,
+                    this.columnComparatorsBuilder.build(),
+                    this.columnsToIgnore);
+            summaryResultTable = actualExpectedJoin.map(verifyPrimaryKeyPairFunction).reduce(new SummaryResultTableReducer());
+        }
+        else
+        {
+            JavaPairRDD<Integer, Iterable<List<Object>>> actualGroups = actualDistributedTable.getRows()
+                    .mapToPair(new GroupRowsFunction(actualDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
+                    .groupByKey();
+            JavaPairRDD<Integer, Iterable<List<Object>>> expectedGroups = expectedDistributedTable.getRows()
+                    .mapToPair(new GroupRowsFunction(expectedDistributedTable.getHeaders(), groupKeyColumnSet, maximumNumberOfGroups))
+                    .groupByKey();
+            JavaPairRDD<Integer, Tuple2<Optional<Iterable<List<Object>>>, Optional<Iterable<List<Object>>>>> joinedRdd = actualGroups.fullOuterJoin(expectedGroups);
+            VerifyGroupFunction verifyGroupFunction = new VerifyGroupFunction(
+                    groupKeyColumnSet,
+                    actualDistributedTable.getHeaders(),
+                    expectedDistributedTable.getHeaders(),
+                    this.ignoreSurplusColumns,
+                    this.columnComparatorsBuilder.build(),
+                    this.columnsToIgnore);
+            summaryResultTable = joinedRdd.map(verifyGroupFunction).reduce(new SummaryResultTableReducer());
+        }
         HtmlOptions htmlOptions = new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet());
         HtmlFormatter htmlFormatter = new HtmlFormatter(null, htmlOptions);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();

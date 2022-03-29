@@ -1,36 +1,18 @@
 package com.gs.tablasco.spark;
 
-import com.gs.tablasco.spark.avro.AvroDataSupplier;
 import org.apache.avro.Schema;
-import org.apache.avro.file.DataFileWriter;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.DatumWriter;
-import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.fs.Path;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.partial.BoundedDouble;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-public class SparkVerifierTest
+public class SparkVerifierGroupKeyTest extends AbstractSparkVerifierTest
 {
-    private static final boolean REBASE = false;
-
     private static final Schema AVSC = new Schema.Parser().parse(
             "{\"namespace\": \"verify.avro\",\n" +
             " \"type\": \"record\",\n" +
@@ -72,52 +54,28 @@ public class SparkVerifierTest
             row(AVSC_MISSING_COL, 12302, "123021", 12301)
     );
 
-    private static GenericRecord row(Schema schema, Object... values)
-    {
-        GenericRecord record = new GenericData.Record(schema);
-        for (int i = 0; i < schema.getFields().size(); i++)
-        {
-            record.put(schema.getFields().get(i).name(), values[i]);
-        }
-        return record;
-    }
-
-    private static final JavaSparkContext JAVA_SPARK_CONTEXT = new JavaSparkContext("local[4]", SparkVerifierTest.class.getSimpleName(),  new SparkConf()
-            .set("spark.ui.enabled", "false")
-            .set("spark.logLineage", "true")
-            .set("spark.sql.shuffle.partitions", "10")
-            .set("spark.task.maxFailures", "1")
-            .set("spark.io.compression.codec", "org.apache.spark.io.LZ4CompressionCodec"));
-
-    @Rule
-    public final TestName testName = new TestName();
-
     @Test
     public void runTestFail() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Arrays.asList("k2", "k1"))
-                .withMaxGroupSize(2));
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Arrays.asList("k2", "k1"), 2));
     }
 
     @Test
     public void runTestPass() throws IOException
     {
-        runTest(AVRO, AVRO, true, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(2));
+        runTest(AVRO, AVRO, true, newSparkVerifier(Collections.emptyList(), 2));
     }
 
     @Test
     public void runTestWithSingleShardColumn() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("k2"))
-                .withMaxGroupSize(2));
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("k2"), 2));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void runTestWithInvalidShardColumn() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("foo"))
-                .withMaxGroupSize(2));
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.singletonList("foo"), 2));
     }
 
     @Test
@@ -128,8 +86,7 @@ public class SparkVerifierTest
         {
             data.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(data, data, true, newSparkVerifier(Collections.singletonList("k1"))
-                .withMaxGroupSize(10_000));
+        runTest(data, data, true, newSparkVerifier(Collections.singletonList("k1"), 10_000));
     }
 
     @Test
@@ -145,8 +102,7 @@ public class SparkVerifierTest
         {
             expected.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(actual, expected, false, newSparkVerifier(Collections.singletonList("k1"))
-                .withMaxGroupSize(10_000));
+        runTest(actual, expected, false, newSparkVerifier(Collections.singletonList("k1"), 10_000));
     }
 
     @Test
@@ -165,8 +121,7 @@ public class SparkVerifierTest
         {
             expected.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(10_000));
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList(), 10_000));
     }
 
     @Test
@@ -189,23 +144,20 @@ public class SparkVerifierTest
         {
             expected.add(row(AVSC, i, i.toString(), i, i * 1.0));
         }
-        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(10_000));
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList(), 10_000));
     }
 
     @Test
     public void ignoreSurplusColumns() throws IOException
     {
-        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(2)
+        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.emptyList(), 2)
                 .withIgnoreSurplusColumns(true));
     }
 
     @Test
     public void ignoreSurplusColumnsBug() throws IOException
     {
-        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(2)
+        runTest(AVRO, AVRO_MISS_COLUMN, true, newSparkVerifier(Collections.emptyList(), 2)
                 .withIgnoreSurplusColumns(true)
                 .withColumnsToIgnore(new HashSet<>(Collections.singletonList("foo"))));
     }
@@ -213,8 +165,7 @@ public class SparkVerifierTest
     @Test
     public void ignoreColumns() throws IOException
     {
-        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(2)
+        runTest(AVRO, AVRO_X, false, newSparkVerifier(Collections.emptyList(), 2)
                 .withColumnsToIgnore(new HashSet<>(Arrays.asList("k2", "v2"))));
     }
 
@@ -243,8 +194,7 @@ public class SparkVerifierTest
                 row(schema, 12301, "123012", 12302, 123012.19, 123022.19),
                 row(schema, 12301, "123013", 12303, 123012.95, 123022.95),
                 row(schema, 12302, "123021", 12301, 123020.75, 123030.75));
-        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(2)
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList(), 2)
                 .withTolerance("v2", 0.01));
     }
 
@@ -263,8 +213,7 @@ public class SparkVerifierTest
                 row(AVSC, 12301, "123013", 12303, 123012.79),
                 row(AVSC, 12302, "123021", 12301, 123020.91)
         );
-        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList())
-                .withMaxGroupSize(2)
+        runTest(actual, expected, false, newSparkVerifier(Collections.emptyList(), 2)
                 .withTolerance(0.1));
     }
 
@@ -276,55 +225,8 @@ public class SparkVerifierTest
         Assert.assertEquals(100, SparkVerifier.getMaximumNumberOfGroups(new BoundedDouble(100.0, 50.0, 0.0, 200.0), 1));
     }
 
-    private void runTest(List<GenericRecord> actual, List<GenericRecord> expected, boolean passed, SparkVerifier sparkVerifier) throws IOException
+    private SparkVerifier newSparkVerifier(List<String> groupKeyColumns, int maxGroupSize)
     {
-        java.nio.file.Path root = Paths.get("target", "tests", this.testName.getMethodName());
-        File actualData = root.resolve("actual.avro").toFile();
-        writeAvroData(actual, actualData);
-        File expectedDate = root.resolve("expected.avro").toFile();
-        writeAvroData(expected, expectedDate);
-        SparkResult sparkResult = sparkVerifier.verify("data",
-                new AvroDataSupplier(JAVA_SPARK_CONTEXT, new Path(actualData.toURI().toString())),
-                new AvroDataSupplier(JAVA_SPARK_CONTEXT, new Path(expectedDate.toURI().toString())));
-        String html = sparkResult.getHtml();
-        java.nio.file.Path baselineFile = Paths.get("src", "test", "resources", "baseline", this.testName.getMethodName() + ".html");
-        if (REBASE)
-        {
-            baselineFile.toFile().getParentFile().mkdirs();
-            Files.write(baselineFile, html.getBytes());
-            Assert.fail("REBASE SUCCESSFUL - " + baselineFile);
-        }
-        Assert.assertEquals(passed, sparkResult.isPassed());
-        Assert.assertEquals(
-                replaceValuesThatMayAppearInNonDeterministicRowOrder(new String(Files.readAllBytes(baselineFile))),
-                replaceValuesThatMayAppearInNonDeterministicRowOrder(html));
-    }
-
-    private static String replaceValuesThatMayAppearInNonDeterministicRowOrder(String value)
-    {
-        return value
-                // mask all test values because output order is non-deterministic (test values start with 1230)
-                .replaceAll(">1,?2,?3,?0,?\\S*?([ <])", ">###$1")
-                // mask variance percentages
-                .replaceAll("/ [\\d\\.-]+%", "###%");
-    }
-
-    private SparkVerifier newSparkVerifier(List<String> groupKeyColumns)
-    {
-        return new SparkVerifier(groupKeyColumns).withMetadata("meta:", "data");
-    }
-
-    private static void writeAvroData(List<GenericRecord> data, File avroFile) throws IOException
-    {
-        FileUtils.forceMkdir(avroFile.getParentFile());
-        Schema schema = data.get(0).getSchema();
-        DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<>(schema);
-        DataFileWriter<GenericRecord> dataFileWriter = new DataFileWriter<>(datumWriter);
-        dataFileWriter.create(schema, avroFile);
-        for (GenericRecord genericRecord : data)
-        {
-            dataFileWriter.append(genericRecord);
-        }
-        dataFileWriter.close();
+        return SparkVerifier.newWithGroupKeyColumns(groupKeyColumns, maxGroupSize).withMetadata("meta:", "data");
     }
 }
