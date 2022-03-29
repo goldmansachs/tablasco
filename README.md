@@ -1,8 +1,8 @@
 # Tablasco
 
 ## What is it?
-Tablasco is a JUnit rule that adds table verification to your unit tests. The three main features of Tablasco combine 
-to create tests that are both comprehensive and easy to maintain.
+Tablasco is a baseline testing utility for JUnit. It was initially developed to verify financial reports but can be used 
+to make assertions on any outputs that can be presented in a tabular format.
 
 ### 1. Fast and efficient table verification algorithm
 Tablasco's table verification algorithm can process tens of thousands of table rows out-of-the-box, and many more with
@@ -61,7 +61,7 @@ public void myTest()
 ### VerifiableTable
 The [`VerifiableTable`](https://github.com/goldmansachs/tablasco/blob/master/src/main/java/com/gs/tablasco/VerifiableTable.java)
 interface is an abstract definition of a table that Tablasco understands. Tests need to adapt the data they are verifying 
-to an instance of `VerifiableTable`. Typically these adapters are shared across tests or even across applications.
+to an instance of `VerifiableTable`. These adapters are typically shared across tests or even across applications.
 
 ### Example Test
 `TableVerifier` compares instances of `VerifiableTable` with the baseline results file; if the tables match the test

@@ -31,12 +31,12 @@ public class ExampleTableVerifierTest
     public void example()
     {
         List<Movie> movieRanks = Arrays.asList(
-            new Movie("The Batman", 2022, 1,  8.3),
-            new Movie("Deep Water", 2022, 2, 5.4),
-            new Movie("X", 2022, 3, 7.4),
-            new Movie("The Adam Project", 2022, 4, 6.7),
-            new Movie("Turning Red", 2022, 5, 7.1),
-            new Movie("Windfall", 2022, 6, 5.7));
+            new Movie("The Batman", "2022", 1,  8.3),
+            new Movie("Deep Water", "2022", 2, 5.4),
+            new Movie("X", "2022", 3, 7.4),
+            new Movie("The Adam Project", "2022", 4, 6.7),
+            new Movie("Turning Red", "2022", 5, 7.1),
+            new Movie("Windfall", "2022", 6, 5.7));
         this.tableVerifier.verify("Most Popular Movies", new MovieTable(movieRanks));
     }
 
@@ -89,11 +89,11 @@ public class ExampleTableVerifierTest
 
     private static class Movie {
         private final String title;
-        private final int year;
+        private final String year;
         private final int rank;
         private final double rating;
 
-        public Movie(String title, int year, int rank, double rating) {
+        public Movie(String title, String year, int rank, double rating) {
             this.title = title;
             this.year = year;
             this.rank = rank;

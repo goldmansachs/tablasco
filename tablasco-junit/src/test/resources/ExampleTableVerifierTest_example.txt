@@ -1,11 +1,11 @@
-Metadata "Recorded At" "2022-03-29 20:23:45"
+Metadata "Recorded At" "2022-03-29 21:28:19"
 
 Section "example" "Most Popular Movies"
 "Title","Year","User Rank","IMDb Rating"
-"The Batman",2022,1,8.3
-"Deep Water",2022,2,5.4
-"X",2022,3,7.4
-"The Adam Project",2022,4,6.7
-"Turning Red",2022,5,7.1
-"Windfall",2022,6,5.7
+"The Batman","2022",1,8.3
+"Deep Water","2022",2,5.4
+"X","2022",3,7.4
+"The Adam Project","2022",4,6.7
+"Turning Red","2022",5,7.1
+"Windfall","2022",6,5.7
 
