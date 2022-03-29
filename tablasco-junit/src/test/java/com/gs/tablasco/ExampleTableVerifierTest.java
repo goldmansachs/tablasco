@@ -30,31 +30,21 @@ public class ExampleTableVerifierTest
     @Test
     public void example()
     {
-        List<BalanceSheetRow> rows = Arrays.asList(
-                new BalanceSheetRow("GSCO", 160.0, -40.0),
-                new BalanceSheetRow("GSIL", 70.0, -30.0));
-        this.tableVerifier.verify("balanceSheet", new BalanceSheetTable(rows));
+        List<Movie> movieRanks = Arrays.asList(
+            new Movie("The Batman", 2022, 1,  8.3),
+            new Movie("Deep Water", 2022, 2, 5.4),
+            new Movie("X", 2022, 3, 7.4),
+            new Movie("The Adam Project", 2022, 4, 6.7),
+            new Movie("Turning Red", 2022, 5, 7.1),
+            new Movie("Windfall", 2022, 6, 5.7));
+        this.tableVerifier.verify("Most Popular Movies", new MovieTable(movieRanks));
     }
 
-    private static class BalanceSheetRow
+    private static class MovieTable implements VerifiableTable
     {
-        private final String entity;
-        private final double assets;
-        private final double liabilities;
+        private final List<Movie> rows;
 
-        private BalanceSheetRow(String entity, double assets, double liabilities)
-        {
-            this.entity = entity;
-            this.assets = assets;
-            this.liabilities = liabilities;
-        }
-    }
-
-    private static class BalanceSheetTable implements VerifiableTable
-    {
-        private final List<BalanceSheetRow> rows;
-
-        private BalanceSheetTable(List<BalanceSheetRow> rows)
+        private MovieTable(List<Movie> rows)
         {
             this.rows = rows;
         }
@@ -68,7 +58,7 @@ public class ExampleTableVerifierTest
         @Override
         public int getColumnCount()
         {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -76,22 +66,38 @@ public class ExampleTableVerifierTest
         {
             switch (columnIndex)
             {
-                case 0: return "Entity";
-                case 1: return "Assets";
-                default: return "Liabilities";
+                case 0: return "Title";
+                case 1: return "Year";
+                case 2: return "User Rank";
+                default: return "IMDb Rating";
             }
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
-            BalanceSheetRow row = this.rows.get(rowIndex);
+            Movie row = this.rows.get(rowIndex);
             switch (columnIndex)
             {
-                case 0: return row.entity;
-                case 1: return row.assets;
-                default: return row.liabilities;
+                case 0: return row.title;
+                case 1: return row.year;
+                case 2: return row.rank;
+                default: return row.rating;
             }
+        }
+    }
+
+    private static class Movie {
+        private final String title;
+        private final int year;
+        private final int rank;
+        private final double rating;
+
+        public Movie(String title, int year, int rank, double rating) {
+            this.title = title;
+            this.year = year;
+            this.rank = rank;
+            this.rating = rating;
         }
     }
 }
