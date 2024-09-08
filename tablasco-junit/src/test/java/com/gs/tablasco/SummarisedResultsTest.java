@@ -86,11 +86,13 @@ public class SummarisedResultsTest {
                 "</td>\n" +
                 "</tr>\n" +
                 "<tr id=\"summarisedResults.name1.summaryRow0\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">d <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\">d\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
-                "<td class=\"summary small\">4 <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\">4\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
@@ -122,12 +124,16 @@ public class SummarisedResultsTest {
                 "</td>\n" +
                 "</tr>\n" +
                 "<tr id=\"summarisedResults.name1.summaryRow1\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">e <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\">e\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
-                "<td class=\"summary small\">\n" +
-                "<span class=\"grey\">Expected </span>5 <span class=\"grey\">Actual </span>x <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\"><span class=\"grey\">Expected </span>\n" +
+                "5\n" +
+                "<span class=\"grey\">Actual </span>\n" +
+                "x\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
@@ -162,11 +168,13 @@ public class SummarisedResultsTest {
                 "</td>\n" +
                 "</tr>\n" +
                 "<tr id=\"summarisedResults.name2.summaryRow0\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">d <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\">d\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
-                "<td class=\"summary small\">4 <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\">4\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
@@ -198,12 +206,16 @@ public class SummarisedResultsTest {
                 "</td>\n" +
                 "</tr>\n" +
                 "<tr id=\"summarisedResults.name2.summaryRow1\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">e <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\">e\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +
-                "<td class=\"summary small\">\n" +
-                "<span class=\"grey\">Expected </span>5 <span class=\"grey\">Actual </span>x <span class=\"grey\">- </span>\n" +
+                "<td class=\"summary small\"><span class=\"grey\">Expected </span>\n" +
+                "5\n" +
+                "<span class=\"grey\">Actual </span>\n" +
+                "x\n" +
+                "<span class=\"grey\">- </span>\n" +
                 "<span class=\"italic blue\">1 row</span>\n" +
                 "<br/>\n" +
                 "</td>\n" +

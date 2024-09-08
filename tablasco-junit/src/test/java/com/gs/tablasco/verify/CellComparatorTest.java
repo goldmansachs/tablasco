@@ -40,15 +40,15 @@ public class CellComparatorTest
     @Test
     public void testCompareNumbersWithinTolerance()
     {
-        Assert.assertTrue("Results match expected. Actual(20.0) and Expected(20.09) within Tolerance range(0.1).",this.toleranceCellComparator.compare(new Double(20.0), new Double(20.09)));
-        Assert.assertTrue("Results match expected. Actual(7894.87) and Expected(7894.79) within Tolerance range(0.1).",this.toleranceCellComparator.compare(new Float(7894.87), new Float(7894.79)));
+        Assert.assertTrue("Results match expected. Actual(20.0) and Expected(20.09) within Tolerance range(0.1).",this.toleranceCellComparator.compare(20.0, 20.09));
+        Assert.assertTrue("Results match expected. Actual(7894.87) and Expected(7894.79) within Tolerance range(0.1).",this.toleranceCellComparator.compare(7894.87F, 7894.79F));
     }
 
     @Test
     public void testCompareNumbersOutsideTolerance()
     {
-        Assert.assertFalse("Results mismatch expected. Actual(20.0) and Expected(20.11) outside Tolerance range(0.1). ", this.toleranceCellComparator.compare(new Double(20.0), new Double(20.11)));
-        Assert.assertFalse("Results mismatch expected. Actual(7894.87) and Expected(7894.75) outside Tolerance range(0.1).  ", this.toleranceCellComparator.compare(new Float(7894.87), new Float(7894.75)));
+        Assert.assertFalse("Results mismatch expected. Actual(20.0) and Expected(20.11) outside Tolerance range(0.1). ", this.toleranceCellComparator.compare(20.0, 20.11));
+        Assert.assertFalse("Results mismatch expected. Actual(7894.87) and Expected(7894.75) outside Tolerance range(0.1).  ", this.toleranceCellComparator.compare(7894.87F, 7894.75F));
     }
 
     @Test
@@ -63,24 +63,24 @@ public class CellComparatorTest
     @Test
     public void testCompareNumbersWithinVariance()
     {
-        Assert.assertTrue("Results match expected. Actual(2000.0) and Expected(2100.0) within Variance range(5%).", this.varianceCellComparator.compare(new Double(2000.0), new Double(2100.0)));
-        Assert.assertTrue("Results match expected. Actual(735.0) and Expected(772.0) within Variance range(5%).", this.varianceCellComparator.compare(new Float(735.0), new Float(772.0)));
+        Assert.assertTrue("Results match expected. Actual(2000.0) and Expected(2100.0) within Variance range(5%).", this.varianceCellComparator.compare(2000.0, 2100.0));
+        Assert.assertTrue("Results match expected. Actual(735.0) and Expected(772.0) within Variance range(5%).", this.varianceCellComparator.compare(735.0F, 772.0F));
     }
 
     @Test
     public void testCompareNumbersOutsideVariance()
     {
-        Assert.assertFalse("Results mismatch expected. Actual(2000.0) and Expected(2110.0) outside Variance range(5%).", this.varianceCellComparator.compare(new Double(2000.0), new Double(2110)));
-        Assert.assertFalse("Results mismatch expected. Actual(735.0) and Expected(775.0) outside Variance range(5%).", this.varianceCellComparator.compare(new Float(735.0), new Float(775.0)));
-        Assert.assertFalse("Results mismatch expected. Actual(5600.0) and Expected(NaN) outside Variance range(5%).", this.varianceCellComparator.compare(new Double(5600.0), Double.NaN));
-        Assert.assertFalse("Results mismatch expected. Actual(NaN) and Expected(88.0) outside Variance range(5%).", this.varianceCellComparator.compare(Double.NaN,new Double(88.0) ));
+        Assert.assertFalse("Results mismatch expected. Actual(2000.0) and Expected(2110.0) outside Variance range(5%).", this.varianceCellComparator.compare(2000.0, 2110.0));
+        Assert.assertFalse("Results mismatch expected. Actual(735.0) and Expected(775.0) outside Variance range(5%).", this.varianceCellComparator.compare(735.0F, 775.0F));
+        Assert.assertFalse("Results mismatch expected. Actual(5600.0) and Expected(NaN) outside Variance range(5%).", this.varianceCellComparator.compare(5600.0, Double.NaN));
+        Assert.assertFalse("Results mismatch expected. Actual(NaN) and Expected(88.0) outside Variance range(5%).", this.varianceCellComparator.compare(Double.NaN, 88.0));
     }
 
     @Test
     public void testActualExpectedMismatchedTypes()
     {
-        Assert.assertFalse("Results mismatch expected. Actual(390.0) and Expected(expected) outside Variance range(5%).", this.varianceCellComparator.compare(new Double(390.0),"expected"));
-        Assert.assertFalse("Results mismatch expected. Actual(actual) and Expected(1045.0) outside Variance range(5%).", this.varianceCellComparator.compare("actual", new Double(1045.0)));
+        Assert.assertFalse("Results mismatch expected. Actual(390.0) and Expected(expected) outside Variance range(5%).", this.varianceCellComparator.compare(390.0,"expected"));
+        Assert.assertFalse("Results mismatch expected. Actual(actual) and Expected(1045.0) outside Variance range(5%).", this.varianceCellComparator.compare("actual", 1045.0));
     }
 
 }

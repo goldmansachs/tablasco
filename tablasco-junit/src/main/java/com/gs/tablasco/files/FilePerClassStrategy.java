@@ -17,7 +17,7 @@
 package com.gs.tablasco.files;
 
 /**
- * A <tt>FilenameStrategy</tt> that returns the same filename for each test in a class. The filename is constructed
+ * A {@link FilenameStrategy} that returns the same filename for each test in a class. The filename is constructed
  * using the simple class name of the test plus file extension.
  *
  * @deprecated Rebase does not work correctly with this strategy which will be removed eventually. Please use the

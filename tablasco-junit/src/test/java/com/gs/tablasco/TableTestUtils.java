@@ -29,6 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,18 +59,19 @@ public class TableTestUtils
 
     static String getHtml(TableVerifier verifier, String tag) throws IOException
     {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(verifier.getOutputFile()), StandardCharsets.UTF_8)))
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(verifier.getOutputFile().toPath()), StandardCharsets.UTF_8)))
         {
             StringBuilder html = new StringBuilder();
             boolean foundTable = false;
             String line = reader.readLine();
             while (line != null)
             {
+                line = line.trim();
                 //System.out.println(line);
                 if (line.startsWith("</" + tag))
                 {
                     html.append(line);
-                    return html.toString();
+                    return cleanHtmlForAssertion(html);
                 }
                 if (line.startsWith('<' + tag))
                 {
@@ -83,6 +85,27 @@ public class TableTestUtils
             }
         }
         return null;
+    }
+
+    private static String cleanHtmlForAssertion(StringBuilder html) {
+        // Changes in Transformer post Java 8 seem to have caused some formatting differences.
+        // This seems like the easiest/quickest for given it is just for test assertions (vs complete re-write)
+        return html.toString()
+                .replaceAll("[\n\r]+", "\n")
+                .replaceAll(" class=\"surplus\">\n", " class=\"surplus\">")
+                .replaceAll(" class=\"surplus number\">\n", " class=\"surplus number\">")
+                .replaceAll("\n<p>Surplus</p>", "<p>Surplus</p>")
+                .replaceAll(" class=\"missing\">\n", " class=\"missing\">")
+                .replaceAll(" class=\"missing number\">\n", " class=\"missing number\">")
+                .replaceAll("\n<p>Missing</p>", "<p>Missing</p>")
+                .replaceAll(" class=\"fail\">\n", " class=\"fail\">")
+                .replaceAll(" class=\"fail number\">\n", " class=\"fail number\">")
+                .replaceAll(" class=\"outoforder\">\n", " class=\"outoforder\">")
+                .replaceAll(" class=\"outoforder number\">\n", " class=\"outoforder number\">")
+                .replaceAll(" class=\"summary small\">\n", " class=\"summary small\">")
+                .replaceAll("\n<p>", "<p>")
+                .replaceAll("<hr/>\n", "<hr/>")
+                ;
     }
 
     /**
@@ -159,11 +182,15 @@ public class TableTestUtils
 
     public static void assertAssertionError(Runnable runnable)
     {
+        AssertionError assertionError = null;
         try
         {
             runnable.run();
-            Assert.fail("Expected AssertionError");
         }
-        catch (AssertionError ignored) {}
+        catch (AssertionError e)
+        {
+            assertionError = e;
+        }
+        Assert.assertNotNull("Expected AssertionError", assertionError);
     }
 }

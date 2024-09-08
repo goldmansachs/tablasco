@@ -19,7 +19,7 @@ package com.gs.tablasco.verify;
 import com.gs.tablasco.VerifiableTable;
 
 /**
- * A default <tt>VerifiableTable</tt> adapter that delegates all calls to an underlying delegate table. Extend this
+ * A default {@link VerifiableTable} adapter that delegates all calls to an underlying delegate table. Extend this
  * class if you only need to modify behaviour of some methods of the udnerlying table.
  */
 public abstract class DefaultVerifiableTableAdapter implements VerifiableTable
@@ -27,7 +27,7 @@ public abstract class DefaultVerifiableTableAdapter implements VerifiableTable
     private final VerifiableTable delegate;
 
     /**
-     * Creates a new <tt>DefaultVerifiableTableAdapter</tt> with an underlying table to which calls should be delegated.
+     * Creates a new {@link DefaultVerifiableTableAdapter} with an underlying table to which calls should be delegated.
      * @param delegate underlying table to which calls should be delegated
      */
     protected DefaultVerifiableTableAdapter(VerifiableTable delegate)

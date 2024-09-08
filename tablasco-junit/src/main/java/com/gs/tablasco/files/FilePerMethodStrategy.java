@@ -17,7 +17,7 @@
 package com.gs.tablasco.files;
 
 /**
- * A <tt>FilenameStrategy</tt> that returns a different filename for each test in a class. The filename is constructed
+ * A {@link FilenameStrategy} that returns a different filename for each test in a class. The filename is constructed
  * using the simple class name of the test plus the method name and file extension.
  */
 public class FilePerMethodStrategy implements FilenameStrategy
