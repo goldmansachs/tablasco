@@ -28,6 +28,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 public class HtmlFormatter
@@ -167,7 +168,7 @@ public class HtmlFormatter
         {
             Document dom = this.initialize(metadata);
             ensurePathExists(this.outputFile);
-            try (OutputStream outputStream = new FileOutputStream(this.outputFile))
+            try (OutputStream outputStream = Files.newOutputStream(this.outputFile.toPath()))
             {
                 appendResults(testName, resultsToFormat, metadata, verifyCount, dom, outputStream);
             }

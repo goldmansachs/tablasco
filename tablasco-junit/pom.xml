@@ -17,6 +17,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.goldmansachs.tablasco</groupId>
+            <artifactId>tablasco-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

@@ -14,25 +14,20 @@
  * under the License.
  */
 
-package com.gs.tablasco.results.parser;
+package com.gs.tablasco.results;
 
-import java.io.IOException;
-import java.io.StreamTokenizer;
-import java.text.ParseException;
+import java.io.*;
+import java.nio.file.Files;
 
-public abstract class ParserState
+public class FileSystemExpectedResultsLoader implements ExpectedResultsLoader
 {
-    private ExpectedResultsParser parser;
-
-    ParserState(ExpectedResultsParser parser)
-    {
-        this.parser = parser;
+    @Override
+    public InputStream load(final File expectedFile) throws IOException {
+        if (!expectedFile.canRead())
+        {
+            throw new IllegalStateException("Could not find expected results '" + expectedFile
+                    + "' - if this is a new test, do you need to run this test in rebase mode first? (-Drebase=true)");
+        }
+        return Files.newInputStream(expectedFile.toPath());
     }
-
-    public ExpectedResultsParser getParser()
-    {
-        return parser;
-    }
-
-    public abstract ParserState parse(StreamTokenizer st) throws IOException, ParseException;
 }

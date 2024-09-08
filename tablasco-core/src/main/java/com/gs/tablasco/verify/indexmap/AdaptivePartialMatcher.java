@@ -41,7 +41,7 @@ public class AdaptivePartialMatcher implements PartialMatcher
         this.actualData = actualData;
         this.expectedData = expectedData;
         this.columnComparators = columnComparators;
-        this.bestMatchThreshold = (long) bestMatchThreshold;
+        this.bestMatchThreshold = bestMatchThreshold;
     }
 
     @Override

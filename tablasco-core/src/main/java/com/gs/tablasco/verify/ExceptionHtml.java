@@ -36,6 +36,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class ExceptionHtml
 {
@@ -86,7 +87,7 @@ public class ExceptionHtml
         trans.setOutputProperty(OutputKeys.METHOD, "xml");
         trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         trans.setOutputProperty(OutputKeys.INDENT, "yes");
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(resultsFile), StandardCharsets.UTF_8)))
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(resultsFile.toPath()), StandardCharsets.UTF_8)))
         {
             trans.transform(new DOMSource(document), new StreamResult(writer));
         }
@@ -114,7 +115,7 @@ public class ExceptionHtml
         Throwable cause = e;
         while (cause != null)
         {
-            out.println(prefix + cause.toString());
+            out.println(prefix + cause);
             for (StackTraceElement ste : cause.getStackTrace())
             {
                 out.println("    " + ste.toString());

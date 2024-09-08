@@ -17,7 +17,7 @@
 package com.gs.tablasco;
 
 /**
- * The table model that {@link TableVerifier} is able to verify. Data structures must be adapted to instances of
+ * The table model that {@link com.gs.tablasco.verify.SingleTableVerifier} is able to verify. Data structures must be adapted to instances of
  * {@link VerifiableTable} in order to be verified.
  */
 public interface VerifiableTable

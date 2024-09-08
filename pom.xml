@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>tablasco-core</module>
         <module>tablasco-junit</module>
     </modules>
 

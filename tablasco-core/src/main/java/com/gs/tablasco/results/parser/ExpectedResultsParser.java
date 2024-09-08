@@ -35,7 +35,7 @@ public class ExpectedResultsParser
     static final String METADATA_IDENTIFIER = "Metadata";
 
     private final ExpectedResultsLoader loader;
-    private File file;
+    private final File file;
     private ExpectedResults results;
     private ExpectedTable expectedTable;
     private HeaderParserState headerState;
@@ -125,9 +125,9 @@ public class ExpectedResultsParser
     {
         StreamTokenizer st = new StreamTokenizer(reader);
         st.eolIsSignificant(true);
-        st.wordChars((int) '_', (int) '_');
+        st.wordChars('_', '_');
         st.parseNumbers();
-        st.quoteChar((int) '"');
+        st.quoteChar('"');
         // These calls caused comments to be discarded
         st.slashSlashComments(true);
         st.slashStarComments(true);

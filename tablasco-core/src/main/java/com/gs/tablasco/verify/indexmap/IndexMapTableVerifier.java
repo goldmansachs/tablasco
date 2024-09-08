@@ -117,7 +117,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier
         List<UnmatchedIndexMap> allSurplusRows = rowGenerator.getSurplus();
 
         List<IndexMap> matchedColumns = columnIndices.stream().filter(IndexMap::isMatched).collect(Collectors.toList());
-        LOGGER.debug("Partial-matching {} missing and {} surplus rows", new Object[] { allMissingRows.size(), allSurplusRows.size() });
+        LOGGER.debug("Partial-matching {} missing and {} surplus rows", allMissingRows.size(), allSurplusRows.size());
         PartialMatcher partialMatcher = new AdaptivePartialMatcher(actualData, expectedData, columnComparators, this.bestMatchThreshold);
         if (actualData instanceof KeyedVerifiableTable)
         {

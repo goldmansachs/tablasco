@@ -166,12 +166,6 @@ public abstract class ResultCell implements Serializable
         {
             return "pass";
         }
-
-        @Override
-        public Object getSummary()
-        {
-            return this.formatter.format(this.actualAndExpected);
-        }
     }
 
     private static class FailedCell extends ResultCell
@@ -396,8 +390,8 @@ public abstract class ResultCell implements Serializable
     private static class SummaryCell extends ResultCell
     {
         private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
-        private int maximumCardinalityToCount;
-        private ColumnCardinality columnCardinality;
+        private final int maximumCardinalityToCount;
+        private final ColumnCardinality columnCardinality;
 
         private SummaryCell(int maximumCardinalityToCount, ColumnCardinality columnCardinality)
         {

@@ -18,7 +18,6 @@ package com.gs.tablasco.results.parser;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
-import java.text.ParseException;
 
 public class BeginningOfLineState extends ParserState
 {
