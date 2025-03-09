@@ -20,20 +20,18 @@ import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class MavenStyleDirectoryStrategyTest
-{
+public class MavenStyleDirectoryStrategyTest {
     @Rule
     public final TableVerifier tableVerifier = new TableVerifier()
             .withFilePerClass()
-            .withDirectoryStrategy(
-                    new MavenStyleDirectoryStrategy()
-                            .withAnchorFile("pom.xml")
-                            .withExpectedSubDir("maven_input")
-                            .withOutputSubDir("maven_output"));
+            .withDirectoryStrategy(new MavenStyleDirectoryStrategy()
+                    .withAnchorFile("pom.xml")
+                    .withExpectedSubDir("maven_input")
+                    .withOutputSubDir("maven_output"));
 
     @Test
-    public void testMavenStyleDirectoryStrategy()
-    {
-        this.tableVerifier.verify("maven", new TestTable("h1", "h2").withRow("r11", "r12").withRow("r21", "r22"));
+    public void testMavenStyleDirectoryStrategy() {
+        this.tableVerifier.verify(
+                "maven", new TestTable("h1", "h2").withRow("r11", "r12").withRow("r21", "r22"));
     }
 }

@@ -24,38 +24,31 @@ import java.text.ParseException;
  * Expected metadata format
  * Metadata "key1" "value1", "key2" "value2"
  */
-public class MetadataReaderState extends ParserState
-{
-    MetadataReaderState(ExpectedResultsParser parser)
-    {
+public class MetadataReaderState extends ParserState {
+    MetadataReaderState(ExpectedResultsParser parser) {
         super(parser);
     }
 
     @Override
-    public ParserState parse(StreamTokenizer st) throws IOException, ParseException
-    {
+    public ParserState parse(StreamTokenizer st) throws IOException, ParseException {
         int token = st.ttype;
-        while (!endOfLineOrFile(token))
-        {
-            //token 1: key
+        while (!endOfLineOrFile(token)) {
+            // token 1: key
             st.nextToken();
-            if (!endOfLineOrFile(token))
-            {
+            if (!endOfLineOrFile(token)) {
                 String key = st.sval;
 
-                //token 2: value
+                // token 2: value
                 token = st.nextToken();
-                if (endOfLineOrFile(token))
-                {
+                if (endOfLineOrFile(token)) {
                     throw new ParseException("Expected a value for metadata key: " + key, st.lineno());
                 }
                 String value = st.sval;
                 this.getParser().getExpectedResults().addMetadata(key, value);
 
-                //token 3: EOL or ,
+                // token 3: EOL or ,
                 token = st.nextToken();
-                if (!endOfLineOrFile(token) && token != (int) ',')
-                {
+                if (!endOfLineOrFile(token) && token != (int) ',') {
                     throw new ParseException("Expected EOL or EOF or a comma on line " + st.lineno(), st.lineno());
                 }
             }
@@ -64,8 +57,7 @@ public class MetadataReaderState extends ParserState
         return this.getParser().getBeginningOfLineState();
     }
 
-    private static boolean endOfLineOrFile(int token)
-    {
+    private static boolean endOfLineOrFile(int token) {
         return token == StreamTokenizer.TT_EOL || token == StreamTokenizer.TT_EOF;
     }
 }

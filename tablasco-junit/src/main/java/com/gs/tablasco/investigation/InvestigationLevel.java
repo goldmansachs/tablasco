@@ -17,15 +17,13 @@
 package com.gs.tablasco.investigation;
 
 import com.gs.tablasco.VerifiableTable;
-
 import java.util.concurrent.Callable;
 
 /**
  * Represents a level of investigation. The actual and expected tables returned at this level must have the same
  * structure and the last column must be the matching key column.
  */
-public interface InvestigationLevel
-{
+public interface InvestigationLevel {
     /**
      * @return a code block for retrieving the actual results table
      */

@@ -18,20 +18,22 @@ package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
-
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class RowIterator implements Iterator<RowView>
-{
+public abstract class RowIterator implements Iterator<RowView> {
     private final VerifiableTable table;
     private final List<IndexMap> columns;
     private final ColumnComparators columnComparators;
     private int rowIndex;
     private final int lastUnMatchedOffset;
 
-    RowIterator(VerifiableTable table, List<IndexMap> columns, ColumnComparators columnComparators, int initialIndex, int lastUnMatchedOffset)
-    {
+    RowIterator(
+            VerifiableTable table,
+            List<IndexMap> columns,
+            ColumnComparators columnComparators,
+            int initialIndex,
+            int lastUnMatchedOffset) {
         this.table = table;
         this.columns = columns;
         this.columnComparators = columnComparators;
@@ -40,14 +42,12 @@ public abstract class RowIterator implements Iterator<RowView>
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return this.rowIndex < this.table.getRowCount() - this.lastUnMatchedOffset;
     }
 
     @Override
-    public RowView next()
-    {
+    public RowView next() {
         RowView rowView = this.createRowView(this.rowIndex);
         this.rowIndex++;
         return rowView;
@@ -56,23 +56,19 @@ public abstract class RowIterator implements Iterator<RowView>
     protected abstract RowView createRowView(int rowIndex);
 
     @Override
-    public void remove()
-    {
+    public void remove() {
         throw new UnsupportedOperationException();
     }
 
-    protected VerifiableTable getTable()
-    {
+    protected VerifiableTable getTable() {
         return this.table;
     }
 
-    protected List<IndexMap> getColumns()
-    {
+    protected List<IndexMap> getColumns() {
         return this.columns;
     }
 
-    protected ColumnComparators getColumnComparators()
-    {
+    protected ColumnComparators getColumnComparators() {
         return this.columnComparators;
     }
 }

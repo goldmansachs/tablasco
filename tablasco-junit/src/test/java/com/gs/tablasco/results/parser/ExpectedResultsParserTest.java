@@ -20,20 +20,18 @@ import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class ExpectedResultsParserTest
-{
+public class ExpectedResultsParserTest {
     @Test
-    public void testParse()
-    {
-        File expected = new File(TableTestUtils.getExpectedDirectory(), ExpectedResultsParserTest.class.getSimpleName() + ".txt");
+    public void testParse() {
+        File expected = new File(
+                TableTestUtils.getExpectedDirectory(), ExpectedResultsParserTest.class.getSimpleName() + ".txt");
 
         ExpectedResults results = new ExpectedResultsParser(new FileSystemExpectedResultsLoader(), expected).parse();
 
@@ -46,33 +44,38 @@ public class ExpectedResultsParserTest
         Assert.assertEquals(1, drillDown.getRowCount());
 
         Assert.assertEquals(2, results.getMetadata().getData().size());
-        Assert.assertEquals(Collections.singletonMap("Recorded At", "2013-06-26 12:00:00").entrySet().iterator().next(), results.getMetadata().getData().get(0));
-        Assert.assertEquals(Collections.singletonMap("App Server URL", "http://test").entrySet().iterator().next(), results.getMetadata().getData().get(1));
+        Assert.assertEquals(
+                Collections.singletonMap("Recorded At", "2013-06-26 12:00:00")
+                        .entrySet()
+                        .iterator()
+                        .next(),
+                results.getMetadata().getData().get(0));
+        Assert.assertEquals(
+                Collections.singletonMap("App Server URL", "http://test")
+                        .entrySet()
+                        .iterator()
+                        .next(),
+                results.getMetadata().getData().get(1));
     }
 
     @Test
-    public void testCache()
-    {
-        File expected = new File(TableTestUtils.getExpectedDirectory(), ExpectedResultsParserTest.class.getSimpleName() + ".txt");
+    public void testCache() {
+        File expected = new File(
+                TableTestUtils.getExpectedDirectory(), ExpectedResultsParserTest.class.getSimpleName() + ".txt");
         Map<ExpectedResults, String> results = new IdentityHashMap<>();
-        for (int i = 0; i < 10; i++)
-        {
+        for (int i = 0; i < 10; i++) {
             results.put(ExpectedResultsCache.getExpectedResults(new FileSystemExpectedResultsLoader(), expected), "");
         }
         Assert.assertTrue("cache was hit at least once", results.size() < 10);
     }
 
     @Test
-    public void testMissingExpectedResultsFileResultsInClearErrorMessage()
-    {
+    public void testMissingExpectedResultsFileResultsInClearErrorMessage() {
         String missingFileName = "missing-expected-results.txt";
-        try
-        {
+        try {
             new ExpectedResultsParser(new FileSystemExpectedResultsLoader(), new File(missingFileName)).parse();
             Assert.fail("Should have failed looking for non-existent file");
-        }
-        catch (IllegalStateException expected)
-        {
+        } catch (IllegalStateException expected) {
             Assert.assertTrue(expected.getMessage().contains(missingFileName));
         }
     }

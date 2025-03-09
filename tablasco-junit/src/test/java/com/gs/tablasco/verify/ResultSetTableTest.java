@@ -20,14 +20,13 @@ import com.gs.tablasco.NamedTable;
 import com.gs.tablasco.TableVerifier;
 import com.gs.tablasco.TestTable;
 import com.gs.tablasco.VerifiableTable;
-import org.h2.tools.SimpleResultSet;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import org.h2.tools.SimpleResultSet;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class ResultSetTableTest {
 
@@ -50,6 +49,5 @@ public class ResultSetTableTest {
         this.tableVerifier.verify(
                 Collections.singletonList(new NamedTable("table", expected)),
                 Collections.singletonList(new NamedTable("table", actual)));
-
     }
 }

@@ -16,27 +16,25 @@
 
 package com.gs.tablasco;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-public class IgnoreTablesTest
-{
+public class IgnoreTablesTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy();
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void ignoreTables() throws IOException
-    {
+    public void ignoreTables() throws IOException {
         VerifiableTable tableA = TableTestUtils.createTable(1, "Col 1", "A");
         VerifiableTable tableX = TableTestUtils.createTable(1, "Col 1", "X");
-        this.tableVerifier.withIgnoreTables("table1", "table3").verify(
-                TableTestUtils.toNamedTables("table1", tableA, "table2", tableA, "table3", tableX),
-                TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
+        this.tableVerifier
+                .withIgnoreTables("table1", "table3")
+                .verify(
+                        TableTestUtils.toNamedTables("table1", tableA, "table2", tableA, "table3", tableX),
+                        TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
 
         Assert.assertEquals(
                 """
@@ -54,6 +52,7 @@ public class IgnoreTablesTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 }

@@ -22,40 +22,34 @@ import com.gs.tablasco.VerifiableTable;
  * A default {@link VerifiableTable} adapter that delegates all calls to an underlying delegate table. Extend this
  * class if you only need to modify behaviour of some methods of the udnerlying table.
  */
-public abstract class DefaultVerifiableTableAdapter implements VerifiableTable
-{
+public abstract class DefaultVerifiableTableAdapter implements VerifiableTable {
     private final VerifiableTable delegate;
 
     /**
      * Creates a new {@link DefaultVerifiableTableAdapter} with an underlying table to which calls should be delegated.
      * @param delegate underlying table to which calls should be delegated
      */
-    protected DefaultVerifiableTableAdapter(VerifiableTable delegate)
-    {
+    protected DefaultVerifiableTableAdapter(VerifiableTable delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return this.delegate.getRowCount();
     }
 
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return this.delegate.getColumnCount();
     }
 
     @Override
-    public String getColumnName(int columnIndex)
-    {
+    public String getColumnName(int columnIndex) {
         return this.delegate.getColumnName(columnIndex);
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         return this.delegate.getValueAt(rowIndex, columnIndex);
     }
 }

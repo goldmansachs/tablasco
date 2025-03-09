@@ -19,18 +19,15 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
-
 import java.util.List;
 
-public abstract class RowView
-{
+public abstract class RowView {
     private final VerifiableTable table;
     private final List<IndexMap> columnIndices;
     private final int rowIndex;
     private final ColumnComparators columnComparators;
 
-    RowView(VerifiableTable table, List<IndexMap> columnIndices, ColumnComparators columnComparators, int rowIndex)
-    {
+    RowView(VerifiableTable table, List<IndexMap> columnIndices, ColumnComparators columnComparators, int rowIndex) {
         this.table = table;
         this.columnIndices = columnIndices;
         this.rowIndex = rowIndex;
@@ -38,13 +35,10 @@ public abstract class RowView
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = 0;
-        for (IndexMap column : this.columnIndices)
-        {
-            if (column.isMatched())
-            {
+        for (IndexMap column : this.columnIndices) {
+            if (column.isMatched()) {
                 CellComparator comparator = getCellComparator(column);
                 hashCode += comparator.computeHashCode(this.getValue(column));
             }
@@ -56,27 +50,21 @@ public abstract class RowView
         return this.columnComparators.getComparator(this.table.getColumnName(this.getColumnIndex(column)));
     }
 
-    private Object getValue(IndexMap column)
-    {
+    private Object getValue(IndexMap column) {
         return this.table.getValueAt(this.rowIndex, getColumnIndex(column));
     }
 
     protected abstract int getColumnIndex(IndexMap column);
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj instanceof RowView)
-        {
+    public boolean equals(Object obj) {
+        if (obj instanceof RowView) {
             RowView that = (RowView) obj;
-            for (IndexMap column : this.columnIndices)
-            {
-                if (column.isMatched())
-                {
+            for (IndexMap column : this.columnIndices) {
+                if (column.isMatched()) {
                     Object thisVal = this.getValue(column);
                     Object thatVal = that.getValue(column);
-                    if (!this.getCellComparator(column).equals(thisVal, thatVal))
-                    {
+                    if (!this.getCellComparator(column).equals(thisVal, thatVal)) {
                         return false;
                     }
                 }

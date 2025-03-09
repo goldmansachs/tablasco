@@ -18,19 +18,20 @@ package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
-
 import java.util.List;
 
-public class ActualRowIterator extends RowIterator
-{
-    ActualRowIterator(VerifiableTable table, List<IndexMap> columns, ColumnComparators columnComparators, int initialIndex, int lastUnMatchedOffset)
-    {
+public class ActualRowIterator extends RowIterator {
+    ActualRowIterator(
+            VerifiableTable table,
+            List<IndexMap> columns,
+            ColumnComparators columnComparators,
+            int initialIndex,
+            int lastUnMatchedOffset) {
         super(table, columns, columnComparators, initialIndex, lastUnMatchedOffset);
     }
 
     @Override
-    protected RowView createRowView(int rowIndex)
-    {
+    protected RowView createRowView(int rowIndex) {
         return new ActualRowView(this.getTable(), this.getColumns(), this.getColumnComparators(), rowIndex);
     }
 }

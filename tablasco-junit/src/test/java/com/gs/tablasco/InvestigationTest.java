@@ -18,71 +18,55 @@ package com.gs.tablasco;
 
 import com.gs.tablasco.investigation.Investigation;
 import com.gs.tablasco.investigation.InvestigationLevel;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
 
-public class InvestigationTest
-{
+public class InvestigationTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy();
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test(expected = IllegalArgumentException.class)
-    public void keyColumnMismatch()
-    {
+    public void keyColumnMismatch() {
         Investigation investigation = new SimpleInvestigation(
-                "Table",
-                TableTestUtils.createTable(2, "A", "K"),
-                TableTestUtils.createTable(2, "A", "X"));
+                "Table", TableTestUtils.createTable(2, "A", "K"), TableTestUtils.createTable(2, "A", "X"));
         this.tableVerifier.investigate(investigation);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void noOtherColumnsMatch()
-    {
+    public void noOtherColumnsMatch() {
         Investigation investigation = new SimpleInvestigation(
-                "Table",
-                TableTestUtils.createTable(2, "A", "K"),
-                TableTestUtils.createTable(2, "B", "K"));
+                "Table", TableTestUtils.createTable(2, "A", "K"), TableTestUtils.createTable(2, "B", "K"));
         this.tableVerifier.investigate(investigation);
     }
 
     @Test
-    public void investigateFailure() throws IOException
-    {
-        Investigation investigation = new ComplexInvestigation(Arrays.asList(
-                new SimpleInvestigationLevel(
-                        "Initial Query",
-                        TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2"),
-                        TableTestUtils.createTable(2, "C", "K", "9", "K1", "2", "K2")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(2, "C", "K", "3", "K3", "9", "K4"),
-                        TableTestUtils.createTable(2, "C", "K", "9", "K3", "4", "K4")),
-                new SimpleInvestigationLevel(
-                        "Second Drilldown",
-                        TableTestUtils.createTable(2, "C", "K", "5", "K5", "6", "K6"),
-                        TableTestUtils.createTable(2, "C", "K", "5", "K5", "6", "K6"))),
+    public void investigateFailure() throws IOException {
+        Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
-                        null,
-                        Arrays.asList("K1"),
-                        Arrays.asList("K3", "K4")),
+                        new SimpleInvestigationLevel(
+                                "Initial Query",
+                                TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2"),
+                                TableTestUtils.createTable(2, "C", "K", "9", "K1", "2", "K2")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(2, "C", "K", "3", "K3", "9", "K4"),
+                                TableTestUtils.createTable(2, "C", "K", "9", "K3", "4", "K4")),
+                        new SimpleInvestigationLevel(
+                                "Second Drilldown",
+                                TableTestUtils.createTable(2, "C", "K", "5", "K5", "6", "K6"),
+                                TableTestUtils.createTable(2, "C", "K", "5", "K5", "6", "K6"))),
+                Arrays.asList(null, Arrays.asList("K1"), Arrays.asList("K3", "K4")),
                 100);
-        try
-        {
+        try {
             this.tableVerifier.investigate(investigation);
-        }
-        catch (AssertionError e)
-        {
-            if (!e.getMessage().startsWith("Some tests failed"))
-            {
+        } catch (AssertionError e) {
+            if (!e.getMessage().startsWith("Some tests failed")) {
                 throw e;
             }
         }
@@ -146,62 +130,38 @@ public class InvestigationTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
-    public void missingSurplusColumns() throws IOException
-    {
-        Investigation investigation = new ComplexInvestigation(Arrays.asList(
-                new SimpleInvestigationLevel(
-                        "Initial Query",
-                        TableTestUtils.createTable(3,
-                                "C1", "C2", "K",
-                                "1",  "X",  "K1",
-                                "2",  "X",  "K2",
-                                "3",  "X",  "K3"),
-                        TableTestUtils.createTable(2,
-                                "C1", "K",
-                                "9",  "K1",
-                                "2",  "K2")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(2,
-                                "C1", "K",
-                                "9",  "K1",
-                                "2",  "K2"),
-                        TableTestUtils.createTable(3,
-                                "C1", "C2", "K",
-                                "1",  "X",  "K1",
-                                "2",  "X",  "K2",
-                                "3",  "X",  "K3")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(2,
-                                "C1", "K"),
-                        TableTestUtils.createTable(3,
-                                "C1", "C2", "K",
-                                "1",  "X",  "K1")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(2,
-                                "C1", "K"),
-                        TableTestUtils.createTable(2,
-                                "C1", "K"))),
+    public void missingSurplusColumns() throws IOException {
+        Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
-                        null,
-                        Arrays.asList("K1", "K3"),
-                        Arrays.asList("K1", "K3"),
-                        Arrays.asList("K1")),
+                        new SimpleInvestigationLevel(
+                                "Initial Query",
+                                TableTestUtils.createTable(
+                                        3, "C1", "C2", "K", "1", "X", "K1", "2", "X", "K2", "3", "X", "K3"),
+                                TableTestUtils.createTable(2, "C1", "K", "9", "K1", "2", "K2")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(2, "C1", "K", "9", "K1", "2", "K2"),
+                                TableTestUtils.createTable(
+                                        3, "C1", "C2", "K", "1", "X", "K1", "2", "X", "K2", "3", "X", "K3")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(2, "C1", "K"),
+                                TableTestUtils.createTable(3, "C1", "C2", "K", "1", "X", "K1")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(2, "C1", "K"),
+                                TableTestUtils.createTable(2, "C1", "K"))),
+                Arrays.asList(null, Arrays.asList("K1", "K3"), Arrays.asList("K1", "K3"), Arrays.asList("K1")),
                 100);
-        try
-        {
+        try {
             this.tableVerifier.investigate(investigation);
-        }
-        catch (AssertionError e)
-        {
-            if (!e.getMessage().startsWith("Some tests failed"))
-            {
+        } catch (AssertionError e) {
+            if (!e.getMessage().startsWith("Some tests failed")) {
                 throw e;
             }
         }
@@ -303,21 +263,22 @@ public class InvestigationTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
-    public void investigateSuccess() throws IOException
-    {
-        Investigation investigation = new ComplexInvestigation(Arrays.asList(
-                new SimpleInvestigationLevel(
-                        "Initial Query",
-                        TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2"),
-                        TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(2, "C", "K", "3", "K3", "9", "K4"),
-                        TableTestUtils.createTable(2, "C", "K", "9", "K3", "4", "K4"))),
+    public void investigateSuccess() throws IOException {
+        Investigation investigation = new ComplexInvestigation(
+                Arrays.asList(
+                        new SimpleInvestigationLevel(
+                                "Initial Query",
+                                TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2"),
+                                TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(2, "C", "K", "3", "K3", "9", "K4"),
+                                TableTestUtils.createTable(2, "C", "K", "9", "K3", "4", "K4"))),
                 Arrays.asList((List<Object>) null),
                 100);
         this.tableVerifier.investigate(investigation);
@@ -340,45 +301,28 @@ public class InvestigationTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
-    public void investigationFailureIntegerKey() throws IOException
-    {
-        Investigation investigation = new ComplexInvestigation(Arrays.asList(
-                new SimpleInvestigationLevel(
-                        "Initial Query",
-                        TableTestUtils.createTable(2,
-                                "C", "I",
-                                "1",  1,
-                                "2",  2,
-                                "3",  3,
-                                "4",  4,
-                                "6",  6),
-                        TableTestUtils.createTable(2,
-                                "C", "I",
-                                "9",  2,
-                                "3",  3,
-                                "4",  9,
-                                "5",  5,
-                                "6",  6)),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(1, "K", "K1"),
-                        TableTestUtils.createTable(1, "K", "K1"))),
+    public void investigationFailureIntegerKey() throws IOException {
+        Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
-                        null,
-                        Arrays.asList(1, 2, 9, 4, 5)),
+                        new SimpleInvestigationLevel(
+                                "Initial Query",
+                                TableTestUtils.createTable(2, "C", "I", "1", 1, "2", 2, "3", 3, "4", 4, "6", 6),
+                                TableTestUtils.createTable(2, "C", "I", "9", 2, "3", 3, "4", 9, "5", 5, "6", 6)),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(1, "K", "K1"),
+                                TableTestUtils.createTable(1, "K", "K1"))),
+                Arrays.asList(null, Arrays.asList(1, 2, 9, 4, 5)),
                 100);
-        try
-        {
+        try {
             this.tableVerifier.investigate(investigation);
-        }
-        catch (AssertionError e)
-        {
-            if (!e.getMessage().startsWith("Some tests failed"))
-            {
+        } catch (AssertionError e) {
+            if (!e.getMessage().startsWith("Some tests failed")) {
                 throw e;
             }
         }
@@ -446,33 +390,28 @@ public class InvestigationTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
-    public void drilldownLimit() throws IOException
-    {
-        Investigation investigation = new ComplexInvestigation(Arrays.asList(
-                new SimpleInvestigationLevel(
-                        "Initial Query",
-                        TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2", "3", "K3"),
-                        TableTestUtils.createTable(2, "C", "K", "9", "K1", "9", "K2", "9", "K3")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(1, "K", "K1"),
-                        TableTestUtils.createTable(1, "K", "K1"))),
+    public void drilldownLimit() throws IOException {
+        Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
-                        null,
-                        Arrays.asList("K1", "K2")),
-                        2);
-        try
-        {
+                        new SimpleInvestigationLevel(
+                                "Initial Query",
+                                TableTestUtils.createTable(2, "C", "K", "1", "K1", "2", "K2", "3", "K3"),
+                                TableTestUtils.createTable(2, "C", "K", "9", "K1", "9", "K2", "9", "K3")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(1, "K", "K1"),
+                                TableTestUtils.createTable(1, "K", "K1"))),
+                Arrays.asList(null, Arrays.asList("K1", "K2")),
+                2);
+        try {
             this.tableVerifier.investigate(investigation);
-        }
-        catch (AssertionError e)
-        {
-            if (!e.getMessage().startsWith("Some tests failed"))
-            {
+        } catch (AssertionError e) {
+            if (!e.getMessage().startsWith("Some tests failed")) {
                 throw e;
             }
         }
@@ -522,37 +461,32 @@ public class InvestigationTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
-    public void drilldownShortCircuit() throws IOException
-    {
-        Investigation investigation = new ComplexInvestigation(Arrays.asList(
-                new SimpleInvestigationLevel(
-                        "Initial Query",
-                        TableTestUtils.createTable(1, "K", "K1"),
-                        TableTestUtils.createTable(1, "K", "K9")),
-                new SimpleInvestigationLevel(
-                        "First Drilldown",
-                        TableTestUtils.createTable(1, "K", "K1"),
-                        TableTestUtils.createTable(1, "K", "K1")),
-                new SimpleInvestigationLevel(
-                        "Second Drilldown",
-                        TableTestUtils.createTable(1, "K", "K1"),
-                        TableTestUtils.createTable(1, "K", "K9"))),
+    public void drilldownShortCircuit() throws IOException {
+        Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
-                        null,
-                        Arrays.asList("K1", "K9")),
+                        new SimpleInvestigationLevel(
+                                "Initial Query",
+                                TableTestUtils.createTable(1, "K", "K1"),
+                                TableTestUtils.createTable(1, "K", "K9")),
+                        new SimpleInvestigationLevel(
+                                "First Drilldown",
+                                TableTestUtils.createTable(1, "K", "K1"),
+                                TableTestUtils.createTable(1, "K", "K1")),
+                        new SimpleInvestigationLevel(
+                                "Second Drilldown",
+                                TableTestUtils.createTable(1, "K", "K1"),
+                                TableTestUtils.createTable(1, "K", "K9"))),
+                Arrays.asList(null, Arrays.asList("K1", "K9")),
                 100);
-        try
-        {
+        try {
             this.tableVerifier.investigate(investigation);
-        }
-        catch (AssertionError e)
-        {
-            if (!e.getMessage().startsWith("Some tests failed"))
-            {
+        } catch (AssertionError e) {
+            if (!e.getMessage().startsWith("Some tests failed")) {
                 throw e;
             }
         }
@@ -591,117 +525,106 @@ public class InvestigationTest
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
-    private static class TableCallable implements Callable<VerifiableTable>
-    {
+    private static class TableCallable implements Callable<VerifiableTable> {
         private final VerifiableTable verifiableTable;
 
-        private TableCallable(VerifiableTable verifiableTable)
-        {
+        private TableCallable(VerifiableTable verifiableTable) {
             this.verifiableTable = verifiableTable;
         }
 
         @Override
-        public VerifiableTable call() throws Exception
-        {
+        public VerifiableTable call() throws Exception {
             return this.verifiableTable;
         }
     }
 
-    private static class SimpleInvestigation implements Investigation
-    {
+    private static class SimpleInvestigation implements Investigation {
         private final SimpleInvestigationLevel investigationLevel;
 
-        private SimpleInvestigation(String levelDescription, VerifiableTable actualTable, VerifiableTable expectedTable)
-        {
+        private SimpleInvestigation(
+                String levelDescription, VerifiableTable actualTable, VerifiableTable expectedTable) {
             this.investigationLevel = new SimpleInvestigationLevel(levelDescription, actualTable, expectedTable);
         }
 
         @Override
-        public InvestigationLevel getFirstLevel()
-        {
+        public InvestigationLevel getFirstLevel() {
             return investigationLevel;
         }
 
         @Override
-        public InvestigationLevel getNextLevel(List<Object> drilldownKeys)
-        {
+        public InvestigationLevel getNextLevel(List<Object> drilldownKeys) {
             return null;
         }
 
         @Override
-        public int getRowKeyLimit()
-        {
+        public int getRowKeyLimit() {
             return 100;
         }
     }
 
-    static class SimpleInvestigationLevel implements InvestigationLevel
-    {
+    static class SimpleInvestigationLevel implements InvestigationLevel {
         private final String levelDescription;
         private final VerifiableTable actualTable;
         private final VerifiableTable expectedTable;
 
-        SimpleInvestigationLevel(String levelDescription, VerifiableTable actualTable, VerifiableTable expectedTable)
-        {
+        SimpleInvestigationLevel(String levelDescription, VerifiableTable actualTable, VerifiableTable expectedTable) {
             this.levelDescription = levelDescription;
             this.actualTable = actualTable;
             this.expectedTable = expectedTable;
         }
 
         @Override
-        public Callable<VerifiableTable> getActualResults()
-        {
+        public Callable<VerifiableTable> getActualResults() {
             return new TableCallable(this.actualTable);
         }
 
         @Override
-        public Callable<VerifiableTable> getExpectedResults()
-        {
+        public Callable<VerifiableTable> getExpectedResults() {
             return new TableCallable(this.expectedTable);
         }
 
         @Override
-        public String getLevelDescription()
-        {
+        public String getLevelDescription() {
             return this.levelDescription;
         }
     }
 
-    private static class ComplexInvestigation implements Investigation
-    {
+    private static class ComplexInvestigation implements Investigation {
         private int levelIndex = 1;
         private final List<SimpleInvestigationLevel> investigationLevels;
         private final List<List<Object>> expectedKeys;
         private final int drilldownLimit;
 
-        private ComplexInvestigation(List<SimpleInvestigationLevel> investigationLevels, List<List<Object>> expectedKeys, int drilldownLimit)
-        {
+        private ComplexInvestigation(
+                List<SimpleInvestigationLevel> investigationLevels,
+                List<List<Object>> expectedKeys,
+                int drilldownLimit) {
             this.investigationLevels = investigationLevels;
             this.expectedKeys = expectedKeys;
             this.drilldownLimit = drilldownLimit;
         }
 
         @Override
-        public InvestigationLevel getFirstLevel()
-        {
+        public InvestigationLevel getFirstLevel() {
             return this.investigationLevels.getFirst();
         }
 
         @Override
-        public InvestigationLevel getNextLevel(List<Object> drilldownKeys)
-        {
+        public InvestigationLevel getNextLevel(List<Object> drilldownKeys) {
             Assert.assertEquals(this.expectedKeys.get(this.levelIndex), drilldownKeys);
             final int nextTableIndex = this.levelIndex;
             this.levelIndex++;
-            return nextTableIndex < this.investigationLevels.size() ? this.investigationLevels.get(nextTableIndex) : null;
+            return nextTableIndex < this.investigationLevels.size()
+                    ? this.investigationLevels.get(nextTableIndex)
+                    : null;
         }
 
         @Override
-        public int getRowKeyLimit()
-        {
+        public int getRowKeyLimit() {
             return this.drilldownLimit;
         }
     }

@@ -17,12 +17,10 @@
 package com.gs.tablasco.adapters;
 
 import com.gs.tablasco.VerifiableTable;
-
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
-public class TableAdapters
-{
+public class TableAdapters {
     /**
      * Takes a table and row filter and returns an adapted table that contains only rows that match the filter.
      *
@@ -30,8 +28,7 @@ public class TableAdapters
      * @param rowFilter a predicate that takes row index and table and returns true if the row should be included
      * @return the adapted table
      */
-    public static VerifiableTable withRows(VerifiableTable delegate, IntPredicate rowFilter)
-    {
+    public static VerifiableTable withRows(VerifiableTable delegate, IntPredicate rowFilter) {
         return new RowFilterAdapter(delegate, rowFilter);
     }
 
@@ -42,13 +39,9 @@ public class TableAdapters
      * @param columnFilter a predicate that takes row index and table and returns true if the row should be included
      * @return the adapted table
      */
-    public static VerifiableTable withColumns(VerifiableTable delegate, Predicate<String> columnFilter)
-    {
+    public static VerifiableTable withColumns(VerifiableTable delegate, Predicate<String> columnFilter) {
         return new ColumnFilterAdapter(delegate, columnFilter);
     }
 
-    private TableAdapters()
-    {
-
-    }
+    private TableAdapters() {}
 }

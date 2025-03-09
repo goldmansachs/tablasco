@@ -21,45 +21,35 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class UnmatchedIndexMap extends IndexMap
-{
+public class UnmatchedIndexMap extends IndexMap {
     private SortedSet<Match> partialMatches;
     private UnmatchedIndexMap bestMutualMatch;
 
-    public UnmatchedIndexMap(int expectedIndex, int actualIndex)
-    {
+    public UnmatchedIndexMap(int expectedIndex, int actualIndex) {
         super(expectedIndex, actualIndex);
     }
 
-    static void linkBestMatches(List<UnmatchedIndexMap> allMissingRows)
-    {
+    static void linkBestMatches(List<UnmatchedIndexMap> allMissingRows) {
         boolean keepMatching = true;
-        while (keepMatching)
-        {
+        while (keepMatching) {
             keepMatching = false;
-            for (UnmatchedIndexMap expected : allMissingRows)
-            {
+            for (UnmatchedIndexMap expected : allMissingRows) {
                 keepMatching |= expected.match();
             }
         }
     }
 
-    public void addMatch(int matchScore, UnmatchedIndexMap match)
-    {
-        if (this.equals(match))
-        {
+    public void addMatch(int matchScore, UnmatchedIndexMap match) {
+        if (this.equals(match)) {
             throw new IllegalArgumentException("Cannot add this as partial match");
         }
-        if (this.partialMatches == null)
-        {
+        if (this.partialMatches == null) {
             this.partialMatches = new TreeSet<>();
         }
-        if (match.partialMatches == null)
-        {
+        if (match.partialMatches == null) {
             match.partialMatches = new TreeSet<>();
         }
-        if (this.getExpectedIndex() < 0 || match.getActualIndex() < 0)
-        {
+        if (this.getExpectedIndex() < 0 || match.getActualIndex() < 0) {
             throw new IllegalStateException("Expecting this to be expected and that to be actual");
         }
 
@@ -67,14 +57,11 @@ public class UnmatchedIndexMap extends IndexMap
         match.partialMatches.add(new Match(matchScore, this));
     }
 
-    public boolean match()
-    {
+    public boolean match() {
         UnmatchedIndexMap thisBest = this.getBestMatch();
-        if (thisBest != null)
-        {
+        if (thisBest != null) {
             UnmatchedIndexMap thatBest = thisBest.getBestMatch();
-            if (this.equals(thatBest))
-            {
+            if (this.equals(thatBest)) {
                 this.bestMutualMatch = thisBest;
                 this.partialMatches = null;
                 thisBest.bestMutualMatch = this;
@@ -85,14 +72,10 @@ public class UnmatchedIndexMap extends IndexMap
         return false;
     }
 
-    private UnmatchedIndexMap getBestMatch()
-    {
-        if (this.partialMatches != null)
-        {
-            for (Match match : this.partialMatches)
-            {
-                if (match.match.bestMutualMatch == null)
-                {
+    private UnmatchedIndexMap getBestMatch() {
+        if (this.partialMatches != null) {
+            for (Match match : this.partialMatches) {
+                if (match.match.bestMutualMatch == null) {
                     return match.match;
                 }
             }
@@ -100,34 +83,28 @@ public class UnmatchedIndexMap extends IndexMap
         return null;
     }
 
-    public UnmatchedIndexMap getBestMutualMatch()
-    {
+    public UnmatchedIndexMap getBestMutualMatch() {
         return this.bestMutualMatch;
     }
 
-    private static class Match implements Comparable<Match>
-    {
-        private static final Comparator<Match> MATCH_COMPARATOR = Comparator
-                .comparing(Match::getMatchScore)
+    private static class Match implements Comparable<Match> {
+        private static final Comparator<Match> MATCH_COMPARATOR = Comparator.comparing(Match::getMatchScore)
                 .reversed()
                 .thenComparing(match -> Math.max(match.match.getActualIndex(), match.match.getExpectedIndex()));
         private final int matchScore;
         private final UnmatchedIndexMap match;
 
-        private Match(int matchScore, UnmatchedIndexMap match)
-        {
+        private Match(int matchScore, UnmatchedIndexMap match) {
             this.matchScore = matchScore;
             this.match = match;
         }
 
         @Override
-        public int compareTo(Match that)
-        {
+        public int compareTo(Match that) {
             return MATCH_COMPARATOR.compare(this, that);
         }
 
-        int getMatchScore()
-        {
+        int getMatchScore() {
             return matchScore;
         }
     }

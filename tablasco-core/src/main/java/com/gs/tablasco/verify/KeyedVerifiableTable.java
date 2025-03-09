@@ -18,7 +18,6 @@ package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
 
-public interface KeyedVerifiableTable extends VerifiableTable
-{
+public interface KeyedVerifiableTable extends VerifiableTable {
     boolean isKeyColumn(int columnIndex);
 }

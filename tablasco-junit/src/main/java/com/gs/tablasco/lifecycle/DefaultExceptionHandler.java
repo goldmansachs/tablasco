@@ -17,14 +17,11 @@
 package com.gs.tablasco.lifecycle;
 
 import com.gs.tablasco.verify.ExceptionHtml;
-
 import java.io.File;
 
-public class DefaultExceptionHandler implements ExceptionHandler
-{
+public class DefaultExceptionHandler implements ExceptionHandler {
     @Override
-    public void onException(File outputFile, Throwable throwable)
-    {
+    public void onException(File outputFile, Throwable throwable) {
         ExceptionHtml.create(outputFile, throwable);
     }
 }

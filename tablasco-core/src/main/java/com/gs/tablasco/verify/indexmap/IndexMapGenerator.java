@@ -20,8 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class IndexMapGenerator<T>
-{
+public class IndexMapGenerator<T> {
     private final Iterator<T> actualIterator;
     private final Iterator<T> expectedIterator;
     private List<IndexMap> matched;
@@ -29,30 +28,25 @@ public class IndexMapGenerator<T>
     private List<UnmatchedIndexMap> surplus;
     private final int initialIndex;
 
-    IndexMapGenerator(Iterator<T> expectedIterator, Iterator<T> actualIterator, int initialIndex)
-    {
+    IndexMapGenerator(Iterator<T> expectedIterator, Iterator<T> actualIterator, int initialIndex) {
         this.actualIterator = actualIterator;
         this.expectedIterator = expectedIterator;
         this.initialIndex = initialIndex;
     }
 
-    public List<IndexMap> getMatched()
-    {
+    public List<IndexMap> getMatched() {
         return this.matched;
     }
 
-    public List<UnmatchedIndexMap> getMissing()
-    {
+    public List<UnmatchedIndexMap> getMissing() {
         return this.missing;
     }
 
-    public List<UnmatchedIndexMap> getSurplus()
-    {
+    public List<UnmatchedIndexMap> getSurplus() {
         return this.surplus;
     }
 
-    List<IndexMap> getAll()
-    {
+    List<IndexMap> getAll() {
         Set<IndexMap> all = new TreeSet<>();
         all.addAll(this.matched);
         all.addAll(this.surplus);
@@ -60,8 +54,7 @@ public class IndexMapGenerator<T>
         return new ArrayList<>(all);
     }
 
-    void generate()
-    {
+    void generate() {
         this.matched = new ArrayList<>();
         this.missing = new ArrayList<>();
         this.surplus = new ArrayList<>();
@@ -69,39 +62,27 @@ public class IndexMapGenerator<T>
         Map<T, Object> actualIndices = new LinkedHashMap<>();
         int ai = this.initialIndex;
 
-        while (this.actualIterator.hasNext())
-        {
+        while (this.actualIterator.hasNext()) {
             T next = this.actualIterator.next();
             Object indexOrListOf = actualIndices.get(next);
-            if (indexOrListOf == null)
-            {
+            if (indexOrListOf == null) {
                 actualIndices.put(next, ai);
-            }
-            else if (indexOrListOf instanceof Integer)
-            {
+            } else if (indexOrListOf instanceof Integer) {
                 actualIndices.put(next, Stream.of((Integer) indexOrListOf, ai).collect(Collectors.toList()));
-            }
-            else
-            {
+            } else {
                 ((List) indexOrListOf).add(ai);
             }
             ai++;
         }
         int ei = this.initialIndex;
-        while (this.expectedIterator.hasNext())
-        {
+        while (this.expectedIterator.hasNext()) {
             T next = this.expectedIterator.next();
             Object actualIndexOrListOf = actualIndices.remove(next);
-            if (actualIndexOrListOf == null)
-            {
+            if (actualIndexOrListOf == null) {
                 this.missing.add(new UnmatchedIndexMap(ei, -1));
-            }
-            else if (actualIndexOrListOf instanceof Integer)
-            {
+            } else if (actualIndexOrListOf instanceof Integer) {
                 this.matched.add(new IndexMap(ei, (Integer) actualIndexOrListOf));
-            }
-            else
-            {
+            } else {
                 List indices = (List) actualIndexOrListOf;
                 Integer actualIndex = (Integer) indices.remove(0);
                 this.matched.add(new IndexMap(ei, actualIndex));
@@ -109,22 +90,15 @@ public class IndexMapGenerator<T>
             }
             ei++;
         }
-        for (Map.Entry<T, Object> actualEntry : actualIndices.entrySet())
-        {
+        for (Map.Entry<T, Object> actualEntry : actualIndices.entrySet()) {
             Object indexOrListOf = actualEntry.getValue();
-            if (indexOrListOf instanceof Integer)
-            {
+            if (indexOrListOf instanceof Integer) {
                 this.surplus.add(new UnmatchedIndexMap(-1, (Integer) indexOrListOf));
-            }
-            else
-            {
-                for (Object index : (List) indexOrListOf)
-                {
+            } else {
+                for (Object index : (List) indexOrListOf) {
                     this.surplus.add(new UnmatchedIndexMap(-1, (Integer) index));
                 }
             }
         }
     }
-
 }
-

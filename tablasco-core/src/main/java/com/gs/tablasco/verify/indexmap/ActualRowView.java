@@ -18,19 +18,16 @@ package com.gs.tablasco.verify.indexmap;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ColumnComparators;
-
 import java.util.List;
 
-public class ActualRowView extends RowView
-{
-    ActualRowView(VerifiableTable actualData, List<IndexMap> keyColumns, ColumnComparators columnComparators, int rowIndex)
-    {
+public class ActualRowView extends RowView {
+    ActualRowView(
+            VerifiableTable actualData, List<IndexMap> keyColumns, ColumnComparators columnComparators, int rowIndex) {
         super(actualData, keyColumns, columnComparators, rowIndex);
     }
 
     @Override
-    protected int getColumnIndex(IndexMap column)
-    {
+    protected int getColumnIndex(IndexMap column) {
         return column.getActualIndex();
     }
 }

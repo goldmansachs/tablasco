@@ -16,32 +16,26 @@
 
 package com.gs.tablasco.verify;
 
-
 import java.io.Serializable;
 
-public class VarianceCellComparator extends CellComparator implements Serializable
-{
+public class VarianceCellComparator extends CellComparator implements Serializable {
     private final double varianceThreshold;
 
-    public VarianceCellComparator(CellFormatter formatter, double varianceThreshold)
-    {
+    public VarianceCellComparator(CellFormatter formatter, double varianceThreshold) {
         super(formatter);
         this.varianceThreshold = varianceThreshold;
     }
 
     @Override
-    public boolean compare(Object actual, Object expected)
-    {
-        if (isFloatingPoint(expected) && isFloatingPoint(actual))
-        {
+    public boolean compare(Object actual, Object expected) {
+        if (isFloatingPoint(expected) && isFloatingPoint(actual)) {
             double variance = getVariance(actual, expected);
             return Math.abs(variance) <= this.varianceThreshold;
         }
         return false;
     }
 
-    static double getVariance(Object actual, Object expected)
-    {
+    static double getVariance(Object actual, Object expected) {
         double number1 = ((Number) actual).doubleValue();
         double number2 = ((Number) expected).doubleValue();
         return (number1 - number2) * 100.0d / number2;

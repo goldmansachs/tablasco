@@ -16,16 +16,6 @@
 
 package com.gs.tablasco.verify;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,14 +26,21 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-public class ExceptionHtml
-{
-    public static void create(File resultsFile, Throwable reason)
-    {
-        try
-        {
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+public class ExceptionHtml {
+    public static void create(File resultsFile, Throwable reason) {
+        try {
+            Document document =
+                    DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             Element html = document.createElement("html");
             document.appendChild(html);
 
@@ -68,39 +65,33 @@ public class ExceptionHtml
             html.appendChild(body);
 
             writeDocument(document, resultsFile);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException("Could not format exception", e);
         }
     }
 
-    private static void writeDocument(Document document, File resultsFile) throws TransformerException, IOException
-    {
+    private static void writeDocument(Document document, File resultsFile) throws TransformerException, IOException {
         File parentDir = resultsFile.getParentFile();
-        if (!parentDir.exists() && !parentDir.mkdirs())
-        {
+        if (!parentDir.exists() && !parentDir.mkdirs()) {
             throw new IllegalStateException("Unable to create results directory:" + parentDir);
         }
         Transformer trans = TransformerFactory.newInstance().newTransformer();
         trans.setOutputProperty(OutputKeys.METHOD, "xml");
         trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         trans.setOutputProperty(OutputKeys.INDENT, "yes");
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(resultsFile.toPath()), StandardCharsets.UTF_8)))
-        {
+        try (Writer writer = new BufferedWriter(
+                new OutputStreamWriter(Files.newOutputStream(resultsFile.toPath()), StandardCharsets.UTF_8))) {
             trans.transform(new DOMSource(document), new StreamResult(writer));
         }
     }
 
-    private static Element createNodeWithText(Document document, String tagName, String content)
-    {
+    private static Element createNodeWithText(Document document, String tagName, String content) {
         Element element = document.createElement(tagName);
         element.appendChild(document.createTextNode(content));
         return element;
     }
 
-    static String stackTraceToString(Throwable e) throws UnsupportedEncodingException
-    {
+    static String stackTraceToString(Throwable e) throws UnsupportedEncodingException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(bytes, false, StandardCharsets.UTF_8);
         stackTraceToString(e, out);
@@ -108,15 +99,12 @@ public class ExceptionHtml
         return bytes.toString(StandardCharsets.UTF_8);
     }
 
-    private static void stackTraceToString(Throwable e, PrintStream out)
-    {
+    private static void stackTraceToString(Throwable e, PrintStream out) {
         String prefix = "";
         Throwable cause = e;
-        while (cause != null)
-        {
+        while (cause != null) {
             out.println(prefix + cause);
-            for (StackTraceElement ste : cause.getStackTrace())
-            {
+            for (StackTraceElement ste : cause.getStackTrace()) {
                 out.println("    " + ste.toString());
             }
 
@@ -125,7 +113,5 @@ public class ExceptionHtml
         }
     }
 
-    private ExceptionHtml()
-    {
-    }
+    private ExceptionHtml() {}
 }

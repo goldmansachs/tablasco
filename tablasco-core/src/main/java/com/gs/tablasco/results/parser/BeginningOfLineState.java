@@ -19,32 +19,22 @@ package com.gs.tablasco.results.parser;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 
-public class BeginningOfLineState extends ParserState
-{
-    BeginningOfLineState(ExpectedResultsParser parserState)
-    {
+public class BeginningOfLineState extends ParserState {
+    BeginningOfLineState(ExpectedResultsParser parserState) {
         super(parserState);
     }
 
     @Override
-    public ParserState parse(StreamTokenizer st) throws IOException
-    {
+    public ParserState parse(StreamTokenizer st) throws IOException {
         ParserState nextState = null;
-        while (nextState == null && st.ttype != StreamTokenizer.TT_EOF)
-        {
+        while (nextState == null && st.ttype != StreamTokenizer.TT_EOF) {
             int nextToken = st.nextToken();
-            if (nextToken != StreamTokenizer.TT_EOL && nextToken != StreamTokenizer.TT_EOF)
-            {
-                if (nextValueIs(ExpectedResultsParser.SECTION_IDENTIFIER, st, nextToken))
-                {
+            if (nextToken != StreamTokenizer.TT_EOL && nextToken != StreamTokenizer.TT_EOF) {
+                if (nextValueIs(ExpectedResultsParser.SECTION_IDENTIFIER, st, nextToken)) {
                     nextState = this.getParser().getSectionReaderState();
-                }
-                else if (nextValueIs(ExpectedResultsParser.METADATA_IDENTIFIER, st, nextToken))
-                {
+                } else if (nextValueIs(ExpectedResultsParser.METADATA_IDENTIFIER, st, nextToken)) {
                     nextState = this.getParser().getMetadataReaderState();
-                }
-                else
-                {
+                } else {
                     nextState = this.getParser().getDataReaderState();
                 }
             }
@@ -52,8 +42,7 @@ public class BeginningOfLineState extends ParserState
         return nextState;
     }
 
-    private boolean nextValueIs(String sectionIdentifier, StreamTokenizer st, int nextToken)
-    {
+    private boolean nextValueIs(String sectionIdentifier, StreamTokenizer st, int nextToken) {
         return nextToken == StreamTokenizer.TT_WORD && st.sval.equals(sectionIdentifier);
     }
 }

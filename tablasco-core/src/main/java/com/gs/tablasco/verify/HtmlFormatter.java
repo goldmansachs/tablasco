@@ -17,23 +17,21 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.core.HtmlConfig;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-public class HtmlFormatter
-{
+public class HtmlFormatter {
     public static final int DEFAULT_ROW_LIMIT = 10000;
     private static final LazyValue<DocumentBuilder> DOCUMENT_BUILDER = new LazyValue<>() {
         @Override
@@ -65,12 +63,11 @@ public class HtmlFormatter
     private final HtmlOptions htmlOptions;
     private final Set<File> initializedFiles;
 
-    public HtmlFormatter(File outputFile, HtmlConfig htmlConfig)
-    {
+    public HtmlFormatter(File outputFile, HtmlConfig htmlConfig) {
         this(outputFile, htmlConfig, INITIALIZED_FILES);
     }
-    public HtmlFormatter(File outputFile, HtmlConfig htmlConfig, Set<File> initializedFiles)
-    {
+
+    public HtmlFormatter(File outputFile, HtmlConfig htmlConfig, Set<File> initializedFiles) {
         this.outputFile = outputFile;
         this.htmlOptions = new HtmlOptions(
                 htmlConfig.isShowAssertionSummary(),
@@ -82,37 +79,28 @@ public class HtmlFormatter
         this.initializedFiles = initializedFiles;
     }
 
-    private Document initialize(Metadata metadata)
-    {
-        if (initializedFiles.add(this.outputFile) && this.outputFile.exists() && !this.outputFile.delete())
-        {
+    private Document initialize(Metadata metadata) {
+        if (initializedFiles.add(this.outputFile) && this.outputFile.exists() && !this.outputFile.delete()) {
             throw new RuntimeException("Cannot delete output file " + this.outputFile.getName());
         }
-        if (this.outputFile.exists())
-        {
-            try
-            {
+        if (this.outputFile.exists()) {
+            try {
                 return DOCUMENT_BUILDER.value().parse(this.outputFile);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new RuntimeException("Error loading " + this.outputFile, e);
             }
         }
         return createNewDocument(metadata);
     }
 
-    private static void ensurePathExists(File outputFile)
-    {
+    private static void ensurePathExists(File outputFile) {
         File path = outputFile.getParentFile();
-        if (!path.exists() && !path.mkdirs())
-        {
+        if (!path.exists() && !path.mkdirs()) {
             throw new RuntimeException("Unable to create output directories for " + outputFile);
         }
     }
 
-    private static Document createNewDocument(Metadata metadata)
-    {
+    private static Document createNewDocument(Metadata metadata) {
         Document document = DOCUMENT_BUILDER.value().newDocument();
         Element html = document.createElement("html");
         document.appendChild(html);
@@ -141,8 +129,7 @@ public class HtmlFormatter
 
         Element div = document.createElement("div");
         div.setAttribute("class", "metadata");
-        if (metadata != null)
-        {
+        if (metadata != null) {
             div.appendChild(ResultCell.createNodeWithText(document, "i", metadata.toString()));
         }
         body.appendChild(div);
@@ -150,88 +137,90 @@ public class HtmlFormatter
         return document;
     }
 
-    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata)
-    {
+    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata) {
         this.appendResults(testName, results, metadata, 1);
     }
 
-    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount)
-    {
+    public void appendResults(
+            String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount) {
         Map<String, FormattableTable> resultsToFormat = new LinkedHashMap<>();
-        for (String name : results.keySet())
-        {
+        for (String name : results.keySet()) {
             FormattableTable formattableTable = results.get(name);
             boolean dontFormat = this.htmlOptions.isHideMatchedTables() && formattableTable.isSuccess();
-            if (!dontFormat)
-            {
+            if (!dontFormat) {
                 resultsToFormat.put(name, formattableTable);
             }
         }
-        if (!resultsToFormat.isEmpty())
-        {
+        if (!resultsToFormat.isEmpty()) {
             Document dom = this.initialize(metadata);
             ensurePathExists(this.outputFile);
-            try (OutputStream outputStream = Files.newOutputStream(this.outputFile.toPath()))
-            {
+            try (OutputStream outputStream = Files.newOutputStream(this.outputFile.toPath())) {
                 appendResults(testName, resultsToFormat, metadata, verifyCount, dom, outputStream);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount, Document dom, OutputStream outputStream) throws TransformerException
-    {
-        if (dom == null)
-        {
+    public void appendResults(
+            String testName,
+            Map<String, ? extends FormattableTable> results,
+            Metadata metadata,
+            int verifyCount,
+            Document dom,
+            OutputStream outputStream)
+            throws TransformerException {
+        if (dom == null) {
             dom = createNewDocument(metadata);
         }
         Node body = dom.getElementsByTagName("body").item(0);
-        if (verifyCount == 1)
-        {
+        if (verifyCount == 1) {
             body.appendChild(ResultCell.createNodeWithText(dom, "h1", testName));
         }
 
-        if (this.htmlOptions.isDisplayAssertionSummary())
-        {
+        if (this.htmlOptions.isDisplayAssertionSummary()) {
             appendAssertionSummary(testName, results, body);
         }
-        for (Map.Entry<String, ? extends FormattableTable> namedTable : results.entrySet())
-        {
+        for (Map.Entry<String, ? extends FormattableTable> namedTable : results.entrySet()) {
             appendResults(testName, namedTable.getKey(), namedTable.getValue(), body, true);
         }
-        TRANSFORMER.value().transform(new DOMSource(dom), new StreamResult(new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))));
+        TRANSFORMER
+                .value()
+                .transform(
+                        new DOMSource(dom),
+                        new StreamResult(
+                                new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))));
     }
 
-    private void appendAssertionSummary(String testName, Map<String, ? extends FormattableTable> results, Node htmlBody)
-    {
+    private void appendAssertionSummary(
+            String testName, Map<String, ? extends FormattableTable> results, Node htmlBody) {
         int right = 0;
         int total = 0;
-        for (FormattableTable table : results.values())
-        {
+        for (FormattableTable table : results.values()) {
             right += table.getPassedCellCount();
             total += table.getTotalCellCount();
         }
         double pctCorrect = Math.floor(1000.0 * right / total) / 10;
         String cellText = String.format("%d right, %d wrong, %.1f", right, total - right, pctCorrect) + "% correct";
         ResultCell cell = ResultCell.createCustomCell(cellText, right == total ? "pass" : "fail");
-        appendResults(testName, "Assertions", new ResultTable(new boolean[] { true }, Collections.singletonList(Collections.singletonList(cell))), htmlBody, false);
+        appendResults(
+                testName,
+                "Assertions",
+                new ResultTable(new boolean[] {true}, Collections.singletonList(Collections.singletonList(cell))),
+                htmlBody,
+                false);
     }
 
-    private void appendResults(String testName, String tableName, FormattableTable resultTable, Node htmlBody, boolean withDivId)
-    {
+    private void appendResults(
+            String testName, String tableName, FormattableTable resultTable, Node htmlBody, boolean withDivId) {
         Element table = getTableElement(testName, tableName, htmlBody, withDivId);
         resultTable.appendTo(testName, tableName, table, this.htmlOptions);
     }
 
-    private Element getTableElement(String testName, String tableName, Node htmlBody, boolean withDivId)
-    {
+    private Element getTableElement(String testName, String tableName, Node htmlBody, boolean withDivId) {
         Document document = htmlBody.getOwnerDocument();
         Element div = document.createElement("div");
-        if (withDivId)
-        {
+        if (withDivId) {
             div.setAttribute("id", toHtmlId(testName, tableName));
         }
         htmlBody.appendChild(div);
@@ -245,36 +234,37 @@ public class HtmlFormatter
         return table;
     }
 
-    static void appendMultiMatchedRow(Element table, int colspan, int matchedRows)
-    {
+    static void appendMultiMatchedRow(Element table, int colspan, int matchedRows) {
         Document document = table.getOwnerDocument();
         Element tr = document.createElement("tr");
         table.appendChild(tr);
         Element td = document.createElement("td");
         td.setAttribute("class", "pass multi");
         td.setAttribute("colspan", String.valueOf(colspan));
-        td.appendChild(document.createTextNode(matchedRows + ResultCell.adaptOnCount(matchedRows, " matched row") + "..."));
+        td.appendChild(
+                document.createTextNode(matchedRows + ResultCell.adaptOnCount(matchedRows, " matched row") + "..."));
         tr.appendChild(td);
     }
 
-    static void appendDataRow(Element table, FormattableTable resultTable, String rowId, String rowStyle, List<ResultCell> resultCells, HtmlOptions htmlOptions)
-    {
+    static void appendDataRow(
+            Element table,
+            FormattableTable resultTable,
+            String rowId,
+            String rowStyle,
+            List<ResultCell> resultCells,
+            HtmlOptions htmlOptions) {
         Element tr = table.getOwnerDocument().createElement("tr");
-        if (rowId != null)
-        {
+        if (rowId != null) {
             tr.setAttribute("id", rowId);
         }
-        if (rowStyle != null)
-        {
+        if (rowStyle != null) {
             tr.setAttribute("style", rowStyle);
         }
         table.appendChild(tr);
-        for (int col = 0; col < resultCells.size(); col++)
-        {
+        for (int col = 0; col < resultCells.size(); col++) {
             int matchedAhead = resultTable.getMatchedColumnsAhead(col);
             ResultCell resultCell = resultCells.get(col);
-            if (htmlOptions.isHideMatchedColumns() && matchedAhead > 0)
-            {
+            if (htmlOptions.isHideMatchedColumns() && matchedAhead > 0) {
                 resultCell = ResultCell.createCustomCell("\u00A0", resultCell.getCssClass());
                 col += matchedAhead;
             }
@@ -283,22 +273,18 @@ public class HtmlFormatter
         }
     }
 
-    static void appendHeaderRow(Node table, FormattableTable resultTable, HtmlOptions htmlOptions)
-    {
+    static void appendHeaderRow(Node table, FormattableTable resultTable, HtmlOptions htmlOptions) {
         final Element tr = table.getOwnerDocument().createElement("tr");
         table.appendChild(tr);
         List<ResultCell> headers = resultTable.getHeaders();
-        for (int col = 0; col < headers.size(); col++)
-        {
+        for (int col = 0; col < headers.size(); col++) {
             int matchedAhead = resultTable.getMatchedColumnsAhead(col);
             ResultCell resultCell;
-            if (htmlOptions.isHideMatchedColumns() && matchedAhead > 0)
-            {
-                resultCell = ResultCell.createCustomCell(String.format("%d matched columns", matchedAhead + 1), "...", "pass multi");
+            if (htmlOptions.isHideMatchedColumns() && matchedAhead > 0) {
+                resultCell = ResultCell.createCustomCell(
+                        String.format("%d matched columns", matchedAhead + 1), "...", "pass multi");
                 col += matchedAhead;
-            }
-            else
-            {
+            } else {
                 resultCell = headers.get(col);
             }
             Node cell = resultCell.createCell(tr.getOwnerDocument(), true);
@@ -306,13 +292,12 @@ public class HtmlFormatter
         }
     }
 
-    static void appendSpanningRow(Node table, FormattableTable resultTable, String cssClass, String data, String onDataClick)
-    {
+    static void appendSpanningRow(
+            Node table, FormattableTable resultTable, String cssClass, String data, String onDataClick) {
         Document document = table.getOwnerDocument();
 
         Element tr = document.createElement("tr");
-        if (onDataClick != null)
-        {
+        if (onDataClick != null) {
             tr.setAttribute("onclick", onDataClick);
         }
         table.appendChild(tr);
@@ -320,75 +305,65 @@ public class HtmlFormatter
         Element td = document.createElement("td");
         td.setAttribute("class", cssClass);
         td.setAttribute("colspan", String.valueOf(resultTable.getHeaders().size()));
-        if (data != null)
-        {
+        if (data != null) {
             Element nodeWithText = ResultCell.createNodeWithText(document, "a", data, "link");
             td.appendChild(nodeWithText);
         }
         tr.appendChild(td);
     }
 
-    static String toHtmlId(String testName, String tableName)
-    {
-        if (tableName == null || tableName.isEmpty())
-        {
+    static String toHtmlId(String testName, String tableName) {
+        if (tableName == null || tableName.isEmpty()) {
             return testName;
         }
         return testName.replaceAll("\\W+", "_") + '.' + tableName.replaceAll("\\W+", "_");
     }
 
-    private static String getVisibilityFunction()
-    {
-        return "\n" +
-                "function toggleVisibility(id){\n" +
-                "var summary = document.getElementById(id);\n" +
-                "if (summary.style.display === 'none') {\n" +
-                "summary.style.display = 'table-row';\n" +
-                "} else {\n" +
-                "summary.style.display = 'none';\n" +
-                "}\n" +
-                "}\n";
+    private static String getVisibilityFunction() {
+        return "\n" + "function toggleVisibility(id){\n"
+                + "var summary = document.getElementById(id);\n"
+                + "if (summary.style.display === 'none') {\n"
+                + "summary.style.display = 'table-row';\n"
+                + "} else {\n"
+                + "summary.style.display = 'none';\n"
+                + "}\n"
+                + "}\n";
     }
 
-    private static String getCSSDefinitions()
-    {
-        return "\n" +
-                "* { padding: 0;margin: 0; }\n" +
-                "body { color: black; padding: 4px; font-family: Verdana, Geneva, sans-serif; }\n" +
-                "table { border-collapse: collapse; border: 0px; margin-bottom: 12px; }\n" +
-                "th { font-weight: bold; }\n" +
-                "td, th { white-space: nowrap; border: 1px solid black; vertical-align: top; font-size: small; padding: 2px; }\n" +
-                ".pass { background-color: #c0ffc0; }\n" +
-                ".fail { background-color: #ff8080; }\n" +
-                ".outoforder { background-color: #d0b0ff; }\n" +
-                ".missing { background-color: #cccccc; }\n" +
-                ".surplus { background-color: #ffffcc; }\n" +
-                ".summary { background-color: #f3f6f8; }\n" +
-                ".number { text-align: right; }\n" +
-                ".metadata { margin-bottom: 12px; }\n" +
-                ".multi { font-style: italic; }\n" +
-                ".blank_row { height: 10px; border: 0px; background-color: #ffffff; }\n" +
-                ".grey { color: #999999; }\n" +
-                ".blue { color: blue; }\n" +
-                ".italic { font-style: italic; }\n" +
-                ".link { color: blue; text-decoration: underline; cursor:pointer; font-style: italic }\n" +
-                ".small { font-size: x-small; }\n" +
-                "hr { border: 0px; color: black; background-color: black; height: 1px; margin: 2px 0px 2px 0px; }\n" +
-                "p { font-style: italic; font-size: x-small; color: blue; padding: 3px 0 0 0; }\n" +
-                "h1 { font-size: medium; margin-bottom: 4px; }\n" +
-                "h2 { font-size: small; margin-bottom: 4px; }\n";
+    private static String getCSSDefinitions() {
+        return "\n" + "* { padding: 0;margin: 0; }\n"
+                + "body { color: black; padding: 4px; font-family: Verdana, Geneva, sans-serif; }\n"
+                + "table { border-collapse: collapse; border: 0px; margin-bottom: 12px; }\n"
+                + "th { font-weight: bold; }\n"
+                + "td, th { white-space: nowrap; border: 1px solid black; vertical-align: top; font-size: small; padding: 2px; }\n"
+                + ".pass { background-color: #c0ffc0; }\n"
+                + ".fail { background-color: #ff8080; }\n"
+                + ".outoforder { background-color: #d0b0ff; }\n"
+                + ".missing { background-color: #cccccc; }\n"
+                + ".surplus { background-color: #ffffcc; }\n"
+                + ".summary { background-color: #f3f6f8; }\n"
+                + ".number { text-align: right; }\n"
+                + ".metadata { margin-bottom: 12px; }\n"
+                + ".multi { font-style: italic; }\n"
+                + ".blank_row { height: 10px; border: 0px; background-color: #ffffff; }\n"
+                + ".grey { color: #999999; }\n"
+                + ".blue { color: blue; }\n"
+                + ".italic { font-style: italic; }\n"
+                + ".link { color: blue; text-decoration: underline; cursor:pointer; font-style: italic }\n"
+                + ".small { font-size: x-small; }\n"
+                + "hr { border: 0px; color: black; background-color: black; height: 1px; margin: 2px 0px 2px 0px; }\n"
+                + "p { font-style: italic; font-size: x-small; color: blue; padding: 3px 0 0 0; }\n"
+                + "h1 { font-size: medium; margin-bottom: 4px; }\n"
+                + "h2 { font-size: small; margin-bottom: 4px; }\n";
     }
 
-    static abstract class LazyValue<T>
-    {
+    abstract static class LazyValue<T> {
         private T value;
 
         protected abstract T initialize();
 
-        public T value()
-        {
-            if (value == null)
-            {
+        public T value() {
+            if (value == null) {
                 value = initialize();
             }
             return value;

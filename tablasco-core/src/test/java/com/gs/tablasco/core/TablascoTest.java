@@ -4,11 +4,6 @@ import com.gs.tablasco.NamedTable;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ListVerifiableTable;
 import com.gs.tablasco.verify.ResultTable;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,11 +11,15 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class TablascoTest {
 
-    private static final VerifiableTable T1 = new ListVerifiableTable(
-            Arrays.asList("key", "value"), Collections.singletonList(Arrays.asList("a", 1)));
+    private static final VerifiableTable T1 =
+            new ListVerifiableTable(Arrays.asList("key", "value"), Collections.singletonList(Arrays.asList("a", 1)));
     private static final VerifiableTable T2 = new ListVerifiableTable(
             Arrays.asList("key", "value", "surplus"), Collections.singletonList(Arrays.asList("a", 2, "x")));
 
@@ -28,16 +27,17 @@ public class TablascoTest {
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void loadBaseline() {
-    }
+    public void loadBaseline() {}
 
     @Test
-    public void saveBaseline() {
-    }
+    public void saveBaseline() {}
 
     @Test
     public void verifyTables() throws IOException {
-        Tablasco tablasco = new Tablasco(new VerifierConfig().withIgnoreSurplusColumns(), new HtmlConfig().withHideMatchedColumns(true), "myTest");
+        Tablasco tablasco = new Tablasco(
+                new VerifierConfig().withIgnoreSurplusColumns(),
+                new HtmlConfig().withHideMatchedColumns(true),
+                "myTest");
         Map<String, ResultTable> verifiedTables = tablasco.verifyTables(
                 Collections.singletonList(new NamedTable("table1", T1)),
                 Collections.singletonList(new NamedTable("table1", T2)));
@@ -113,10 +113,10 @@ public class TablascoTest {
                                 </div>
                             </body>
                         </html>
-                        """, new String(Files.readAllBytes(path), StandardCharsets.UTF_8).replaceAll("[\n\r]+", "\n"));
+                        """,
+                new String(Files.readAllBytes(path), StandardCharsets.UTF_8).replaceAll("[\n\r]+", "\n"));
     }
 
     @Test
-    public void writeResults() {
-    }
+    public void writeResults() {}
 }

@@ -22,8 +22,7 @@ import com.gs.tablasco.VerifiableTable;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class TableAdaptersTest
-{
+public class TableAdaptersTest {
     @Rule
     public final TableVerifier verifier = new TableVerifier()
             .withExpectedDir(TableTestUtils.getExpectedDirectory())
@@ -33,26 +32,20 @@ public class TableAdaptersTest
             .withHideMatchedTables(true);
 
     @Test
-    public void testAllRows()
-    {
+    public void testAllRows() {
         this.verify(
                 TableTestUtils.createTable(1, "C", 1, 2, 3, 4, 5),
                 TableAdapters.withRows(TableTestUtils.createTable(1, "C", 1, 2, 3, 4, 5), i -> true));
     }
 
-
     @Test
-    public void testNoRows()
-    {
+    public void testNoRows() {
         VerifiableTable table = TableTestUtils.createTable(1, "C", 1, 2, 3, 4, 5);
-        this.verify(
-                TableTestUtils.createTable(1, "C"),
-                TableAdapters.withRows(table, i -> false));
+        this.verify(TableTestUtils.createTable(1, "C"), TableAdapters.withRows(table, i -> false));
     }
 
     @Test
-    public void testSomeRows()
-    {
+    public void testSomeRows() {
         VerifiableTable table = TableTestUtils.createTable(1, "C", 1, 2, 3, 4, 5);
         this.verify(
                 TableTestUtils.createTable(1, "C", 2, 4),
@@ -60,41 +53,37 @@ public class TableAdaptersTest
     }
 
     @Test
-    public void testAllColumns()
-    {
+    public void testAllColumns() {
         this.verify(
                 TableTestUtils.createTable(5, "C1", "C2", "C3", "C4", "C5"),
                 TableAdapters.withColumns(TableTestUtils.createTable(5, "C1", "C2", "C3", "C4", "C5"), name -> true));
     }
 
     @Test
-    public void testSomeColumns()
-    {
+    public void testSomeColumns() {
         this.verify(
                 TableTestUtils.createTable(3, "C1", "C3", "C5"),
-                TableAdapters.withColumns(TableTestUtils.createTable(5, "C1", "C2", "C3", "C4", "C5"), name -> name.matches("C[135]")));
+                TableAdapters.withColumns(
+                        TableTestUtils.createTable(5, "C1", "C2", "C3", "C4", "C5"), name -> name.matches("C[135]")));
     }
 
     @Test
-    public void composition1()
-    {
+    public void composition1() {
         VerifiableTable table = TableTestUtils.createTable(2, "C1", "C2", 1, 2, 3, 4);
-        VerifiableTable rowFilter = TableAdapters.withRows(TableAdapters.withColumns(table, name -> name.equals("C2")), i -> i > 0);
+        VerifiableTable rowFilter =
+                TableAdapters.withRows(TableAdapters.withColumns(table, name -> name.equals("C2")), i -> i > 0);
         this.verify(TableTestUtils.createTable(1, "C2", 4), rowFilter);
     }
 
     @Test
-    public void composition2()
-    {
+    public void composition2() {
         VerifiableTable table = TableTestUtils.createTable(2, "C1", "C2", 1, 2, 3, 4);
-        VerifiableTable columnFilter = TableAdapters.withColumns(
-                TableAdapters.withRows(table, i -> i > 0),
-                name -> name.equals("C2"));
+        VerifiableTable columnFilter =
+                TableAdapters.withColumns(TableAdapters.withRows(table, i -> i > 0), name -> name.equals("C2"));
         this.verify(TableTestUtils.createTable(1, "C2", 4), columnFilter);
     }
 
-    private void verify(VerifiableTable expected, VerifiableTable adaptedActual)
-    {
+    private void verify(VerifiableTable expected, VerifiableTable adaptedActual) {
         this.verifier.verify("table", adaptedActual, expected);
     }
 }

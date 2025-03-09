@@ -21,41 +21,35 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class CreateActualResultsTest
-{
-    private final TableVerifier verifier = new TableVerifier()
-            .withMavenDirectoryStrategy()
-            .withFilePerMethod();
+public class CreateActualResultsTest {
+    private final TableVerifier verifier =
+            new TableVerifier().withMavenDirectoryStrategy().withFilePerMethod();
 
     @Rule
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         this.verifier.starting(this.description.get());
         this.verifier.getActualFile().delete();
     }
 
     @Test
-    public void testDefault()
-    {
+    public void testDefault() {
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testTrue()
-    {
+    public void testTrue() {
         this.verifier.withCreateActualResults(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testFalse()
-    {
+    public void testFalse() {
         this.verifier.withCreateActualResults(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
         Assert.assertFalse(this.verifier.getActualFile().exists());

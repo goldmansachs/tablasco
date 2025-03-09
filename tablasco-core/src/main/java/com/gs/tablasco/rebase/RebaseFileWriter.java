@@ -20,9 +20,6 @@ import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.Metadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -31,9 +28,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public final class RebaseFileWriter
-{
+public final class RebaseFileWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RebaseFileWriter.class);
 
     // we create files first time for each test run, then append...
@@ -48,86 +46,79 @@ public final class RebaseFileWriter
     private final ColumnComparators columnComparators;
     private final File outputFile;
 
-    public RebaseFileWriter(Metadata metadata, String[] baselineHeaders, ColumnComparators columnComparators, File outputFile)
-    {
+    public RebaseFileWriter(
+            Metadata metadata, String[] baselineHeaders, ColumnComparators columnComparators, File outputFile) {
         this.metadata = metadata;
         this.baselineHeaders = baselineHeaders;
         this.columnComparators = columnComparators;
         this.outputFile = outputFile;
     }
 
-    public void writeRebasedResults(String methodName, Map<String, VerifiableTable> actualResults)
-    {
+    public void writeRebasedResults(String methodName, Map<String, VerifiableTable> actualResults) {
         deleteExpectedResults();
         boolean needsHeaderAndMetadata = !this.outputFile.exists();
         File parentDir = this.outputFile.getParentFile();
-        if (!parentDir.exists() && !parentDir.mkdirs())
-        {
+        if (!parentDir.exists() && !parentDir.mkdirs()) {
             throw new IllegalStateException("Unable to create results directory:" + parentDir);
         }
-        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile, true), StandardCharsets.UTF_8))))
-        {
-            if (needsHeaderAndMetadata)
-            {
+        try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(this.outputFile, true), StandardCharsets.UTF_8)))) {
+            if (needsHeaderAndMetadata) {
                 printHeaderAndMetadata(printWriter);
             }
             writeTables(methodName, actualResults, printWriter);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void writeTables(String methodName, Map<String, VerifiableTable> actualResults, PrintWriter printWriter) {
-        for (Map.Entry<String, VerifiableTable> namedTable : actualResults.entrySet())
-        {
+        for (Map.Entry<String, VerifiableTable> namedTable : actualResults.entrySet()) {
             LOGGER.info("Writing results for '{} {}' to '{}'", methodName, namedTable.getKey(), this.outputFile);
             printTable(printWriter, methodName, namedTable.getKey(), namedTable.getValue(), this.columnComparators);
         }
     }
 
-    private static void printSeparatorIfNecessary(VerifiableTable table, PrintWriter printWriter, int column)
-    {
-        if (column < table.getColumnCount() - 1)
-        {
+    private static void printSeparatorIfNecessary(VerifiableTable table, PrintWriter printWriter, int column) {
+        if (column < table.getColumnCount() - 1) {
             printWriter.print(",");
         }
     }
 
-    private static void printString(PrintWriter printWriter, String str)
-    {
+    private static void printString(PrintWriter printWriter, String str) {
         printWriter.print("\"");
-        String backSlashesEscaped = str.indexOf('\\') < 0 ? str : BACKSLASH_PATTERN.matcher(str).replaceAll(BACKSLASH_REPLACEMENT);
-        String backSlashesAndQuotesEscaped = backSlashesEscaped.indexOf('"') < 0 ? backSlashesEscaped : DOUBLE_QUOTE_PATTERN.matcher(backSlashesEscaped).replaceAll(DOUBLE_QUOTE_REPLACEMENT);
+        String backSlashesEscaped =
+                str.indexOf('\\') < 0 ? str : BACKSLASH_PATTERN.matcher(str).replaceAll(BACKSLASH_REPLACEMENT);
+        String backSlashesAndQuotesEscaped = backSlashesEscaped.indexOf('"') < 0
+                ? backSlashesEscaped
+                : DOUBLE_QUOTE_PATTERN.matcher(backSlashesEscaped).replaceAll(DOUBLE_QUOTE_REPLACEMENT);
         printWriter.print(backSlashesAndQuotesEscaped);
         printWriter.print("\"");
     }
 
-    private static void deleteFile(File file)
-    {
-        if (file.exists() && !file.delete())
-        {
+    private static void deleteFile(File file) {
+        if (file.exists() && !file.delete()) {
             throw new RuntimeException("Cannot delete output file " + file.getName());
         }
     }
 
-    private void deleteExpectedResults()
-    {
-        if (SEEN_FILES.add(this.outputFile.getAbsolutePath()))
-        {
+    private void deleteExpectedResults() {
+        if (SEEN_FILES.add(this.outputFile.getAbsolutePath())) {
             deleteFile(this.outputFile);
         }
     }
 
-    public static void printTable(PrintWriter printWriter, String methodName, String tableName, VerifiableTable verifiableTable, ColumnComparators columnComparators)
-    {
+    public static void printTable(
+            PrintWriter printWriter,
+            String methodName,
+            String tableName,
+            VerifiableTable verifiableTable,
+            ColumnComparators columnComparators) {
         printWriter.print("Section ");
         printWriter.print('"');
         printWriter.print(methodName);
         printWriter.print('"');
-        if (tableName != null && !tableName.isEmpty())
-        {
+        if (tableName != null && !tableName.isEmpty()) {
             printWriter.print(' ');
             printString(printWriter, tableName);
         }
@@ -136,29 +127,23 @@ public final class RebaseFileWriter
         printWriter.println();
     }
 
-    public static void printTableContents(PrintWriter printWriter, VerifiableTable table, ColumnComparators columnComparators)
-    {
-        for (int column = 0; column < table.getColumnCount(); column++)
-        {
+    public static void printTableContents(
+            PrintWriter printWriter, VerifiableTable table, ColumnComparators columnComparators) {
+        for (int column = 0; column < table.getColumnCount(); column++) {
             String name = table.getColumnName(column);
             printString(printWriter, name);
             printSeparatorIfNecessary(table, printWriter, column);
         }
         printWriter.println();
 
-        for (int row = 0; row < table.getRowCount(); row++)
-        {
-            for (int column = 0; column < table.getColumnCount(); column++)
-            {
+        for (int row = 0; row < table.getRowCount(); row++) {
+            for (int column = 0; column < table.getColumnCount(); column++) {
                 CellComparator comparator = columnComparators.getComparatorForRebase(table.getColumnName(column));
                 Object cell = table.getValueAt(row, column);
                 String formattedCell = comparator.getFormatter().format(cell);
-                if (cell instanceof Number && !SPECIAL_NUMBERS.contains(formattedCell))
-                {
+                if (cell instanceof Number && !SPECIAL_NUMBERS.contains(formattedCell)) {
                     printWriter.print(formattedCell);
-                }
-                else
-                {
+                } else {
                     printString(printWriter, formattedCell);
                 }
                 printSeparatorIfNecessary(table, printWriter, column);
@@ -167,13 +152,10 @@ public final class RebaseFileWriter
         }
     }
 
-    private void printHeaderAndMetadata(PrintWriter printWriter)
-    {
-        if (this.baselineHeaders != null && this.baselineHeaders.length > 0)
-        {
+    private void printHeaderAndMetadata(PrintWriter printWriter) {
+        if (this.baselineHeaders != null && this.baselineHeaders.length > 0) {
             printWriter.println("/*");
-            for (String baselineHeader : this.baselineHeaders)
-            {
+            for (String baselineHeader : this.baselineHeaders) {
                 printWriter.print(" * ");
                 printWriter.println(baselineHeader);
             }

@@ -16,24 +16,22 @@
 
 package com.gs.tablasco;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-public class IgnoreColumnsTest
-{
+public class IgnoreColumnsTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy();
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void ignoreColumns() throws IOException
-    {
-        VerifiableTable table1 = TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "A2", "A3", "A4");
-        VerifiableTable table2 = TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "XX", "A3", "XX");
+    public void ignoreColumns() throws IOException {
+        VerifiableTable table1 =
+                TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "A2", "A3", "A4");
+        VerifiableTable table2 =
+                TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "XX", "A3", "XX");
         this.tableVerifier.withIgnoreColumns("Col 2", "Col 4").verify("name", table1, table2);
 
         Assert.assertEquals(
@@ -47,6 +45,7 @@ public class IgnoreColumnsTest
                         <td class="pass">A1</td>
                         <td class="pass">A3</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }

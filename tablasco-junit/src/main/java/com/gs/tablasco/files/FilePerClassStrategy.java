@@ -24,23 +24,19 @@ package com.gs.tablasco.files;
  * default FilePerMethod instead.
  */
 @Deprecated
-public class FilePerClassStrategy implements FilenameStrategy
-{
+public class FilePerClassStrategy implements FilenameStrategy {
     @Override
-    public String getExpectedFilename(Class<?> testClass, String methodName)
-    {
+    public String getExpectedFilename(Class<?> testClass, String methodName) {
         return testClass.getSimpleName() + ".txt";
     }
 
     @Override
-    public String getOutputFilename(Class<?> testClass, String methodName)
-    {
+    public String getOutputFilename(Class<?> testClass, String methodName) {
         return testClass.getSimpleName() + ".html";
     }
 
     @Override
-    public String getActualFilename(Class<?> testClass, String methodName)
-    {
+    public String getActualFilename(Class<?> testClass, String methodName) {
         return testClass.getSimpleName() + ".txt";
     }
 }

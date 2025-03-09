@@ -19,44 +19,41 @@ package com.gs.tablasco.verify.indexmap;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.CellComparator;
 import com.gs.tablasco.verify.ColumnComparators;
-
 import java.util.List;
 
-public class BestMatchPartialMatcher implements PartialMatcher
-{
+public class BestMatchPartialMatcher implements PartialMatcher {
     private final VerifiableTable actualData;
     private final VerifiableTable expectedData;
     private final ColumnComparators columnComparators;
 
-    BestMatchPartialMatcher(VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators)
-    {
+    BestMatchPartialMatcher(
+            VerifiableTable actualData, VerifiableTable expectedData, ColumnComparators columnComparators) {
         this.actualData = actualData;
         this.expectedData = expectedData;
         this.columnComparators = columnComparators;
     }
 
     @Override
-    public void match(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> matchedColumns)
-    {
-        for (UnmatchedIndexMap expected : allMissingRows)
-        {
-            for (UnmatchedIndexMap actual : allSurplusRows)
-            {
+    public void match(
+            List<UnmatchedIndexMap> allMissingRows,
+            List<UnmatchedIndexMap> allSurplusRows,
+            List<IndexMap> matchedColumns) {
+        for (UnmatchedIndexMap expected : allMissingRows) {
+            for (UnmatchedIndexMap actual : allSurplusRows) {
                 int matchScore = 0;
-                for (int colIndex = 0; colIndex < matchedColumns.size(); colIndex++)
-                {
+                for (int colIndex = 0; colIndex < matchedColumns.size(); colIndex++) {
                     IndexMap column = matchedColumns.get(colIndex);
-                    Object expectedValue = this.expectedData.getValueAt(expected.getExpectedIndex(), column.getExpectedIndex());
+                    Object expectedValue =
+                            this.expectedData.getValueAt(expected.getExpectedIndex(), column.getExpectedIndex());
                     Object actualValue = this.actualData.getValueAt(actual.getActualIndex(), column.getActualIndex());
-                    CellComparator comparator = this.columnComparators.getComparator(expectedData.getColumnName(column.getExpectedIndex()));
-                    if (comparator.equals(actualValue, expectedValue))
-                    {
+                    CellComparator comparator =
+                            this.columnComparators.getComparator(expectedData.getColumnName(column.getExpectedIndex()));
+                    if (comparator.equals(actualValue, expectedValue)) {
                         int inverseColumnNumber = matchedColumns.size() - colIndex;
                         matchScore += inverseColumnNumber * inverseColumnNumber;
                     }
                 }
-                if (matchScore > 0)
-                {
+                if (matchScore > 0) {
                     expected.addMatch(matchScore, actual);
                 }
             }

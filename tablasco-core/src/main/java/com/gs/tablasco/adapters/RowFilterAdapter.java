@@ -18,36 +18,29 @@ package com.gs.tablasco.adapters;
 
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-
 import java.util.function.IntPredicate;
 
-class RowFilterAdapter extends DefaultVerifiableTableAdapter
-{
+class RowFilterAdapter extends DefaultVerifiableTableAdapter {
     private final int[] indexMap;
     private int rowCount = 0;
 
-    RowFilterAdapter(VerifiableTable delegate, IntPredicate rowFilter)
-    {
+    RowFilterAdapter(VerifiableTable delegate, IntPredicate rowFilter) {
         super(delegate);
         this.indexMap = new int[delegate.getRowCount()];
-        for (int i = 0; i < delegate.getRowCount(); i++)
-        {
-            if (rowFilter.test(i))
-            {
+        for (int i = 0; i < delegate.getRowCount(); i++) {
+            if (rowFilter.test(i)) {
                 indexMap[this.rowCount++] = i;
             }
         }
     }
 
     @Override
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return this.rowCount;
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         return super.getValueAt(this.indexMap[rowIndex], columnIndex);
     }
 }

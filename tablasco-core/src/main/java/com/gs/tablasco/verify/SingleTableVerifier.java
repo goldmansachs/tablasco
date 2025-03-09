@@ -18,7 +18,6 @@ package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
 
-public interface SingleTableVerifier
-{
+public interface SingleTableVerifier {
     ResultTable verify(VerifiableTable actualData, VerifiableTable expectedData);
 }

@@ -16,31 +16,28 @@
 
 package com.gs.tablasco;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-public class HideMatchedTablesTest
-{
+public class HideMatchedTablesTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy()
-            .withHideMatchedTables(true);
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedTables(true);
 
     @Test
-    public void matchedTablesAreHidden() throws IOException
-    {
+    public void matchedTablesAreHidden() throws IOException {
         final VerifiableTable matchTable = new TestTable("Col").withRow("A");
         final VerifiableTable outOfOrderTableExpected = new TestTable("Col 1", "Col 2").withRow("A", "B");
         final VerifiableTable outOfOrderTableActual = new TestTable("Col 2", "Col 1").withRow("B", "A");
         final VerifiableTable breakTableExpected = new TestTable("Col").withRow("A");
         final VerifiableTable breakTableActual = new TestTable("Col").withRow("B");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify(
-                TableTestUtils.toNamedTables("match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
-                TableTestUtils.toNamedTables("match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual)));
+                TableTestUtils.toNamedTables(
+                        "match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
+                TableTestUtils.toNamedTables(
+                        "match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual)));
         Assert.assertEquals(
                 """
                         <body>
@@ -77,7 +74,7 @@ public class HideMatchedTablesTest
                         </tr>
                         </table>
                         </div>
-                        </body>"""
-        , TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 }

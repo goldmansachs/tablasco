@@ -16,34 +16,29 @@
 
 package com.gs.tablasco.verify;
 
-import org.w3c.dom.Element;
-
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.w3c.dom.Element;
 
-public class SummaryResultTable implements FormattableTable, Serializable
-{
+public class SummaryResultTable implements FormattableTable, Serializable {
     private final Map<String, SummaryResult> resultsByKey = new TreeMap<>();
     private int passedCellCount;
     private int totalCellCount;
     private List<ResultCell> headers;
 
-    public SummaryResultTable(ResultTable resultTable)
-    {
+    public SummaryResultTable(ResultTable resultTable) {
         this.headers = resultTable.getHeaders();
         this.passedCellCount += resultTable.getPassedCellCount();
         this.totalCellCount += resultTable.getTotalCellCount();
         List<List<ResultCell>> verifiedRows = resultTable.getVerifiedRows();
-        for (int i = 1; i < verifiedRows.size(); i++)
-        {
+        for (int i = 1; i < verifiedRows.size(); i++) {
             List<ResultCell> verifiedRow = verifiedRows.get(i);
             String key = getKey(verifiedRow);
             SummaryResult summaryResult = this.resultsByKey.get(key);
-            if (summaryResult == null)
-            {
+            if (summaryResult == null) {
                 summaryResult = new SummaryResult(key, this.headers.size());
                 this.resultsByKey.put(key, summaryResult);
             }
@@ -53,29 +48,23 @@ public class SummaryResultTable implements FormattableTable, Serializable
         }
     }
 
-    public SummaryResultTable merge(SummaryResultTable resultTable)
-    {
+    public SummaryResultTable merge(SummaryResultTable resultTable) {
         List<ResultCell> nextHeaders = resultTable.getHeaders();
-        if (this.headers == null || nextHeaders.size() > this.headers.size())
-        {
+        if (this.headers == null || nextHeaders.size() > this.headers.size()) {
             this.headers = nextHeaders;
         }
         this.passedCellCount += resultTable.getPassedCellCount();
         this.totalCellCount += resultTable.getTotalCellCount();
 
-        for (Map.Entry<String, SummaryResult> entry : resultTable.getResultsByKey().entrySet())
-        {
+        for (Map.Entry<String, SummaryResult> entry :
+                resultTable.getResultsByKey().entrySet()) {
             SummaryResult summaryResult = entry.getValue();
             SummaryResult mergedResult = this.resultsByKey.get(entry.getKey());
-            if (mergedResult == null)
-            {
+            if (mergedResult == null) {
                 mergedResult = new SummaryResult(summaryResult);
                 this.resultsByKey.put(entry.getKey(), mergedResult);
-            }
-            else
-            {
-                for (List<ResultCell> resultCells : summaryResult.firstFew)
-                {
+            } else {
+                for (List<ResultCell> resultCells : summaryResult.firstFew) {
                     mergedResult.addRow(resultCells);
                 }
                 mergedResult.mergeCardinalities(summaryResult.columnCardinalityList);
@@ -86,25 +75,21 @@ public class SummaryResultTable implements FormattableTable, Serializable
     }
 
     @Override
-    public boolean isSuccess()
-    {
+    public boolean isSuccess() {
         return this.passedCellCount == this.totalCellCount;
     }
 
     @Override
-    public int getPassedCellCount()
-    {
+    public int getPassedCellCount() {
         return this.passedCellCount;
     }
 
     @Override
-    public int getTotalCellCount()
-    {
+    public int getTotalCellCount() {
         return this.totalCellCount;
     }
 
-    Map<String, SummaryResult> getResultsByKey()
-    {
+    Map<String, SummaryResult> getResultsByKey() {
         return this.resultsByKey;
     }
 
@@ -115,16 +100,13 @@ public class SummaryResultTable implements FormattableTable, Serializable
      *  - All cells are surplus: returns "2"
      *  - All cells are fail:    returns "300110" (where 00110 corresponds to pass/fail cells in the row)
      */
-    private String getKey(List<ResultCell> verifiedRow)
-    {
+    private String getKey(List<ResultCell> verifiedRow) {
         int passCount = 0;
         int surpCount = 0;
         int failCount = 0;
         StringBuilder failedKey = new StringBuilder().append('3');
-        for (ResultCell resultCell : verifiedRow)
-        {
-            switch (resultCell.getCssClass())
-            {
+        for (ResultCell resultCell : verifiedRow) {
+            switch (resultCell.getCssClass()) {
                 case "pass":
                     passCount++;
                     failedKey.append('0');
@@ -138,64 +120,65 @@ public class SummaryResultTable implements FormattableTable, Serializable
                     break;
             }
         }
-        if (failCount > 0)
-        {
+        if (failCount > 0) {
             return failedKey.toString();
         }
-        if (passCount > 0)
-        {
+        if (passCount > 0) {
             return "0";
         }
         return surpCount > 0 ? "2" : "1";
     }
 
     @Override
-    public List<ResultCell> getHeaders()
-    {
+    public List<ResultCell> getHeaders() {
         return this.headers;
     }
 
     @Override
-    public int getMatchedColumnsAhead(int col)
-    {
+    public int getMatchedColumnsAhead(int col) {
         return 0;
     }
 
     @Override
-    public void appendTo(final String testName, final String tableName, final Element table, final HtmlOptions htmlOptions)
-    {
+    public void appendTo(
+            final String testName, final String tableName, final Element table, final HtmlOptions htmlOptions) {
         HtmlFormatter.appendHeaderRow(table, this, htmlOptions);
         int index = 0;
         for (String key : this.getResultsByKey().keySet()) {
             SummaryResult summaryResult = getResultsByKey().get(key);
             HtmlFormatter.appendSpanningRow(table, SummaryResultTable.this, "blank_row", null, null);
 
-            for (List<ResultCell> resultCells : summaryResult.getFirstFewRows())
-            {
+            for (List<ResultCell> resultCells : summaryResult.getFirstFewRows()) {
                 HtmlFormatter.appendDataRow(table, SummaryResultTable.this, null, null, resultCells, htmlOptions);
             }
             int remainingRows = summaryResult.getRemainingRowCount();
-            if (remainingRows > 0)
-            {
+            if (remainingRows > 0) {
                 String summaryRowId = HtmlFormatter.toHtmlId(testName, tableName) + ".summaryRow" + index;
                 String summaryText;
-                if ("0".equals(key))
-                {
+                if ("0".equals(key)) {
                     summaryText = ResultCell.adaptOnCount(remainingRows, " more matched row");
-                }
-                else
-                {
+                } else {
                     summaryText = ResultCell.adaptOnCount(remainingRows, " more break") + " like this";
                 }
-                HtmlFormatter.appendSpanningRow(table, SummaryResultTable.this, "summary", NumberFormat.getInstance().format(remainingRows) + summaryText + "...", "toggleVisibility('" + summaryRowId + "')");
-                HtmlFormatter.appendDataRow(table, SummaryResultTable.this, summaryRowId, "display:none", summaryResult.getSummaryCardinalityRow(), htmlOptions);
+                HtmlFormatter.appendSpanningRow(
+                        table,
+                        SummaryResultTable.this,
+                        "summary",
+                        NumberFormat.getInstance().format(remainingRows) + summaryText + "...",
+                        "toggleVisibility('" + summaryRowId + "')");
+                HtmlFormatter.appendDataRow(
+                        table,
+                        SummaryResultTable.this,
+                        summaryRowId,
+                        "display:none",
+                        summaryResult.getSummaryCardinalityRow(),
+                        htmlOptions);
             }
             index++;
         }
     }
 
-    private static class SummaryResult implements Serializable
-    {
+    private static class SummaryResult implements Serializable {
         private static final int MAX_NUMBER_OF_FIRST_FEW_ROWS = 3;
         private static final int MAXIMUM_CARDINALITY_TO_COUNT = 20;
         private final List<List<ResultCell>> firstFew = new ArrayList<>();
@@ -203,62 +186,52 @@ public class SummaryResultTable implements FormattableTable, Serializable
         private final String key;
         private final List<ColumnCardinality> columnCardinalityList;
 
-        private SummaryResult(String key, int numberOfColumns)
-        {
+        private SummaryResult(String key, int numberOfColumns) {
             this.key = key;
-            this.columnCardinalityList = IntStream.rangeClosed(1, numberOfColumns).mapToObj(value -> createColumnCardinality()).collect(Collectors.toList());
+            this.columnCardinalityList = IntStream.rangeClosed(1, numberOfColumns)
+                    .mapToObj(value -> createColumnCardinality())
+                    .collect(Collectors.toList());
         }
 
-        private SummaryResult(SummaryResult summaryResult)
-        {
+        private SummaryResult(SummaryResult summaryResult) {
             this.firstFew.addAll(summaryResult.firstFew);
             this.totalRows = summaryResult.totalRows;
             this.key = summaryResult.key;
             this.columnCardinalityList = summaryResult.columnCardinalityList;
         }
 
-        void addRow(List<ResultCell> verifiedRow)
-        {
-            if (this.firstFew.size() < MAX_NUMBER_OF_FIRST_FEW_ROWS)
-            {
+        void addRow(List<ResultCell> verifiedRow) {
+            if (this.firstFew.size() < MAX_NUMBER_OF_FIRST_FEW_ROWS) {
                 this.firstFew.add(verifiedRow);
             }
         }
 
-        void addCardinality(List<ResultCell> verifiedRow)
-        {
-            for (int rowIndex = 0; rowIndex < verifiedRow.size(); rowIndex++)
-            {
+        void addCardinality(List<ResultCell> verifiedRow) {
+            for (int rowIndex = 0; rowIndex < verifiedRow.size(); rowIndex++) {
                 ResultCell resultCell = verifiedRow.get(rowIndex);
                 SummaryResult.this.columnCardinalityList.get(rowIndex).addOccurrence(resultCell.getSummary());
             }
         }
 
-        void mergeCardinalities(final List<ColumnCardinality> columnCardinalities)
-        {
-            for (int columnIndex = 0; columnIndex < columnCardinalities.size(); columnIndex++)
-            {
+        void mergeCardinalities(final List<ColumnCardinality> columnCardinalities) {
+            for (int columnIndex = 0; columnIndex < columnCardinalities.size(); columnIndex++) {
                 ColumnCardinality columnCardinality = columnCardinalities.get(columnIndex);
                 SummaryResult.this.columnCardinalityList.get(columnIndex).merge(columnCardinality);
             }
         }
 
-        private List<List<ResultCell>> getFirstFewRows()
-        {
+        private List<List<ResultCell>> getFirstFewRows() {
             return this.firstFew;
         }
 
-        private int getRemainingRowCount()
-        {
+        private int getRemainingRowCount() {
             return this.totalRows - this.firstFew.size();
         }
 
-        private List<ColumnCardinality> getRemainingCardinalities()
-        {
+        private List<ColumnCardinality> getRemainingCardinalities() {
             final List<ColumnCardinality> remainingCardinalities = new ArrayList<>(this.columnCardinalityList);
             this.firstFew.forEach(row -> {
-                for (int index = 0; index < row.size(); index++)
-                {
+                for (int index = 0; index < row.size(); index++) {
                     ResultCell cell = row.get(index);
                     remainingCardinalities.get(index).removeOccurrence(cell.getSummary());
                 }
@@ -266,25 +239,22 @@ public class SummaryResultTable implements FormattableTable, Serializable
             return remainingCardinalities;
         }
 
-        private List<ResultCell> getSummaryCardinalityRow()
-        {
-            return getRemainingCardinalities()
-                    .stream()
-                    .map(columnCardinality -> ResultCell.createSummaryCell(MAXIMUM_CARDINALITY_TO_COUNT, columnCardinality))
+        private List<ResultCell> getSummaryCardinalityRow() {
+            return getRemainingCardinalities().stream()
+                    .map(columnCardinality ->
+                            ResultCell.createSummaryCell(MAXIMUM_CARDINALITY_TO_COUNT, columnCardinality))
                     .collect(Collectors.toList());
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             Map<Object, Object> map = new LinkedHashMap<>();
             map.put("firstFew", this.firstFew.size());
             map.put("totalRows", this.totalRows);
             return map.toString();
         }
 
-        private ColumnCardinality createColumnCardinality()
-        {
+        private ColumnCardinality createColumnCardinality() {
             return new ColumnCardinality(MAX_NUMBER_OF_FIRST_FEW_ROWS + MAXIMUM_CARDINALITY_TO_COUNT);
         }
     }

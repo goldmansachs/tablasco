@@ -21,8 +21,7 @@ import java.io.File;
 /**
  * A strategy for determining the expected results and verification output directories for a given test class.
  */
-public interface DirectoryStrategy
-{
+public interface DirectoryStrategy {
     /**
      * Returns the expected results directory for a given test class.
      * @param testClass the test class

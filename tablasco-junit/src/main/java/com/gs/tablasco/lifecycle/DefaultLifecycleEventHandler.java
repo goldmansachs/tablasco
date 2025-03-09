@@ -18,35 +18,19 @@ package com.gs.tablasco.lifecycle;
 
 import org.junit.runner.Description;
 
-public class DefaultLifecycleEventHandler implements LifecycleEventHandler
-{
+public class DefaultLifecycleEventHandler implements LifecycleEventHandler {
     @Override
-    public void onStarted(Description description)
-    {
-
-    }
+    public void onStarted(Description description) {}
 
     @Override
-    public void onSucceeded(Description description)
-    {
-
-    }
+    public void onSucceeded(Description description) {}
 
     @Override
-    public void onFailed(Throwable e, Description description)
-    {
-
-    }
+    public void onFailed(Throwable e, Description description) {}
 
     @Override
-    public void onSkipped(Description description)
-    {
-
-    }
+    public void onSkipped(Description description) {}
 
     @Override
-    public void onFinished(Description description)
-    {
-
-    }
+    public void onFinished(Description description) {}
 }

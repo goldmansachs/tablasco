@@ -19,27 +19,23 @@ package com.gs.tablasco.verify.indexmap;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class UnmatchedIndexMapTest
-{
+public class UnmatchedIndexMapTest {
     private final UnmatchedIndexMap unmatched = new UnmatchedIndexMap(0, 0);
     private final UnmatchedIndexMap unmatched1 = new UnmatchedIndexMap(1, 1);
     private final UnmatchedIndexMap unmatched2 = new UnmatchedIndexMap(2, 2);
 
     @Test(expected = IllegalArgumentException.class)
-    public void testAddPartialMatchFailsIfSelf()
-    {
+    public void testAddPartialMatchFailsIfSelf() {
         this.unmatched.addMatch(2, this.unmatched);
     }
 
     @Test
-    public void testInitialState()
-    {
+    public void testInitialState() {
         Assert.assertNull(this.unmatched.getBestMutualMatch());
     }
 
     @Test
-    public void addSinglePartialMatch()
-    {
+    public void addSinglePartialMatch() {
         this.unmatched.addMatch(1, this.unmatched1);
         Assert.assertTrue(this.unmatched.match());
         Assert.assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
@@ -47,8 +43,7 @@ public class UnmatchedIndexMapTest
     }
 
     @Test
-    public void bestMatchAddedFirst()
-    {
+    public void bestMatchAddedFirst() {
         this.unmatched.addMatch(2, this.unmatched1);
         this.unmatched.addMatch(1, this.unmatched2);
         Assert.assertTrue(this.unmatched.match());
@@ -57,8 +52,7 @@ public class UnmatchedIndexMapTest
     }
 
     @Test
-    public void bestMatchAddedLast()
-    {
+    public void bestMatchAddedLast() {
         this.unmatched.addMatch(1, this.unmatched2);
         this.unmatched.addMatch(2, this.unmatched1);
         Assert.assertTrue(this.unmatched.match());

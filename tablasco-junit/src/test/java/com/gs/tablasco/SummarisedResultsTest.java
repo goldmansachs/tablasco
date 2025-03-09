@@ -16,44 +16,25 @@
 
 package com.gs.tablasco;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
 public class SummarisedResultsTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy()
-            .withSummarisedResults(true);
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withSummarisedResults(true);
 
     @Test
     public void summarisedResults() throws IOException {
-        final VerifiableTable table1 = TableTestUtils.createTable(2,
-                "key", "v1",
-                "d", "4",
-                "d", "4",
-                "d", "4",
-                "d", "4",
-                "e", "5",
-                "e", "5",
-                "e", "5",
-                "e", "5"
-        );
-        final VerifiableTable table2 = TableTestUtils.createTable(2,
-                "key", "v1",
-                "d", "4",
-                "d", "4",
-                "d", "4",
-                "d", "4",
-                "e", "x",
-                "e", "x",
-                "e", "x",
-                "e", "x"
-        );
-        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(TableTestUtils.toNamedTables("name1", table1, "name2", table1), TableTestUtils.toNamedTables("name1", table2, "name2", table2)));
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                2, "key", "v1", "d", "4", "d", "4", "d", "4", "d", "4", "e", "5", "e", "5", "e", "5", "e", "5");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                2, "key", "v1", "d", "4", "d", "4", "d", "4", "d", "4", "e", "x", "e", "x", "e", "x", "e", "x");
+        TableTestUtils.assertAssertionError(() -> tableVerifier.verify(
+                TableTestUtils.toNamedTables("name1", table1, "name2", table1),
+                TableTestUtils.toNamedTables("name1", table2, "name2", table2)));
         Assert.assertEquals(
                 """
                         <body>
@@ -223,6 +204,7 @@ public class SummarisedResultsTest {
                         </tr>
                         </table>
                         </div>
-                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                        </body>""",
+                TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 }

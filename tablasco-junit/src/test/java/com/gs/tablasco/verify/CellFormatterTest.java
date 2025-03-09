@@ -16,16 +16,13 @@
 
 package com.gs.tablasco.verify;
 
+import java.sql.Timestamp;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.sql.Timestamp;
-
-public class CellFormatterTest
-{
+public class CellFormatterTest {
     @Test
-    public void formatNumbers()
-    {
+    public void formatNumbers() {
         CellFormatter formatter = new CellFormatter(0.01, true);
         Assert.assertEquals("1", formatter.format(1.0d));
         Assert.assertEquals("1.1", formatter.format(1.10d));
@@ -48,8 +45,7 @@ public class CellFormatterTest
     }
 
     @Test
-    public void formatNegativeZero()
-    {
+    public void formatNegativeZero() {
         CellFormatter formatter = new CellFormatter(0.0001, true);
         Assert.assertEquals("0", formatter.format(-0.0d));
         Assert.assertEquals("0", formatter.format(-0));
@@ -61,15 +57,13 @@ public class CellFormatterTest
     }
 
     @Test
-    public void formatDate()
-    {
+    public void formatDate() {
         CellFormatter formatter = new CellFormatter(0, false);
         Assert.assertEquals("2009-02-13 23:31:30", formatter.format(Timestamp.valueOf("2009-02-13 23:31:30.0001")));
     }
 
     @Test
-    public void formatString()
-    {
+    public void formatString() {
         CellFormatter formatter = new CellFormatter(0, false);
         Assert.assertEquals("", formatter.format(""));
         Assert.assertEquals("foo", formatter.format("foo"));
@@ -84,5 +78,4 @@ public class CellFormatterTest
         Assert.assertEquals("", formatter.format("\n \r "));
         Assert.assertEquals("", formatter.format(" \n \r"));
     }
-
 }

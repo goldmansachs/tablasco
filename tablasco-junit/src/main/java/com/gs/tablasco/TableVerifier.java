@@ -32,11 +32,6 @@ import com.gs.tablasco.results.ExpectedResultsLoader;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsCache;
 import com.gs.tablasco.verify.*;
-import org.junit.Assert;
-import org.junit.AssumptionViolatedException;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-
 import java.io.File;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
@@ -47,6 +42,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.junit.Assert;
+import org.junit.AssumptionViolatedException;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 /**
  * A JUnit {@link org.junit.Rule} that can be included in JUnit 4 tests and used for verifying tabular data represented as
@@ -73,14 +72,14 @@ import java.util.function.Predicate;
  * <p>
  */
 @SuppressWarnings("WeakerAccess")
-public final class TableVerifier extends TestWatcher
-{
-    private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
-        Thread thread = new Thread(runnable);
-        thread.setName("Expected Results Loader");
-        thread.setDaemon(true);
-        return thread;
-    });
+public final class TableVerifier extends TestWatcher {
+    private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR =
+            Executors.newSingleThreadExecutor(runnable -> {
+                Thread thread = new Thread(runnable);
+                thread.setName("Expected Results Loader");
+                thread.setDaemon(true);
+                return thread;
+            });
 
     private final VerifierConfig verifierConfig = new VerifierConfig();
     private final HtmlConfig htmlConfig = new HtmlConfig();
@@ -113,8 +112,7 @@ public final class TableVerifier extends TestWatcher
      * @param expectedDirPath path to the expected results directory
      * @return this
      */
-    public TableVerifier withExpectedDir(String expectedDirPath)
-    {
+    public TableVerifier withExpectedDir(String expectedDirPath) {
         return this.withExpectedDir(new File(expectedDirPath));
     }
 
@@ -124,8 +122,7 @@ public final class TableVerifier extends TestWatcher
      * @param expectedDir expected results directory
      * @return this
      */
-    public TableVerifier withExpectedDir(File expectedDir)
-    {
+    public TableVerifier withExpectedDir(File expectedDir) {
         this.fixedExpectedDir = expectedDir;
         return this.withDirectoryStrategy(new FixedDirectoryStrategy(expectedDir, this.fixedOutputDir));
     }
@@ -136,8 +133,7 @@ public final class TableVerifier extends TestWatcher
      * @param outputDirPath path to the verification output directory
      * @return this
      */
-    public TableVerifier withOutputDir(String outputDirPath)
-    {
+    public TableVerifier withOutputDir(String outputDirPath) {
         return this.withOutputDir(new File(outputDirPath));
     }
 
@@ -147,8 +143,7 @@ public final class TableVerifier extends TestWatcher
      * @param outputDir verification output directory
      * @return this
      */
-    public TableVerifier withOutputDir(File outputDir)
-    {
+    public TableVerifier withOutputDir(File outputDir) {
         this.fixedOutputDir = outputDir;
         return this.withDirectoryStrategy(new FixedDirectoryStrategy(this.fixedExpectedDir, outputDir));
     }
@@ -158,8 +153,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withMavenDirectoryStrategy()
-    {
+    public TableVerifier withMavenDirectoryStrategy() {
         return this.withDirectoryStrategy(new MavenStyleDirectoryStrategy());
     }
 
@@ -170,12 +164,10 @@ public final class TableVerifier extends TestWatcher
      * @param outputSubDir   - the folder in target where actual files are written
      * @return this
      */
-    public TableVerifier withMavenDirectoryStrategy(String expectedSubDir, String outputSubDir)
-    {
-        final MavenStyleDirectoryStrategy directoryStrategy =
-                new MavenStyleDirectoryStrategy()
-                        .withExpectedSubDir(expectedSubDir)
-                        .withOutputSubDir(outputSubDir);
+    public TableVerifier withMavenDirectoryStrategy(String expectedSubDir, String outputSubDir) {
+        final MavenStyleDirectoryStrategy directoryStrategy = new MavenStyleDirectoryStrategy()
+                .withExpectedSubDir(expectedSubDir)
+                .withOutputSubDir(outputSubDir);
         return this.withDirectoryStrategy(directoryStrategy);
     }
 
@@ -184,8 +176,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withRebase()
-    {
+    public TableVerifier withRebase() {
         this.isRebasing = true;
         return this;
     }
@@ -193,8 +184,7 @@ public final class TableVerifier extends TestWatcher
     /**
      * @return whether rebasing is enabled or not
      */
-    public boolean isRebasing()
-    {
+    public boolean isRebasing() {
         return this.isRebasing;
     }
 
@@ -204,8 +194,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withFilePerMethod()
-    {
+    public TableVerifier withFilePerMethod() {
         return this.withFileStrategy(new FilePerMethodStrategy());
     }
 
@@ -219,8 +208,7 @@ public final class TableVerifier extends TestWatcher
      * default FilePerMethod instead.
      */
     @Deprecated
-    public TableVerifier withFilePerClass()
-    {
+    public TableVerifier withFilePerClass() {
         return this.withFileStrategy(new FilePerClassStrategy());
     }
 
@@ -231,8 +219,7 @@ public final class TableVerifier extends TestWatcher
      * @param filenameStrategy the filename stragety
      * @return this
      */
-    public TableVerifier withFileStrategy(FilenameStrategy filenameStrategy)
-    {
+    public TableVerifier withFileStrategy(FilenameStrategy filenameStrategy) {
         this.fileStrategy = filenameStrategy;
         return this;
     }
@@ -244,8 +231,7 @@ public final class TableVerifier extends TestWatcher
      * @param directoryStrategy the directory strategy
      * @return this
      */
-    public TableVerifier withDirectoryStrategy(DirectoryStrategy directoryStrategy)
-    {
+    public TableVerifier withDirectoryStrategy(DirectoryStrategy directoryStrategy) {
         this.directoryStrategy = directoryStrategy;
         return this;
     }
@@ -257,8 +243,7 @@ public final class TableVerifier extends TestWatcher
      * @param verifyRowOrder whether to verify row order or not
      * @return this
      */
-    public TableVerifier withVerifyRowOrder(boolean verifyRowOrder)
-    {
+    public TableVerifier withVerifyRowOrder(boolean verifyRowOrder) {
         this.verifierConfig.withVerifyRowOrder(verifyRowOrder);
         return this;
     }
@@ -271,8 +256,7 @@ public final class TableVerifier extends TestWatcher
      * @param value metadata value
      * @return this
      */
-    public TableVerifier withMetadata(String name, String value)
-    {
+    public TableVerifier withMetadata(String name, String value) {
         this.metadata.add(name, value);
         return this;
     }
@@ -287,8 +271,7 @@ public final class TableVerifier extends TestWatcher
      * @param tolerance the tolerance to apply
      * @return this
      */
-    public TableVerifier withTolerance(double tolerance)
-    {
+    public TableVerifier withTolerance(double tolerance) {
         this.verifierConfig.withTolerance(tolerance);
         return this;
     }
@@ -301,8 +284,7 @@ public final class TableVerifier extends TestWatcher
      * @param tolerance the tolerance to apply
      * @return this
      */
-    public TableVerifier withTolerance(String columnName, double tolerance)
-    {
+    public TableVerifier withTolerance(String columnName, double tolerance) {
         this.verifierConfig.withTolerance(columnName, tolerance);
         return this;
     }
@@ -318,8 +300,7 @@ public final class TableVerifier extends TestWatcher
      * @param varianceThreshold the variance threshold to apply
      * @return this
      */
-    public TableVerifier withVarianceThreshold(double varianceThreshold)
-    {
+    public TableVerifier withVarianceThreshold(double varianceThreshold) {
         this.verifierConfig.withVarianceThreshold(varianceThreshold);
         return this;
     }
@@ -332,8 +313,7 @@ public final class TableVerifier extends TestWatcher
      * @param varianceThreshold the variance threshold to apply
      * @return this
      */
-    public TableVerifier withVarianceThreshold(String columnName, double varianceThreshold)
-    {
+    public TableVerifier withVarianceThreshold(String columnName, double varianceThreshold) {
         this.verifierConfig.withVarianceThreshold(columnName, varianceThreshold);
         return this;
     }
@@ -345,8 +325,7 @@ public final class TableVerifier extends TestWatcher
      * @param hideMatchedRows whether to hide matched rows or not
      * @return this
      */
-    public TableVerifier withHideMatchedRows(boolean hideMatchedRows)
-    {
+    public TableVerifier withHideMatchedRows(boolean hideMatchedRows) {
         this.htmlConfig.withHideMatchedRows(hideMatchedRows);
         return this;
     }
@@ -358,8 +337,7 @@ public final class TableVerifier extends TestWatcher
      * @param tableNames varargs of table names to always show matched rows for
      * @return this
      */
-    public TableVerifier withAlwaysShowMatchedRowsFor(String... tableNames)
-    {
+    public TableVerifier withAlwaysShowMatchedRowsFor(String... tableNames) {
         this.htmlConfig.withAlwaysShowMatchedRowsFor(tableNames);
         return this;
     }
@@ -371,15 +349,14 @@ public final class TableVerifier extends TestWatcher
      * @param hideMatchedColumns whether to hide matched columns or not
      * @return this
      */
-    public TableVerifier withHideMatchedColumns(boolean hideMatchedColumns)
-    {
+    public TableVerifier withHideMatchedColumns(boolean hideMatchedColumns) {
         this.htmlConfig.withHideMatchedColumns(hideMatchedColumns);
         return this;
     }
 
     /**
-
-     /**
+     *
+     * /**
      * Returns the same instance of {@link TableVerifier} configured to use the original unmodified results for the specified
      * tables. This only makes sense when withActualAdapter or withExpectedAdapter is enabled and means that the adapter
      * is not applied to the specified tables.
@@ -387,8 +364,7 @@ public final class TableVerifier extends TestWatcher
      * @param tableNames varargs of table names for which original unmodified results should be displayed
      * @return this
      */
-    public TableVerifier withTablesNotToAdapt(String... tableNames)
-    {
+    public TableVerifier withTablesNotToAdapt(String... tableNames) {
         this.tablesNotToAdapt.addAll(Arrays.asList(tableNames));
         return this;
     }
@@ -400,8 +376,7 @@ public final class TableVerifier extends TestWatcher
      * @param hideMatchedTables whether to hide matched tables or not
      * @return this
      */
-    public TableVerifier withHideMatchedTables(boolean hideMatchedTables)
-    {
+    public TableVerifier withHideMatchedTables(boolean hideMatchedTables) {
         this.htmlConfig.withHideMatchedTables(hideMatchedTables);
         return this;
     }
@@ -413,8 +388,7 @@ public final class TableVerifier extends TestWatcher
      * @param htmlRowLimit the number of rows to limit output to
      * @return this
      */
-    public TableVerifier withHtmlRowLimit(int htmlRowLimit)
-    {
+    public TableVerifier withHtmlRowLimit(int htmlRowLimit) {
         this.htmlConfig.withHtmlRowLimit(htmlRowLimit);
         return this;
     }
@@ -426,8 +400,7 @@ public final class TableVerifier extends TestWatcher
      * @param createActualResults create actual results file
      * @return this
      */
-    public TableVerifier withCreateActualResults(boolean createActualResults)
-    {
+    public TableVerifier withCreateActualResults(boolean createActualResults) {
         this.createActualResults = createActualResults;
         return this;
     }
@@ -437,8 +410,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withCreateActualResultsOnFailure(boolean createActualResultsOnFailure)
-    {
+    public TableVerifier withCreateActualResultsOnFailure(boolean createActualResultsOnFailure) {
         this.createActualResultsOnFailure = createActualResultsOnFailure;
         return this;
     }
@@ -448,8 +420,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withAssertionSummary(boolean assertionSummary)
-    {
+    public TableVerifier withAssertionSummary(boolean assertionSummary) {
         this.htmlConfig.withAssertionSummary(assertionSummary);
         return this;
     }
@@ -461,8 +432,7 @@ public final class TableVerifier extends TestWatcher
      * @param actualAdapter function for adapting tables
      * @return this
      */
-    public TableVerifier withActualAdapter(Function<VerifiableTable, VerifiableTable> actualAdapter)
-    {
+    public TableVerifier withActualAdapter(Function<VerifiableTable, VerifiableTable> actualAdapter) {
         this.verifierConfig.withActualAdapter(actualAdapter);
         return this;
     }
@@ -471,8 +441,7 @@ public final class TableVerifier extends TestWatcher
      * Returns the actual table adapter
      * @return - the actual table adapter
      */
-    public Function<VerifiableTable, VerifiableTable> getActualAdapter()
-    {
+    public Function<VerifiableTable, VerifiableTable> getActualAdapter() {
         return this.verifierConfig.getActualAdapter();
     }
 
@@ -483,8 +452,7 @@ public final class TableVerifier extends TestWatcher
      * @param expectedAdapter function for adapting tables
      * @return this
      */
-    public TableVerifier withExpectedAdapter(Function<VerifiableTable, VerifiableTable> expectedAdapter)
-    {
+    public TableVerifier withExpectedAdapter(Function<VerifiableTable, VerifiableTable> expectedAdapter) {
         this.verifierConfig.withExpectedAdapter(expectedAdapter);
         return this;
     }
@@ -493,8 +461,7 @@ public final class TableVerifier extends TestWatcher
      * Returns the expected table adapter
      * @return - the expected table adapter
      */
-    public Function<VerifiableTable, VerifiableTable> getExpectedAdapter()
-    {
+    public Function<VerifiableTable, VerifiableTable> getExpectedAdapter() {
         return this.verifierConfig.getExpectedAdapter();
     }
 
@@ -503,8 +470,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withIgnoreSurplusRows()
-    {
+    public TableVerifier withIgnoreSurplusRows() {
         this.verifierConfig.withIgnoreSurplusRows();
         return this;
     }
@@ -514,8 +480,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withIgnoreMissingRows()
-    {
+    public TableVerifier withIgnoreMissingRows() {
         this.verifierConfig.withIgnoreMissingRows();
         return this;
     }
@@ -525,8 +490,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withIgnoreSurplusColumns()
-    {
+    public TableVerifier withIgnoreSurplusColumns() {
         this.verifierConfig.withIgnoreSurplusColumns();
         return this;
     }
@@ -536,8 +500,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withIgnoreMissingColumns()
-    {
+    public TableVerifier withIgnoreMissingColumns() {
         this.verifierConfig.withIgnoreMissingColumns();
         return this;
     }
@@ -549,8 +512,7 @@ public final class TableVerifier extends TestWatcher
      * @param columnsToIgnore the columns to ignore
      * @return this
      */
-    public TableVerifier withIgnoreColumns(String... columnsToIgnore)
-    {
+    public TableVerifier withIgnoreColumns(String... columnsToIgnore) {
         final Set<String> columnSet = new HashSet<>(Arrays.asList(columnsToIgnore));
         return this.withColumnFilter(s -> !columnSet.contains(s));
     }
@@ -562,9 +524,9 @@ public final class TableVerifier extends TestWatcher
      * @param columnFilter the column filter to apply
      * @return this
      */
-    public TableVerifier withColumnFilter(final Predicate<String> columnFilter)
-    {
-        Function<VerifiableTable, VerifiableTable> adapter = verifiableTable -> TableAdapters.withColumns(verifiableTable, columnFilter);
+    public TableVerifier withColumnFilter(final Predicate<String> columnFilter) {
+        Function<VerifiableTable, VerifiableTable> adapter =
+                verifiableTable -> TableAdapters.withColumns(verifiableTable, columnFilter);
         return this.withActualAdapter(adapter).withExpectedAdapter(adapter);
     }
 
@@ -575,8 +537,7 @@ public final class TableVerifier extends TestWatcher
      * @param tableNames the names of tables to ignore
      * @return this
      */
-    public TableVerifier withIgnoreTables(String... tableNames)
-    {
+    public TableVerifier withIgnoreTables(String... tableNames) {
         final Set<String> tableNameSet = new HashSet<>(Arrays.asList(tableNames));
         return this.withTableFilter(s -> !tableNameSet.contains(s));
     }
@@ -588,8 +549,7 @@ public final class TableVerifier extends TestWatcher
      * @param tableFilter the table filter to apply
      * @return this
      */
-    public TableVerifier withTableFilter(Predicate<String> tableFilter)
-    {
+    public TableVerifier withTableFilter(Predicate<String> tableFilter) {
         this.tableFilter = tableFilter;
         return this;
     }
@@ -599,8 +559,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withBaselineHeaders(String... headers)
-    {
+    public TableVerifier withBaselineHeaders(String... headers) {
         this.baselineHeaders = headers;
         return this;
     }
@@ -612,8 +571,7 @@ public final class TableVerifier extends TestWatcher
      * @param expectedResultsLoader the {@link ExpectedResultsLoader} instance
      * @return this
      */
-    public TableVerifier withExpectedResultsLoader(ExpectedResultsLoader expectedResultsLoader)
-    {
+    public TableVerifier withExpectedResultsLoader(ExpectedResultsLoader expectedResultsLoader) {
         this.expectedResultsLoader = expectedResultsLoader;
         return this;
     }
@@ -625,8 +583,7 @@ public final class TableVerifier extends TestWatcher
      * @param summarisedResults whether to summarise results or not
      * @return this
      */
-    public TableVerifier withSummarisedResults(boolean summarisedResults)
-    {
+    public TableVerifier withSummarisedResults(boolean summarisedResults) {
         this.summarisedResults = summarisedResults;
         return this;
     }
@@ -638,8 +595,7 @@ public final class TableVerifier extends TestWatcher
      * @param partialMatchTimeoutMillis verification timeout in milliseconds
      * @return this
      */
-    public TableVerifier withPartialMatchTimeoutMillis(long partialMatchTimeoutMillis)
-    {
+    public TableVerifier withPartialMatchTimeoutMillis(long partialMatchTimeoutMillis) {
         this.verifierConfig.withPartialMatchTimeoutMillis(partialMatchTimeoutMillis);
         return this;
     }
@@ -649,8 +605,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withoutPartialMatchTimeout()
-    {
+    public TableVerifier withoutPartialMatchTimeout() {
         this.verifierConfig.withoutPartialMatchTimeout();
         return this;
     }
@@ -660,8 +615,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withLifecycleEventHandler(LifecycleEventHandler lifecycleEventHandler)
-    {
+    public TableVerifier withLifecycleEventHandler(LifecycleEventHandler lifecycleEventHandler) {
         this.lifecycleEventHandler = lifecycleEventHandler;
         return this;
     }
@@ -671,85 +625,73 @@ public final class TableVerifier extends TestWatcher
      *
      * @return this
      */
-    public TableVerifier withExceptionHandler(ExceptionHandler exceptionHandler)
-    {
+    public TableVerifier withExceptionHandler(ExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
         return this;
     }
 
     @Override
-    public void starting(Description description)
-    {
+    public void starting(Description description) {
         this.description = description;
-        if (!this.isRebasing)
-        {
-            this.expectedResultsFuture = EXPECTED_RESULTS_LOADER_EXECUTOR.submit(() -> ExpectedResultsCache.getExpectedResults(expectedResultsLoader, getExpectedFile()));
+        if (!this.isRebasing) {
+            this.expectedResultsFuture = EXPECTED_RESULTS_LOADER_EXECUTOR.submit(
+                    () -> ExpectedResultsCache.getExpectedResults(expectedResultsLoader, getExpectedFile()));
         }
         this.lifecycleEventHandler.onStarted(description);
     }
 
     @Override
-    public void succeeded(Description description)
-    {
-        try
-        {
-            if (this.expectedTables != null && !this.expectedTables.isEmpty())
-            {
+    public void succeeded(Description description) {
+        try {
+            if (this.expectedTables != null && !this.expectedTables.isEmpty()) {
                 this.verifyTables(this.expectedTables, new HashMap<>(), this.expectedMetadata);
             }
-        }
-        catch (AssertionError assertionError)
-        {
+        } catch (AssertionError assertionError) {
             this.failed(assertionError, description);
             throw assertionError;
         }
         this.lifecycleEventHandler.onSucceeded(description);
-        if (this.isRebasing)
-        {
+        if (this.isRebasing) {
             Assert.fail("REBASE SUCCESSFUL - failing test in case rebase flag is set by mistake");
         }
     }
 
     @Override
-    public void failed(Throwable e, Description description)
-    {
-        if (!(e instanceof AssertionError))
-        {
+    public void failed(Throwable e, Description description) {
+        if (!(e instanceof AssertionError)) {
             this.exceptionHandler.onException(this.getOutputFile(), e);
         }
         this.lifecycleEventHandler.onFailed(e, description);
     }
 
     @Override
-    public void skipped(AssumptionViolatedException e, Description description)
-    {
+    public void skipped(AssumptionViolatedException e, Description description) {
         this.lifecycleEventHandler.onSkipped(description);
     }
 
     @Override
-    public void finished(Description description)
-    {
+    public void finished(Description description) {
         this.lifecycleEventHandler.onFinished(description);
     }
 
-    public File getExpectedFile()
-    {
+    public File getExpectedFile() {
         File dir = this.directoryStrategy.getExpectedDirectory(this.description.getTestClass());
-        String filename = this.fileStrategy.getExpectedFilename(this.description.getTestClass(), this.description.getMethodName());
+        String filename = this.fileStrategy.getExpectedFilename(
+                this.description.getTestClass(), this.description.getMethodName());
         return new File(dir, filename);
     }
 
-    public File getOutputFile()
-    {
+    public File getOutputFile() {
         File dir = this.directoryStrategy.getOutputDirectory(this.description.getTestClass());
-        String filename = this.fileStrategy.getOutputFilename(this.description.getTestClass(), this.description.getMethodName());
+        String filename =
+                this.fileStrategy.getOutputFilename(this.description.getTestClass(), this.description.getMethodName());
         return new File(dir, filename);
     }
 
-    public File getActualFile()
-    {
+    public File getActualFile() {
         File dir = this.directoryStrategy.getActualDirectory(this.description.getTestClass());
-        String filename = this.fileStrategy.getActualFilename(this.description.getTestClass(), this.description.getMethodName());
+        String filename =
+                this.fileStrategy.getActualFilename(this.description.getTestClass(), this.description.getMethodName());
         return new File(dir, filename);
     }
 
@@ -759,8 +701,7 @@ public final class TableVerifier extends TestWatcher
      * @param tableName   the table name
      * @param actualTable the actual table
      */
-    public void verify(String tableName, VerifiableTable actualTable)
-    {
+    public void verify(String tableName, VerifiableTable actualTable) {
         this.verify(new NamedTable(tableName, actualTable));
     }
 
@@ -769,8 +710,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @param actualTables - actual tables
      */
-    public void verify(NamedTable... actualTables)
-    {
+    public void verify(NamedTable... actualTables) {
         this.verify(Arrays.asList(actualTables));
     }
 
@@ -779,8 +719,7 @@ public final class TableVerifier extends TestWatcher
      *
      * @param actualTables - actual tables
      */
-    public void verify(List<NamedTable> actualTables)
-    {
+    public void verify(List<NamedTable> actualTables) {
         this.verify(toMap(actualTables));
     }
 
@@ -791,46 +730,40 @@ public final class TableVerifier extends TestWatcher
      * @param actualTables - actual tables by name
      */
     @Deprecated
-    public void verify(Map<String, VerifiableTable> actualTables)
-    {
+    public void verify(Map<String, VerifiableTable> actualTables) {
         this.runPreVerifyChecks();
         this.makeSureDirectoriesAreNotSame();
 
-        if (this.isRebasing)
-        {
-            this.newRebaser().rebase(this.description.getMethodName(), adaptAndFilterTables(actualTables, this.getActualAdapter()), this.getExpectedFile());
-        }
-        else
-        {
-            if (this.expectedTables == null)
-            {
+        if (this.isRebasing) {
+            this.newRebaser()
+                    .rebase(
+                            this.description.getMethodName(),
+                            adaptAndFilterTables(actualTables, this.getActualAdapter()),
+                            this.getExpectedFile());
+        } else {
+            if (this.expectedTables == null) {
                 ExpectedResults expectedResults = getExpectedResults();
-                this.expectedTables = new HashMap<>(Objects.requireNonNull(expectedResults).getTables(this.description.getMethodName()));
+                this.expectedTables = new HashMap<>(
+                        Objects.requireNonNull(expectedResults).getTables(this.description.getMethodName()));
                 this.expectedMetadata = expectedResults.getMetadata();
             }
             Map<String, VerifiableTable> expectedTablesToVerify = new LinkedHashMap<>(actualTables.size());
-            for (String actualTableName : actualTables.keySet())
-            {
+            for (String actualTableName : actualTables.keySet()) {
                 expectedTablesToVerify.put(actualTableName, this.expectedTables.remove(actualTableName));
             }
             this.verifyTables(expectedTablesToVerify, actualTables, this.expectedMetadata);
         }
     }
 
-    public ExpectedResults getExpectedResults()
-    {
-        try
-        {
+    public ExpectedResults getExpectedResults() {
+        try {
             return this.isRebasing ? null : this.expectedResultsFuture.get();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Rebaser newRebaser()
-    {
+    private Rebaser newRebaser() {
         return new Rebaser(this.verifierConfig, this.metadata, this.baselineHeaders);
     }
 
@@ -840,9 +773,10 @@ public final class TableVerifier extends TestWatcher
      * @param expectedTable - expected table
      * @param actualTable - actual table
      */
-    public void verify(String name, VerifiableTable expectedTable, VerifiableTable actualTable)
-    {
-        this.verify(Collections.singletonList(new NamedTable(name, expectedTable)), Collections.singletonList(new NamedTable(name, actualTable)));
+    public void verify(String name, VerifiableTable expectedTable, VerifiableTable actualTable) {
+        this.verify(
+                Collections.singletonList(new NamedTable(name, expectedTable)),
+                Collections.singletonList(new NamedTable(name, actualTable)));
     }
 
     /**
@@ -850,13 +784,11 @@ public final class TableVerifier extends TestWatcher
      * @param expectedTables - expected tables
      * @param actualTables - actual tables
      */
-    public void verify(List<NamedTable> expectedTables, List<NamedTable> actualTables)
-    {
+    public void verify(List<NamedTable> expectedTables, List<NamedTable> actualTables) {
         this.verify(toMap(expectedTables), toMap(actualTables));
     }
 
-    private Map<String, VerifiableTable> toMap(List<NamedTable> namedTables)
-    {
+    private Map<String, VerifiableTable> toMap(List<NamedTable> namedTables) {
         Map<String, VerifiableTable> map = new LinkedHashMap<>();
         namedTables.forEach(namedTable -> map.put(namedTable.getName(), namedTable.getTable()));
         return map;
@@ -869,28 +801,25 @@ public final class TableVerifier extends TestWatcher
      * @param actualTables - actual tables by name
      */
     @Deprecated
-    public void verify(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables)
-    {
+    public void verify(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables) {
         this.runPreVerifyChecks();
-        if (!this.isRebasing)
-        {
+        if (!this.isRebasing) {
             this.verifyTables(expectedTables, actualTables, null);
         }
     }
 
-    private void verifyTables(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables, Metadata metadata)
-    {
-        Map<String, VerifiableTable> adaptedExpectedTables = adaptAndFilterTables(expectedTables, this.getExpectedAdapter());
+    private void verifyTables(
+            Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables, Metadata metadata) {
+        Map<String, VerifiableTable> adaptedExpectedTables =
+                adaptAndFilterTables(expectedTables, this.getExpectedAdapter());
         Map<String, VerifiableTable> adaptedActualTables = adaptAndFilterTables(actualTables, this.getActualAdapter());
         Map<String, FormattableTable> allResults = getVerifiedResults(adaptedExpectedTables, adaptedActualTables);
         boolean verificationSuccess = allResults.values().stream().allMatch(FormattableTable::isSuccess);
         boolean createActual = this.createActualResults;
-        if (this.createActualResultsOnFailure)
-        {
+        if (this.createActualResultsOnFailure) {
             createActual = !verificationSuccess;
         }
-        if (createActual)
-        {
+        if (createActual) {
             this.newRebaser().rebase(this.description.getMethodName(), adaptedActualTables, this.getActualFile());
         }
         HtmlFormatter htmlFormatter = newHtmlFormatter();
@@ -898,48 +827,41 @@ public final class TableVerifier extends TestWatcher
         Assert.assertTrue("Some tests failed. See " + getOutputFileUrl() + " for more details.", verificationSuccess);
     }
 
-    private URL getOutputFileUrl()
-    {
-        try
-        {
+    private URL getOutputFileUrl() {
+        try {
             return this.getOutputFile().toURI().toURL();
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    public HtmlFormatter newHtmlFormatter()
-    {
+    public HtmlFormatter newHtmlFormatter() {
         return new HtmlFormatter(this.getOutputFile(), this.htmlConfig);
     }
 
-    private Map<String, FormattableTable> getVerifiedResults(Map<String, VerifiableTable> adaptedExpectedTables, Map<String, VerifiableTable> adaptedActualTables)
-    {
+    private Map<String, FormattableTable> getVerifiedResults(
+            Map<String, VerifiableTable> adaptedExpectedTables, Map<String, VerifiableTable> adaptedActualTables) {
         MultiTableVerifier multiTableVerifier = new MultiTableVerifier(this.verifierConfig);
-        Map<String, ResultTable> resultTables = multiTableVerifier.verifyTables(adaptedExpectedTables, adaptedActualTables);
+        Map<String, ResultTable> resultTables =
+                multiTableVerifier.verifyTables(adaptedExpectedTables, adaptedActualTables);
         Map<String, FormattableTable> resultTableInterfaces = new LinkedHashMap<>(resultTables.size());
-        for (Map.Entry<String, ResultTable> resultTableEntry : resultTables.entrySet())
-        {
+        for (Map.Entry<String, ResultTable> resultTableEntry : resultTables.entrySet()) {
             ResultTable resultTable = resultTableEntry.getValue();
-            resultTableInterfaces.put(resultTableEntry.getKey(), this.summarisedResults ? new SummaryResultTable(resultTable) : resultTable);
+            resultTableInterfaces.put(
+                    resultTableEntry.getKey(),
+                    this.summarisedResults ? new SummaryResultTable(resultTable) : resultTable);
         }
         return resultTableInterfaces;
     }
 
-    private Map<String, VerifiableTable> adaptAndFilterTables(final Map<String, VerifiableTable> tables, final Function<VerifiableTable, VerifiableTable> adapter)
-    {
+    private Map<String, VerifiableTable> adaptAndFilterTables(
+            final Map<String, VerifiableTable> tables, final Function<VerifiableTable, VerifiableTable> adapter) {
         final Map<String, VerifiableTable> target = new LinkedHashMap<>(tables.size());
         tables.forEach((name, table) -> {
-            if (tableFilter.test(name))
-            {
-                if (TableVerifier.this.tablesNotToAdapt.contains(name))
-                {
+            if (tableFilter.test(name)) {
+                if (TableVerifier.this.tablesNotToAdapt.contains(name)) {
                     target.put(name, table);
-                }
-                else
-                {
+                } else {
                     target.put(name, adapter.apply(table));
                 }
             }
@@ -947,31 +869,26 @@ public final class TableVerifier extends TestWatcher
         return target;
     }
 
-    private void runPreVerifyChecks()
-    {
-        if (this.description == null)
-        {
+    private void runPreVerifyChecks() {
+        if (this.description == null) {
             throw new IllegalStateException("The starting() has not been called. Ensure watcher has @Rule annotation.");
         }
     }
 
-    private void makeSureDirectoriesAreNotSame()
-    {
+    private void makeSureDirectoriesAreNotSame() {
         File expectedDirectory = this.directoryStrategy.getExpectedDirectory(this.description.getTestClass());
         File outputDirectory = this.directoryStrategy.getOutputDirectory(this.description.getTestClass());
-        if (expectedDirectory != null && expectedDirectory.equals(outputDirectory))
-        {
-            throw new IllegalArgumentException("Expected results directory and verification output directory must NOT be the same.");
+        if (expectedDirectory != null && expectedDirectory.equals(outputDirectory)) {
+            throw new IllegalArgumentException(
+                    "Expected results directory and verification output directory must NOT be the same.");
         }
     }
 
-    public void investigate(Investigation investigation)
-    {
+    public void investigate(Investigation investigation) {
         investigate(investigation, this.getOutputFile());
     }
 
-    public void investigate(Investigation investigation, File outputFile)
-    {
+    public void investigate(Investigation investigation, File outputFile) {
         new Sherlock().handle(investigation, outputFile);
     }
 }

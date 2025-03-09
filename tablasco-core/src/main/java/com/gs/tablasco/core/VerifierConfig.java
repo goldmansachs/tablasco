@@ -20,15 +20,13 @@ import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.adapters.TableAdapters;
 import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class VerifierConfig
-{
+public final class VerifierConfig {
     private final ColumnComparators.Builder columnComparatorsBuilder = new ColumnComparators.Builder();
     private boolean verifyRowOrder = true;
     private boolean ignoreSurplusRows = false;
@@ -46,8 +44,7 @@ public final class VerifierConfig
      * @param verifyRowOrder whether to verify row order or not
      * @return this
      */
-    public VerifierConfig withVerifyRowOrder(boolean verifyRowOrder)
-    {
+    public VerifierConfig withVerifyRowOrder(boolean verifyRowOrder) {
         this.verifyRowOrder = verifyRowOrder;
         return this;
     }
@@ -62,8 +59,7 @@ public final class VerifierConfig
      * @param tolerance the tolerance to apply
      * @return this
      */
-    public VerifierConfig withTolerance(double tolerance)
-    {
+    public VerifierConfig withTolerance(double tolerance) {
         this.columnComparatorsBuilder.withTolerance(tolerance);
         return this;
     }
@@ -76,8 +72,7 @@ public final class VerifierConfig
      * @param tolerance the tolerance to apply
      * @return this
      */
-    public VerifierConfig withTolerance(String columnName, double tolerance)
-    {
+    public VerifierConfig withTolerance(String columnName, double tolerance) {
         this.columnComparatorsBuilder.withTolerance(columnName, tolerance);
         return this;
     }
@@ -93,8 +88,7 @@ public final class VerifierConfig
      * @param varianceThreshold the variance threshold to apply
      * @return this
      */
-    public VerifierConfig withVarianceThreshold(double varianceThreshold)
-    {
+    public VerifierConfig withVarianceThreshold(double varianceThreshold) {
         this.columnComparatorsBuilder.withVarianceThreshold(varianceThreshold);
         return this;
     }
@@ -107,8 +101,7 @@ public final class VerifierConfig
      * @param varianceThreshold the variance threshold to apply
      * @return this
      */
-    public VerifierConfig withVarianceThreshold(String columnName, double varianceThreshold)
-    {
+    public VerifierConfig withVarianceThreshold(String columnName, double varianceThreshold) {
         this.columnComparatorsBuilder.withVarianceThreshold(columnName, varianceThreshold);
         return this;
     }
@@ -120,8 +113,7 @@ public final class VerifierConfig
      * @param actualAdapter function for adapting tables
      * @return this
      */
-    public VerifierConfig withActualAdapter(Function<VerifiableTable, VerifiableTable> actualAdapter)
-    {
+    public VerifierConfig withActualAdapter(Function<VerifiableTable, VerifiableTable> actualAdapter) {
         this.actualAdapter = actualAdapter;
         return this;
     }
@@ -130,8 +122,7 @@ public final class VerifierConfig
      * Returns the actual table adapter
      * @return - the actual table adapter
      */
-    public Function<VerifiableTable, VerifiableTable> getActualAdapter()
-    {
+    public Function<VerifiableTable, VerifiableTable> getActualAdapter() {
         return actualAdapter;
     }
 
@@ -142,8 +133,7 @@ public final class VerifierConfig
      * @param expectedAdapter function for adapting tables
      * @return this
      */
-    public VerifierConfig withExpectedAdapter(Function<VerifiableTable, VerifiableTable> expectedAdapter)
-    {
+    public VerifierConfig withExpectedAdapter(Function<VerifiableTable, VerifiableTable> expectedAdapter) {
         this.expectedAdapter = expectedAdapter;
         return this;
     }
@@ -152,8 +142,7 @@ public final class VerifierConfig
      * Returns the expected table adapter
      * @return - the expected table adapter
      */
-    public Function<VerifiableTable, VerifiableTable> getExpectedAdapter()
-    {
+    public Function<VerifiableTable, VerifiableTable> getExpectedAdapter() {
         return expectedAdapter;
     }
 
@@ -162,8 +151,7 @@ public final class VerifierConfig
      *
      * @return this
      */
-    public VerifierConfig withIgnoreSurplusRows()
-    {
+    public VerifierConfig withIgnoreSurplusRows() {
         this.ignoreSurplusRows = true;
         return this;
     }
@@ -173,8 +161,7 @@ public final class VerifierConfig
      *
      * @return this
      */
-    public VerifierConfig withIgnoreMissingRows()
-    {
+    public VerifierConfig withIgnoreMissingRows() {
         this.ignoreMissingRows = true;
         return this;
     }
@@ -184,8 +171,7 @@ public final class VerifierConfig
      *
      * @return this
      */
-    public VerifierConfig withIgnoreSurplusColumns()
-    {
+    public VerifierConfig withIgnoreSurplusColumns() {
         this.ignoreSurplusColumns = true;
         return this;
     }
@@ -195,8 +181,7 @@ public final class VerifierConfig
      *
      * @return this
      */
-    public VerifierConfig withIgnoreMissingColumns()
-    {
+    public VerifierConfig withIgnoreMissingColumns() {
         this.ignoreMissingColumns = true;
         return this;
     }
@@ -208,8 +193,7 @@ public final class VerifierConfig
      * @param columnsToIgnore the columns to ignore
      * @return this
      */
-    public VerifierConfig withIgnoreColumns(String... columnsToIgnore)
-    {
+    public VerifierConfig withIgnoreColumns(String... columnsToIgnore) {
         final Set<String> columnSet = new HashSet<>(Arrays.asList(columnsToIgnore));
         return this.withColumnFilter(s -> !columnSet.contains(s));
     }
@@ -221,9 +205,9 @@ public final class VerifierConfig
      * @param columnFilter the column filter to apply
      * @return this
      */
-    public VerifierConfig withColumnFilter(final Predicate<String> columnFilter)
-    {
-        Function<VerifiableTable, VerifiableTable> adapter = verifiableTable -> TableAdapters.withColumns(verifiableTable, columnFilter);
+    public VerifierConfig withColumnFilter(final Predicate<String> columnFilter) {
+        Function<VerifiableTable, VerifiableTable> adapter =
+                verifiableTable -> TableAdapters.withColumns(verifiableTable, columnFilter);
         return this.withActualAdapter(adapter).withExpectedAdapter(adapter);
     }
 
@@ -234,8 +218,7 @@ public final class VerifierConfig
      * @param partialMatchTimeoutMillis verification timeout in milliseconds
      * @return this
      */
-    public VerifierConfig withPartialMatchTimeoutMillis(long partialMatchTimeoutMillis)
-    {
+    public VerifierConfig withPartialMatchTimeoutMillis(long partialMatchTimeoutMillis) {
         this.partialMatchTimeoutMillis = partialMatchTimeoutMillis;
         return this;
     }
@@ -245,8 +228,7 @@ public final class VerifierConfig
      *
      * @return this
      */
-    public VerifierConfig withoutPartialMatchTimeout()
-    {
+    public VerifierConfig withoutPartialMatchTimeout() {
         return this.withPartialMatchTimeoutMillis(0);
     }
 
@@ -277,5 +259,4 @@ public final class VerifierConfig
     public long getPartialMatchTimeoutMillis() {
         return partialMatchTimeoutMillis;
     }
-
 }

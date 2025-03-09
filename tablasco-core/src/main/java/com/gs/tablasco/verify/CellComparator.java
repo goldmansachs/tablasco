@@ -18,36 +18,30 @@ package com.gs.tablasco.verify;
 
 import java.io.Serializable;
 
-public abstract class CellComparator implements Serializable
-{
+public abstract class CellComparator implements Serializable {
     private final CellFormatter formatter;
 
-    public CellComparator(CellFormatter formatter)
-    {
+    public CellComparator(CellFormatter formatter) {
         this.formatter = formatter;
     }
 
-    public CellFormatter getFormatter()
-    {
+    public CellFormatter getFormatter() {
         return this.formatter;
     }
 
     protected abstract boolean compare(Object actual, Object expected);
 
-    public static boolean isFloatingPoint(Object object)
-    {
+    public static boolean isFloatingPoint(Object object) {
         return object instanceof Double || object instanceof Float;
     }
 
-    public boolean equals(Object actual, Object expected)
-    {
+    public boolean equals(Object actual, Object expected) {
         String formattedActual = this.getFormatter().format(actual);
         String formattedExpected = this.getFormatter().format(expected);
         return formattedActual.equals(formattedExpected) || compare(actual, expected);
     }
 
-    public int computeHashCode(Object object)
-    {
+    public int computeHashCode(Object object) {
         return this.formatter.format(object).hashCode();
     }
 }

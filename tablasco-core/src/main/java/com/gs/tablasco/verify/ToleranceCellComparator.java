@@ -18,27 +18,23 @@ package com.gs.tablasco.verify;
 
 import java.io.Serializable;
 
-public class ToleranceCellComparator extends CellComparator implements Serializable
-{
-    public ToleranceCellComparator(CellFormatter formatter)
-    {
+public class ToleranceCellComparator extends CellComparator implements Serializable {
+    public ToleranceCellComparator(CellFormatter formatter) {
         super(formatter);
     }
 
     @Override
-    public boolean compare(Object actual, Object expected)
-    {
-        if (isFloatingPoint(expected) && isFloatingPoint(actual))
-        {
+    public boolean compare(Object actual, Object expected) {
+        if (isFloatingPoint(expected) && isFloatingPoint(actual)) {
             double actualVal = ((Number) actual).doubleValue();
             double expectVal = ((Number) expected).doubleValue();
-            return Double.compare(expectVal, actualVal) == 0 || Math.abs(expectVal - actualVal) <= getFormatter().getTolerance();
+            return Double.compare(expectVal, actualVal) == 0
+                    || Math.abs(expectVal - actualVal) <= getFormatter().getTolerance();
         }
         return false;
     }
 
-    static double getDifference(Object actual, Object expected)
-    {
+    static double getDifference(Object actual, Object expected) {
         return ((Number) expected).doubleValue() - ((Number) actual).doubleValue();
     }
 }

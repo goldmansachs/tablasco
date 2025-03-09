@@ -16,12 +16,10 @@
 
 package com.gs.tablasco.verify;
 
+import java.util.List;
 import org.w3c.dom.Element;
 
-import java.util.List;
-
-public interface FormattableTable
-{
+public interface FormattableTable {
     int getPassedCellCount();
 
     int getTotalCellCount();

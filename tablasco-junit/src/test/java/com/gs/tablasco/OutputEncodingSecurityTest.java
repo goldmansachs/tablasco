@@ -16,24 +16,28 @@
 
 package com.gs.tablasco;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-public class OutputEncodingSecurityTest
-{
+public class OutputEncodingSecurityTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy();
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void htmlTagsAreEncoded() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(1, "Col", "<script language=\"javascript\">alert(\"boo\")</script>", "<script language=\"javascript\">alert(\"boo\")</script>");
-        final VerifiableTable table2 = TableTestUtils.createTable(1, "Col", "<script language=\"javascript\">alert(\"boo\")</script>", "<script language=\"javascript\">alert(\"foo\")</script>");
+    public void htmlTagsAreEncoded() throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                1,
+                "Col",
+                "<script language=\"javascript\">alert(\"boo\")</script>",
+                "<script language=\"javascript\">alert(\"boo\")</script>");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                1,
+                "Col",
+                "<script language=\"javascript\">alert(\"boo\")</script>",
+                "<script language=\"javascript\">alert(\"foo\")</script>");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 """
@@ -52,6 +56,7 @@ public class OutputEncodingSecurityTest
                         <td class="missing">&lt;script language="javascript"&gt;alert("boo")&lt;/script&gt;<p>Missing</p>
                         </td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }

@@ -20,17 +20,14 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.text.ParseException;
 
-public abstract class ParserState
-{
+public abstract class ParserState {
     private final ExpectedResultsParser parser;
 
-    ParserState(ExpectedResultsParser parser)
-    {
+    ParserState(ExpectedResultsParser parser) {
         this.parser = parser;
     }
 
-    public ExpectedResultsParser getParser()
-    {
+    public ExpectedResultsParser getParser() {
         return parser;
     }
 

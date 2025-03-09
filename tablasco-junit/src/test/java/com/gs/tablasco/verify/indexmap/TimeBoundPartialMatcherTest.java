@@ -16,20 +16,16 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class TimeBoundPartialMatcherTest
-{
+public class TimeBoundPartialMatcherTest {
     @Test
-    public void executionTimesOut()
-    {
-        try
-        {
+    public void executionTimesOut() {
+        try {
             PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
                 try {
                     Thread.sleep(10_000);
@@ -40,41 +36,33 @@ public class TimeBoundPartialMatcherTest
             };
             new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null);
             Assert.fail("timeout expected");
-        }
-        catch (RuntimeException e)
-        {
+        } catch (RuntimeException e) {
             Assert.assertTrue(e.getCause() instanceof TimeoutException);
         }
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void matchingExceptionPropagates()
-    {
-        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> Collections.singletonList("foo").get(2);
+    public void matchingExceptionPropagates() {
+        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) ->
+                Collections.singletonList("foo").get(2);
         new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
     }
 
     @Test
-    public void matchingErrorPropagates()
-    {
-        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) ->
-        {
+    public void matchingErrorPropagates() {
+        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
             throw new NoSuchMethodError();
         };
-        try
-        {
+        try {
             new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
             Assert.fail();
-        }
-        catch (RuntimeException e)
-        {
+        } catch (RuntimeException e) {
             Assert.assertTrue(e.getCause() instanceof NoSuchMethodError);
         }
     }
 
     @Test
-    public void successfulMatch()
-    {
+    public void successfulMatch() {
         final AtomicBoolean matched = new AtomicBoolean(false);
         PartialMatcher matcher = (allMissingRows, allSurplusRows, matchedColumns) -> matched.set(true);
         new TimeBoundPartialMatcher(matcher, Long.MAX_VALUE).match(null, null, null);

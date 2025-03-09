@@ -17,24 +17,20 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ListVerifiableTable implements VerifiableTable
-{
+public class ListVerifiableTable implements VerifiableTable {
     private final List<?> headers;
     private final List<List<Object>> data;
 
-    public ListVerifiableTable(List<List<Object>> headersAndData)
-    {
+    public ListVerifiableTable(List<List<Object>> headersAndData) {
         this(headersAndData.get(0), headersAndData.subList(1, headersAndData.size()));
     }
 
-    public ListVerifiableTable(List<?> headers, List<List<Object>> data)
-    {
+    public ListVerifiableTable(List<?> headers, List<List<Object>> data) {
         this.headers = headers;
         this.data = data;
     }
@@ -47,8 +43,7 @@ public class ListVerifiableTable implements VerifiableTable
      * @param headersAndRows iterable of headers and rows
      * @return verifiable table
      */
-    public static VerifiableTable create(Iterable<List> headersAndRows)
-    {
+    public static VerifiableTable create(Iterable<List> headersAndRows) {
         Iterator<List> iterator = headersAndRows.iterator();
         List headers = iterator.next();
         headers.forEach(ListVerifiableTable::verifyHeader);
@@ -58,8 +53,7 @@ public class ListVerifiableTable implements VerifiableTable
     }
 
     private static void verifyHeader(Object obj) {
-        if ((!(obj instanceof String)))
-        {
+        if ((!(obj instanceof String))) {
             throw new IllegalArgumentException("Invalid header " + obj);
         }
     }
@@ -72,10 +66,8 @@ public class ListVerifiableTable implements VerifiableTable
      * @param rows iterable rows
      * @return the verifiable table
      */
-    public static VerifiableTable create(List<String> headers, Iterable<List> rows)
-    {
-        if (rows instanceof List)
-        {
+    public static VerifiableTable create(List<String> headers, Iterable<List> rows) {
+        if (rows instanceof List) {
             rows.forEach(verifyRowSize(headers));
             return new ListVerifiableTable(headers, (List) rows);
         }
@@ -86,34 +78,30 @@ public class ListVerifiableTable implements VerifiableTable
 
     private static Consumer<List> verifyRowSize(final List headers) {
         return row -> {
-            if (row.size() != headers.size())
-            {
-                throw new IllegalArgumentException(String.format("Row size %d does not match header size %s", row.size(), headers.size()));
+            if (row.size() != headers.size()) {
+                throw new IllegalArgumentException(
+                        String.format("Row size %d does not match header size %s", row.size(), headers.size()));
             }
         };
     }
 
     @Override
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return this.data.size();
     }
 
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return this.headers.size();
     }
 
     @Override
-    public String getColumnName(int columnIndex)
-    {
+    public String getColumnName(int columnIndex) {
         return String.valueOf(this.headers.get(columnIndex));
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         return this.data.get(rowIndex).get(columnIndex);
     }
 }

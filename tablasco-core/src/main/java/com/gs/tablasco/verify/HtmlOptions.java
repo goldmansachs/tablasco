@@ -18,8 +18,7 @@ package com.gs.tablasco.verify;
 
 import java.util.Set;
 
-public class HtmlOptions
-{
+public class HtmlOptions {
     private final boolean displayAssertionSummary;
     private final int htmlRowLimit;
     private final boolean hideMatchedTables;
@@ -27,8 +26,13 @@ public class HtmlOptions
     private final boolean hideMatchedColumns;
     private final Set<String> tablesToAlwaysShowMatchedRowsFor;
 
-    public HtmlOptions(boolean displayAssertionSummary, int htmlRowLimit, boolean hideMatchedTables, boolean hideMatchedRows, boolean hideMatchedColumns, Set<String> tablesToAlwaysShowMatchedRowsFor)
-    {
+    public HtmlOptions(
+            boolean displayAssertionSummary,
+            int htmlRowLimit,
+            boolean hideMatchedTables,
+            boolean hideMatchedRows,
+            boolean hideMatchedColumns,
+            Set<String> tablesToAlwaysShowMatchedRowsFor) {
         this.displayAssertionSummary = displayAssertionSummary;
         this.hideMatchedColumns = hideMatchedColumns;
         this.hideMatchedTables = hideMatchedTables;
@@ -37,28 +41,23 @@ public class HtmlOptions
         this.tablesToAlwaysShowMatchedRowsFor = tablesToAlwaysShowMatchedRowsFor;
     }
 
-    boolean isHideMatchedColumns()
-    {
+    boolean isHideMatchedColumns() {
         return this.hideMatchedColumns;
     }
 
-    boolean isDisplayAssertionSummary()
-    {
+    boolean isDisplayAssertionSummary() {
         return this.displayAssertionSummary;
     }
 
-    int getHtmlRowLimit()
-    {
+    int getHtmlRowLimit() {
         return this.htmlRowLimit;
     }
 
-    boolean isHideMatchedRowsFor(String tableName)
-    {
+    boolean isHideMatchedRowsFor(String tableName) {
         return this.hideMatchedRows && !this.tablesToAlwaysShowMatchedRowsFor.contains(tableName);
     }
 
-    boolean isHideMatchedTables()
-    {
+    boolean isHideMatchedTables() {
         return this.hideMatchedTables;
     }
 }

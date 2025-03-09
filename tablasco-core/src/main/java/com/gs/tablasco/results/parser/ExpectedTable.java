@@ -17,69 +17,54 @@
 package com.gs.tablasco.results.parser;
 
 import com.gs.tablasco.VerifiableTable;
-
 import java.io.StreamTokenizer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpectedTable implements VerifiableTable
-{
+public class ExpectedTable implements VerifiableTable {
     private final List<String> headers = new ArrayList<>();
     private final List<List<?>> rowValues = new ArrayList<>();
 
-    void addColumnHeader(String header)
-    {
+    void addColumnHeader(String header) {
         this.headers.add(header);
     }
 
-    void parseData(StreamTokenizer st, int currentNumber, List<Object> rowValue) throws ParseException
-    {
-        if (currentNumber >= this.headers.size())
-        {
+    void parseData(StreamTokenizer st, int currentNumber, List<Object> rowValue) throws ParseException {
+        if (currentNumber >= this.headers.size()) {
             throw new ParseException("extra data on line " + st.lineno(), st.lineno());
         }
-        if (st.ttype == StreamTokenizer.TT_NUMBER)
-        {
+        if (st.ttype == StreamTokenizer.TT_NUMBER) {
             rowValue.add(st.nval);
-        }
-        else
-        {
+        } else {
             rowValue.add(st.sval);
         }
     }
 
-    void addRowToList(List<Object> rowValue)
-    {
+    void addRowToList(List<Object> rowValue) {
         this.rowValues.add(rowValue);
     }
 
     @Override
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return this.rowValues.size();
     }
 
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return this.headers.size();
     }
 
     @Override
-    public String getColumnName(int columnIndex)
-    {
+    public String getColumnName(int columnIndex) {
         return columnIndex < this.getColumnCount() ? this.headers.get(columnIndex) : null;
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
-        if (rowIndex < this.getRowCount())
-        {
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        if (rowIndex < this.getRowCount()) {
             List<?> rowData = this.rowValues.get(rowIndex);
-            if (columnIndex < rowData.size())
-            {
+            if (columnIndex < rowData.size()) {
                 return rowData.get(columnIndex);
             }
         }

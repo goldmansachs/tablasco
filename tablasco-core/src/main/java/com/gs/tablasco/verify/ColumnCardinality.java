@@ -23,92 +23,71 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-class ColumnCardinality implements Serializable
-{
+class ColumnCardinality implements Serializable {
     private final int maximumCardinalityToCount;
     private Map<Object, Integer> bag = new HashMap<>();
 
-    ColumnCardinality(int maximumCardinalityToCount)
-    {
+    ColumnCardinality(int maximumCardinalityToCount) {
         this.maximumCardinalityToCount = maximumCardinalityToCount;
     }
 
-    int getDistinctCount()
-    {
-        if (this.isFull())
-        {
+    int getDistinctCount() {
+        if (this.isFull()) {
             return this.maximumCardinalityToCount;
         }
         return this.bag.size();
     }
 
-    void merge(ColumnCardinality that)
-    {
-        if (that.isFull())
-        {
+    void merge(ColumnCardinality that) {
+        if (that.isFull()) {
             this.setFull();
-        }
-        else
-        {
+        } else {
             that.bag.forEach(ColumnCardinality.this::addOccurrences);
         }
     }
 
-    void addOccurrence(Object value)
-    {
+    void addOccurrence(Object value) {
         this.addOccurrences(value, 1);
     }
 
-    void removeOccurrence(Object value)
-    {
-        if (!this.isFull())
-        {
+    void removeOccurrence(Object value) {
+        if (!this.isFull()) {
             Integer integer = this.bag.get(value);
-            if (integer != null)
-            {
-                if (integer > 1)
-                {
+            if (integer != null) {
+                if (integer > 1) {
                     this.bag.put(value, integer - 1);
-                }
-                else
-                {
+                } else {
                     this.bag.remove(value);
                 }
             }
         }
     }
 
-    void forEachWithOccurrences(final BiConsumer<Object, Integer> procedure)
-    {
+    void forEachWithOccurrences(final BiConsumer<Object, Integer> procedure) {
         this.bag.entrySet().stream()
-                .sorted(Comparator.comparing((Function<Map.Entry<Object, Integer>, Integer>) Map.Entry::getValue).reversed())
+                .sorted(Comparator.comparing((Function<Map.Entry<Object, Integer>, Integer>) Map.Entry::getValue)
+                        .reversed())
                 .limit(this.maximumCardinalityToCount)
-                .forEach(objectIntegerEntry -> procedure.accept(objectIntegerEntry.getKey(), objectIntegerEntry.getValue()));
+                .forEach(objectIntegerEntry ->
+                        procedure.accept(objectIntegerEntry.getKey(), objectIntegerEntry.getValue()));
     }
 
-    boolean isFull()
-    {
+    boolean isFull() {
         return this.bag == null;
     }
 
-    private void addOccurrences(Object value, int occurrences)
-    {
-        if (!this.isFull())
-        {
+    private void addOccurrences(Object value, int occurrences) {
+        if (!this.isFull()) {
             Integer cardinality = this.bag.get(value);
-            if (cardinality != null || this.bag.size() < this.maximumCardinalityToCount)
-            {
+            if (cardinality != null || this.bag.size() < this.maximumCardinalityToCount) {
                 this.bag.put(value, (cardinality == null ? 0 : cardinality) + occurrences);
-            }
-            else
-            {
+            } else {
                 this.setFull();
             }
         }
     }
 
-    private void setFull()
-    {
+    private void setFull() {
         this.bag = null;
     }
 }

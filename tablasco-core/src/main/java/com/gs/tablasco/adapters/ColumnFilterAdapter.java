@@ -20,39 +20,32 @@ import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import java.util.function.Predicate;
 
-class ColumnFilterAdapter extends DefaultVerifiableTableAdapter
-{
+class ColumnFilterAdapter extends DefaultVerifiableTableAdapter {
     private final int[] indexMap;
     private int columnCount = 0;
 
-    ColumnFilterAdapter(VerifiableTable delegate, Predicate<String> columnFilter)
-    {
+    ColumnFilterAdapter(VerifiableTable delegate, Predicate<String> columnFilter) {
         super(delegate);
         this.indexMap = new int[delegate.getColumnCount()];
-        for (int i = 0; i < delegate.getColumnCount(); i++)
-        {
-            if (columnFilter.test(delegate.getColumnName(i)))
-            {
+        for (int i = 0; i < delegate.getColumnCount(); i++) {
+            if (columnFilter.test(delegate.getColumnName(i))) {
                 indexMap[this.columnCount++] = i;
             }
         }
     }
 
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return this.columnCount;
     }
 
     @Override
-    public String getColumnName(int columnIndex)
-    {
+    public String getColumnName(int columnIndex) {
         return super.getColumnName(this.indexMap[columnIndex]);
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         return super.getValueAt(rowIndex, this.indexMap[columnIndex]);
     }
 }

@@ -24,8 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class MavenStyleDirectoryStrategy implements DirectoryStrategy
-{
+public class MavenStyleDirectoryStrategy implements DirectoryStrategy {
     private String expectedSubDir = null;
     private String outputSubDir = null;
     private String anchorFile = "pom.xml";
@@ -36,8 +35,7 @@ public class MavenStyleDirectoryStrategy implements DirectoryStrategy
      * @param expectedSubDir - the folder in src/test/resources which contains the actual results
      * @return the same {@code MavenStyleDirectoryStrategy}
      */
-    public MavenStyleDirectoryStrategy withExpectedSubDir(String expectedSubDir)
-    {
+    public MavenStyleDirectoryStrategy withExpectedSubDir(String expectedSubDir) {
         this.expectedSubDir = expectedSubDir;
         return this;
     }
@@ -48,8 +46,7 @@ public class MavenStyleDirectoryStrategy implements DirectoryStrategy
      * @param outputSubDir - the folder in target which contains the output
      * @return the same {@code MavenStyleDirectoryStrategy}
      */
-    public MavenStyleDirectoryStrategy withOutputSubDir(String outputSubDir)
-    {
+    public MavenStyleDirectoryStrategy withOutputSubDir(String outputSubDir) {
         this.outputSubDir = outputSubDir;
         return this;
     }
@@ -60,82 +57,70 @@ public class MavenStyleDirectoryStrategy implements DirectoryStrategy
      * @param anchorFile - the file which tells us we have reached the module base dir.  defaults to pom.xml
      * @return the same {@code MavenStyleDirectoryStrategy}
      */
-    public MavenStyleDirectoryStrategy withAnchorFile(String anchorFile)
-    {
+    public MavenStyleDirectoryStrategy withAnchorFile(String anchorFile) {
         assert anchorFile != null : "Anchor file cannot be null (for maven it should be pom.xml, which is the default)";
         this.anchorFile = anchorFile;
         return this;
     }
 
     @Override
-    public File getExpectedDirectory(Class<?> testClass)
-    {
-        final URL sourceLocation = testClass.getProtectionDomain().getCodeSource().getLocation();
-        if (sourceLocation.getProtocol().equalsIgnoreCase("file"))
-        {
-            try
-            {
+    public File getExpectedDirectory(Class<?> testClass) {
+        final URL sourceLocation =
+                testClass.getProtectionDomain().getCodeSource().getLocation();
+        if (sourceLocation.getProtocol().equalsIgnoreCase("file")) {
+            try {
                 Path moduleDir = findModuleDir(Paths.get(sourceLocation.toURI()));
-                final Path resourcesFolder = moduleDir.resolve("src").resolve("test").resolve("resources");
-                return isEmptyString(this.expectedSubDir) ? resourcesFolder.toFile() : resourcesFolder.resolve(this.expectedSubDir).toFile();
-            }
-            catch (URISyntaxException e)
-            {
+                final Path resourcesFolder =
+                        moduleDir.resolve("src").resolve("test").resolve("resources");
+                return isEmptyString(this.expectedSubDir)
+                        ? resourcesFolder.toFile()
+                        : resourcesFolder.resolve(this.expectedSubDir).toFile();
+            } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else
-        {
-            //e.g. when running from a jar file
+        } else {
+            // e.g. when running from a jar file
             throw new UnsupportedOperationException("Not supported unless running from a file");
         }
     }
 
     @Override
     public File getOutputDirectory(Class<?> testClass) {
-        final URL sourceLocation = testClass.getProtectionDomain().getCodeSource().getLocation();
-        if (sourceLocation.getProtocol().equalsIgnoreCase("file"))
-        {
-            try
-            {
+        final URL sourceLocation =
+                testClass.getProtectionDomain().getCodeSource().getLocation();
+        if (sourceLocation.getProtocol().equalsIgnoreCase("file")) {
+            try {
                 Path moduleDir = findModuleDir(Paths.get(sourceLocation.toURI()));
-                final Path outputFolder = isEmptyString(this.outputSubDir) ? moduleDir.resolve("target") : moduleDir.resolve("target").resolve(this.outputSubDir);
+                final Path outputFolder = isEmptyString(this.outputSubDir)
+                        ? moduleDir.resolve("target")
+                        : moduleDir.resolve("target").resolve(this.outputSubDir);
                 Files.createDirectories(outputFolder);
                 return outputFolder.toFile();
-            }
-            catch (URISyntaxException | IOException e)
-            {
+            } catch (URISyntaxException | IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else
-        {
-            //e.g. when running from a jar file
+        } else {
+            // e.g. when running from a jar file
             throw new UnsupportedOperationException("Not supported unless running from a file");
         }
     }
 
     @Override
-    public File getActualDirectory(Class<?> testClass)
-    {
+    public File getActualDirectory(Class<?> testClass) {
         return getOutputDirectory(testClass);
     }
 
-    private boolean isEmptyString(String string)
-    {
+    private boolean isEmptyString(String string) {
         return string == null || string.isEmpty();
     }
 
-    private boolean hasAnchorFile(Path path)
-    {
+    private boolean hasAnchorFile(Path path) {
         return Files.exists(path.resolve(this.anchorFile));
     }
 
-    private Path findModuleDir(Path path)
-    {
+    private Path findModuleDir(Path path) {
         Path tmpPath = path;
-        while (tmpPath != null && !hasAnchorFile(tmpPath))
-        {
+        while (tmpPath != null && !hasAnchorFile(tmpPath)) {
             tmpPath = tmpPath.getParent();
         }
         return tmpPath;

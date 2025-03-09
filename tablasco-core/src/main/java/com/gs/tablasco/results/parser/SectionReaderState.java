@@ -20,40 +20,33 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.text.ParseException;
 
-public class SectionReaderState extends ParserState
-{
-    SectionReaderState(ExpectedResultsParser parserState)
-    {
+public class SectionReaderState extends ParserState {
+    SectionReaderState(ExpectedResultsParser parserState) {
         super(parserState);
     }
 
     @Override
-    public ParserState parse(StreamTokenizer st) throws IOException, ParseException
-    {
+    public ParserState parse(StreamTokenizer st) throws IOException, ParseException {
         int token = st.ttype;
-        if (token != StreamTokenizer.TT_WORD || !st.sval.equals(ExpectedResultsParser.SECTION_IDENTIFIER))
-        {
+        if (token != StreamTokenizer.TT_WORD || !st.sval.equals(ExpectedResultsParser.SECTION_IDENTIFIER)) {
             throw new ParseException("expected line " + st.lineno() + " to begin with Section", st.lineno());
         }
         token = st.nextToken();
-        if (token != StreamTokenizer.TT_WORD && token != '"')
-        {
+        if (token != StreamTokenizer.TT_WORD && token != '"') {
             throw new ParseException("expected a section name on line " + st.lineno(), st.lineno());
         }
         String testName = st.sval;
 
         token = st.nextToken();
         String tableName = null;
-        if (token == StreamTokenizer.TT_WORD || token == '"')
-        {
+        if (token == StreamTokenizer.TT_WORD || token == '"') {
             tableName = st.sval;
             token = st.nextToken();
         }
 
         this.getParser().startNewSection(testName, tableName);
 
-        if (token != StreamTokenizer.TT_EOL)
-        {
+        if (token != StreamTokenizer.TT_EOL) {
             throw new ParseException("invalid data after the class name on line " + st.lineno(), st.lineno());
         }
 

@@ -18,8 +18,7 @@ package com.gs.tablasco.lifecycle;
 
 import org.junit.runner.Description;
 
-public interface LifecycleEventHandler
-{
+public interface LifecycleEventHandler {
     void onStarted(Description description);
 
     void onSucceeded(Description description);

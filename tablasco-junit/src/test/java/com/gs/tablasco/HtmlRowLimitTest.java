@@ -16,24 +16,20 @@
 
 package com.gs.tablasco;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-public class HtmlRowLimitTest
-{
+public class HtmlRowLimitTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy()
-            .withHtmlRowLimit(3);
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHtmlRowLimit(3);
 
     @Test
-    public void tablesMatch() throws IOException
-    {
-        VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
+    public void tablesMatch() throws IOException {
+        VerifiableTable table = TableTestUtils.createTable(
+                2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
         this.tableVerifier.verify("name", table, table);
         Assert.assertEquals(
                 """
@@ -57,14 +53,16 @@ public class HtmlRowLimitTest
                         <tr>
                         <td class="pass multi" colspan="2">2 more rows...</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void tablesDoNotMatch() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
-        final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "DX", "E1", "E2");
+    public void tablesDoNotMatch() throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "DX", "E1", "E2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 """
@@ -88,15 +86,18 @@ public class HtmlRowLimitTest
                         <tr>
                         <td class="fail multi" colspan="2">2 more rows...</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void hideMatchedRows() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
-        final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "AX", "B1", "B2", "C1", "C2", "D1", "DX", "E1", "E2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
+    public void hideMatchedRows() throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                2, "Col 1", "Col 2", "A1", "AX", "B1", "B2", "C1", "C2", "D1", "DX", "E1", "E2");
+        TableTestUtils.assertAssertionError(
+                () -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
         Assert.assertEquals(
                 """
                         <table border="1" cellspacing="0">
@@ -122,15 +123,18 @@ public class HtmlRowLimitTest
                         <tr>
                         <td class="fail multi" colspan="2">1 more row...</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void hideMatchedRows2() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2");
-        final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "CX", "D1", "DX");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withHtmlRowLimit(1).withHideMatchedRows(true).verify("name", table1, table2));
+    public void hideMatchedRows2() throws IOException {
+        final VerifiableTable table1 =
+                TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2");
+        final VerifiableTable table2 =
+                TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "CX", "D1", "DX");
+        TableTestUtils.assertAssertionError(() ->
+                tableVerifier.withHtmlRowLimit(1).withHideMatchedRows(true).verify("name", table1, table2));
         Assert.assertEquals(
                 """
                         <table border="1" cellspacing="0">
@@ -144,6 +148,7 @@ public class HtmlRowLimitTest
                         <tr>
                         <td class="fail multi" colspan="2">2 more rows...</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }

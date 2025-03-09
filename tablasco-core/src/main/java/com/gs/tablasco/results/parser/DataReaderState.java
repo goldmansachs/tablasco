@@ -22,20 +22,16 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataReaderState extends ParserState
-{
+public class DataReaderState extends ParserState {
     private String sectionName;
 
-    DataReaderState(ExpectedResultsParser parserState)
-    {
+    DataReaderState(ExpectedResultsParser parserState) {
         super(parserState);
     }
 
     @Override
-    public ParserState parse(StreamTokenizer st) throws IOException, ParseException
-    {
-        if (this.sectionName == null)
-        {
+    public ParserState parse(StreamTokenizer st) throws IOException, ParseException {
+        if (this.sectionName == null) {
             throw new ParseException("no section name found before line " + st.lineno(), st.lineno());
         }
 
@@ -45,32 +41,25 @@ public class DataReaderState extends ParserState
 
         boolean wantData = true;
         List<Object> rowValue = new ArrayList<>();
-        while (token != StreamTokenizer.TT_EOL && token != StreamTokenizer.TT_EOF)
-        {
-            if (wantData)
-            {
+        while (token != StreamTokenizer.TT_EOL && token != StreamTokenizer.TT_EOF) {
+            if (wantData) {
                 this.getParser().getExpectedTable().parseData(st, currentAttribute, rowValue);
                 currentAttribute++;
-            }
-            else
-            {
-                if (token != ',')
-                {
+            } else {
+                if (token != ',') {
                     throw new ParseException("Expected a comma on line " + st.lineno(), st.lineno());
                 }
             }
             wantData = !wantData;
             token = st.nextToken();
         }
-        if (!rowValue.isEmpty())
-        {
+        if (!rowValue.isEmpty()) {
             this.getParser().getExpectedTable().addRowToList(rowValue);
         }
         return this.getParser().getBeginningOfLineState();
     }
 
-    void setSectionName(String sectionName)
-    {
+    void setSectionName(String sectionName) {
         this.sectionName = sectionName;
     }
 }

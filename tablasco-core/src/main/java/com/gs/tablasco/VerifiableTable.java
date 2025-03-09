@@ -20,8 +20,7 @@ package com.gs.tablasco;
  * The table model that {@link com.gs.tablasco.verify.SingleTableVerifier} is able to verify. Data structures must be adapted to instances of
  * {@link VerifiableTable} in order to be verified.
  */
-public interface VerifiableTable
-{
+public interface VerifiableTable {
     /**
      * Returns the number of data rows in this table. This does not include column headers.
      * @return the row count

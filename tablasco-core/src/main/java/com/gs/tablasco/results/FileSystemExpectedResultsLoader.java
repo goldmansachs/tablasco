@@ -19,12 +19,10 @@ package com.gs.tablasco.results;
 import java.io.*;
 import java.nio.file.Files;
 
-public class FileSystemExpectedResultsLoader implements ExpectedResultsLoader
-{
+public class FileSystemExpectedResultsLoader implements ExpectedResultsLoader {
     @Override
     public InputStream load(final File expectedFile) throws IOException {
-        if (!expectedFile.canRead())
-        {
+        if (!expectedFile.canRead()) {
             throw new IllegalStateException("Could not find expected results '" + expectedFile
                     + "' - if this is a new test, do you need to run this test in rebase mode first? (-Drebase=true)");
         }

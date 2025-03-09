@@ -17,13 +17,11 @@
 package com.gs.tablasco.core;
 
 import com.gs.tablasco.verify.HtmlFormatter;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class HtmlConfig
-{
+public final class HtmlConfig {
     private boolean hideMatchedRows = false;
     private boolean hideMatchedTables = false;
     private boolean hideMatchedColumns = false;
@@ -38,8 +36,7 @@ public final class HtmlConfig
      * @param hideMatchedRows whether to hide matched rows or not
      * @return this
      */
-    public HtmlConfig withHideMatchedRows(boolean hideMatchedRows)
-    {
+    public HtmlConfig withHideMatchedRows(boolean hideMatchedRows) {
         this.hideMatchedRows = hideMatchedRows;
         return this;
     }
@@ -51,8 +48,7 @@ public final class HtmlConfig
      * @param tableNames varargs of table names to always show matched rows for
      * @return this
      */
-    public HtmlConfig withAlwaysShowMatchedRowsFor(String... tableNames)
-    {
+    public HtmlConfig withAlwaysShowMatchedRowsFor(String... tableNames) {
         this.tablesToAlwaysShowMatchedRowsFor.addAll(Arrays.asList(tableNames));
         return this;
     }
@@ -64,8 +60,7 @@ public final class HtmlConfig
      * @param hideMatchedColumns whether to hide matched columns or not
      * @return this
      */
-    public HtmlConfig withHideMatchedColumns(boolean hideMatchedColumns)
-    {
+    public HtmlConfig withHideMatchedColumns(boolean hideMatchedColumns) {
         this.hideMatchedColumns = hideMatchedColumns;
         return this;
     }
@@ -77,8 +72,7 @@ public final class HtmlConfig
      * @param hideMatchedTables whether to hide matched tables or not
      * @return this
      */
-    public HtmlConfig withHideMatchedTables(boolean hideMatchedTables)
-    {
+    public HtmlConfig withHideMatchedTables(boolean hideMatchedTables) {
         this.hideMatchedTables = hideMatchedTables;
         return this;
     }
@@ -90,8 +84,7 @@ public final class HtmlConfig
      * @param htmlRowLimit the number of rows to limit output to
      * @return this
      */
-    public HtmlConfig withHtmlRowLimit(int htmlRowLimit)
-    {
+    public HtmlConfig withHtmlRowLimit(int htmlRowLimit) {
         this.htmlRowLimit = htmlRowLimit;
         return this;
     }
@@ -101,8 +94,7 @@ public final class HtmlConfig
      *
      * @return this
      */
-    public HtmlConfig withAssertionSummary(boolean assertionSummary)
-    {
+    public HtmlConfig withAssertionSummary(boolean assertionSummary) {
         this.showAssertionSummary = assertionSummary;
         return this;
     }

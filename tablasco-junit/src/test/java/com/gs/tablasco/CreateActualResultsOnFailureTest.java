@@ -21,48 +21,42 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class CreateActualResultsOnFailureTest
-{
-    private final TableVerifier verifier = new TableVerifier()
-            .withMavenDirectoryStrategy()
-            .withFilePerMethod();
+public class CreateActualResultsOnFailureTest {
+    private final TableVerifier verifier =
+            new TableVerifier().withMavenDirectoryStrategy().withFilePerMethod();
 
     @Rule
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         this.verifier.starting(this.description.get());
         this.verifier.getActualFile().delete();
     }
 
     @Test
-    public void testTrue()
-    {
+    public void testTrue() {
         this.verifier.withCreateActualResultsOnFailure(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         Assert.assertFalse(this.verifier.getActualFile().exists());
     }
 
-
     @Test
-    public void testFalse()
-    {
+    public void testFalse() {
         this.verifier.withCreateActualResultsOnFailure(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testTrueFail()
-    {
-        TableTestUtils.assertAssertionError(() -> verifier.withCreateActualResultsOnFailure(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
+    public void testTrueFail() {
+        TableTestUtils.assertAssertionError(() -> verifier.withCreateActualResultsOnFailure(true)
+                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testFalseFail()
-    {
-        TableTestUtils.assertAssertionError(() -> verifier.withCreateActualResultsOnFailure(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
+    public void testFalseFail() {
+        TableTestUtils.assertAssertionError(() -> verifier.withCreateActualResultsOnFailure(false)
+                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL));
         Assert.assertTrue(this.verifier.getActualFile().exists());
     }
 }

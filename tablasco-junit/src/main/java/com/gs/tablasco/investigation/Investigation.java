@@ -21,8 +21,7 @@ import java.util.List;
 /**
  * Defines a series of investigation levels that verifier can execute, compare and format.
  */
-public interface Investigation
-{
+public interface Investigation {
     /**
      * @return the first level of investigation
      */

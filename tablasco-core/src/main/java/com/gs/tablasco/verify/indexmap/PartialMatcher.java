@@ -18,7 +18,9 @@ package com.gs.tablasco.verify.indexmap;
 
 import java.util.List;
 
-public interface PartialMatcher
-{
-    void match(List<UnmatchedIndexMap> allMissingRows, List<UnmatchedIndexMap> allSurplusRows, List<IndexMap> matchedColumns);
+public interface PartialMatcher {
+    void match(
+            List<UnmatchedIndexMap> allMissingRows,
+            List<UnmatchedIndexMap> allSurplusRows,
+            List<IndexMap> matchedColumns);
 }

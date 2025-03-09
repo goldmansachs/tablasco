@@ -17,23 +17,18 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.verify.KeyedVerifiableTableAdapter;
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-public class HideMatchedColumnsTest
-{
+public class HideMatchedColumnsTest {
     @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy()
-            .withHideMatchedColumns(true);
+    public final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedColumns(true);
 
     @Test
-    public void allColumnsMatch() throws IOException
-    {
+    public void allColumnsMatch() throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
         Assert.assertEquals(
@@ -48,22 +43,16 @@ public class HideMatchedColumnsTest
                         <tr>
                         <td class="pass">\u00A0</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void missingAndSurplusRows() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(3,
-                "Col 1", "Col 2", "Col 3",
-                "A1", "A2", "A3",
-                "B1", "B2", "B3",
-                "C1", "C2", "C3");
-        final VerifiableTable table2 = TableTestUtils.createTable(3,
-                "Col 1", "Col 2", "Col 3",
-                "B1", "B2", "B9",
-                "C1", "C2", "C9",
-                "D1", "D2", "D3");
+    public void missingAndSurplusRows() throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                3, "Col 1", "Col 2", "Col 3", "B1", "B2", "B9", "C1", "C2", "C9", "D1", "D2", "D3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 """
@@ -94,20 +83,18 @@ public class HideMatchedColumnsTest
                         <td class="surplus">D3<p>Surplus</p>
                         </td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void multiMatchedColumns() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(8,
-                "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8",
-                "A", "A", "A", "A", "A", "A", "A", "A",
-                "B", "B", "B", "B", "B", "B", "B", "B");
-        final VerifiableTable table2 = TableTestUtils.createTable(8,
-                "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8",
-                "A", "A", "A", "A", "A", "X", "A", "A",
-                "B", "B", "X", "B", "B", "B", "B", "B");
+    public void multiMatchedColumns() throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "A",
+                "A", "A", "B", "B", "B", "B", "B", "B", "B", "B");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "X",
+                "A", "A", "B", "B", "X", "B", "B", "B", "B", "B");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
                 """
@@ -137,13 +124,14 @@ public class HideMatchedColumnsTest
                         <td class="pass">B</td>
                         <td class="pass">\u00A0</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void keyColumnIgnored() throws IOException
-    {
-        VerifiableTable table = new KeyedVerifiableTableAdapter(TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
+    public void keyColumnIgnored() throws IOException {
+        VerifiableTable table = new KeyedVerifiableTableAdapter(
+                TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
         this.tableVerifier.verify("name", table, table);
         Assert.assertEquals(
                 """
@@ -156,25 +144,20 @@ public class HideMatchedColumnsTest
                         <td class="pass">A</td>
                         <td class="pass">\u00A0</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
-    public void matchedRowsAndColumns() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(4,
-                "Col 1", "Col 2", "Col 3", "Col 3",
-                "A", "A", "A", "A",
-                "B", "B", "B", "B",
-                "C", "C", "C", "C",
-                "D", "D", "D", "D");
-        final VerifiableTable table2 = TableTestUtils.createTable(4,
-                "Col 1", "Col 2", "Col 3", "Col 3",
-                "A", "A", "A", "X",
-                "B", "B", "B", "B",
-                "C", "C", "C", "C",
-                "X", "D", "D", "D");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
+    public void matchedRowsAndColumns() throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                4, "Col 1", "Col 2", "Col 3", "Col 3", "A", "A", "A", "A", "B", "B", "B", "B", "C", "C", "C", "C", "D",
+                "D", "D", "D");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                4, "Col 1", "Col 2", "Col 3", "Col 3", "A", "A", "A", "X", "B", "B", "B", "B", "C", "C", "C", "C", "X",
+                "D", "D", "D");
+        TableTestUtils.assertAssertionError(
+                () -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
         Assert.assertEquals(
                 """
                         <table border="1" cellspacing="0">
@@ -200,6 +183,7 @@ public class HideMatchedColumnsTest
                         <td class="pass">\u00A0</td>
                         <td class="pass">D</td>
                         </tr>
-                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                        </table>""",
+                TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }

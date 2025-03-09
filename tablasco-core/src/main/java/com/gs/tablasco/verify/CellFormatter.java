@@ -23,16 +23,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.Function;
 
-public class CellFormatter implements Function<Object, String>, Serializable
-{
+public class CellFormatter implements Function<Object, String>, Serializable {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final NumberFormat numberFormat;
     private final DateFormat dateFormat;
     private final double tolerance;
     private final StringBuilder builder;
 
-    public CellFormatter(double tolerance, boolean isGroupingUsed)
-    {
+    public CellFormatter(double tolerance, boolean isGroupingUsed) {
         this.tolerance = tolerance;
         this.numberFormat = NumberFormat.getInstance();
         this.numberFormat.setMinimumFractionDigits(0);
@@ -44,101 +42,78 @@ public class CellFormatter implements Function<Object, String>, Serializable
     }
 
     @Override
-    public String apply(Object object)
-    {
+    public String apply(Object object) {
         return this.format(object);
     }
 
-    public String format(Object value)
-    {
-        if (isNumber(value))
-        {
-            if (value.equals(Double.NaN) || value.equals(Float.NaN))
-            {
+    public String format(Object value) {
+        if (isNumber(value)) {
+            if (value.equals(Double.NaN) || value.equals(Float.NaN)) {
                 return "NaN";
             }
             String formatted = this.numberFormat.format(value);
-            if (isNegativeZero(formatted))
-            {
+            if (isNegativeZero(formatted)) {
                 return formatted.substring(1);
             }
             return formatted;
         }
-        if (value instanceof Date)
-        {
+        if (value instanceof Date) {
             return this.dateFormat.format(value);
         }
-        if (value == null)
-        {
+        if (value == null) {
             return "";
         }
         return this.formatString(String.valueOf(value));
     }
 
-    private String formatString(String untrimmedValue)
-    {
+    private String formatString(String untrimmedValue) {
         String value = untrimmedValue.trim();
         this.builder.setLength(0);
         boolean changed = false;
-        for (int i = 0; i < value.length(); i++)
-        {
+        for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
-            if (Character.isWhitespace(c))
-            {
+            if (Character.isWhitespace(c)) {
                 this.builder.append(' ');
-                if (c != ' ')
-                {
+                if (c != ' ') {
                     changed = true;
                 }
-            }
-            else
-            {
+            } else {
                 this.builder.append(c);
             }
         }
         return changed ? this.builder.toString() : value;
     }
 
-    static boolean isNegativeZero(String formatted)
-    {
-        if (!isCharAt(formatted, 0, '-'))
-        {
+    static boolean isNegativeZero(String formatted) {
+        if (!isCharAt(formatted, 0, '-')) {
             return false;
         }
-        if (!isCharAt(formatted, 1, '0'))
-        {
+        if (!isCharAt(formatted, 1, '0')) {
             return false;
         }
-        if (formatted.length() == 2)
-        {
+        if (formatted.length() == 2) {
             return true;
         }
-        if (!isCharAt(formatted, 2, '.'))
-        {
+        if (!isCharAt(formatted, 2, '.')) {
             return false;
         }
-        for (int i = 3; i < formatted.length(); i++)
-        {
-            if (formatted.charAt(i) != '0')
-            {
+        for (int i = 3; i < formatted.length(); i++) {
+            if (formatted.charAt(i) != '0') {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean isCharAt(String str, int index, char ch)
-    {
+    private static boolean isCharAt(String str, int index, char ch) {
         return str.length() > index && str.charAt(index) == ch;
     }
 
-    double getTolerance()
-    {
+    double getTolerance() {
         return this.tolerance;
     }
 
-    static boolean isNumber(Object value)
-    {
+    static boolean isNumber(Object value) {
         return value instanceof Number;
     }
 }

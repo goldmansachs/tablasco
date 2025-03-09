@@ -19,48 +19,41 @@ package com.gs.tablasco;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestTable implements VerifiableTable
-{
+public class TestTable implements VerifiableTable {
     private final String[] headers;
     private final List<Object[]> rows;
 
-    public TestTable(String... headers)
-    {
+    public TestTable(String... headers) {
         this.headers = headers;
         this.rows = new ArrayList<>();
     }
 
-    public TestTable withRow(Object... row)
-    {
-        if (row.length != this.headers.length)
-        {
-            throw new IllegalArgumentException("Row size " + row.length + " does not match header count " + this.headers.length);
+    public TestTable withRow(Object... row) {
+        if (row.length != this.headers.length) {
+            throw new IllegalArgumentException(
+                    "Row size " + row.length + " does not match header count " + this.headers.length);
         }
         this.rows.add(row);
         return this;
     }
 
     @Override
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return this.rows.size();
     }
 
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return this.headers.length;
     }
 
     @Override
-    public String getColumnName(int columnIndex)
-    {
+    public String getColumnName(int columnIndex) {
         return this.headers[columnIndex];
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         return this.rows.get(rowIndex)[columnIndex];
     }
 }

@@ -18,7 +18,6 @@ package com.gs.tablasco.lifecycle;
 
 import java.io.File;
 
-public interface ExceptionHandler
-{
+public interface ExceptionHandler {
     void onException(File outputFile, Throwable throwable);
 }

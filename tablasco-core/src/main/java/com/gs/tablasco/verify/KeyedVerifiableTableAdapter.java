@@ -18,23 +18,19 @@ package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
 
-public class KeyedVerifiableTableAdapter extends DefaultVerifiableTableAdapter implements KeyedVerifiableTable
-{
+public class KeyedVerifiableTableAdapter extends DefaultVerifiableTableAdapter implements KeyedVerifiableTable {
     private final boolean[] keyColumnIndices;
 
-    public KeyedVerifiableTableAdapter(VerifiableTable delegate, int... keyColumnIndices)
-    {
+    public KeyedVerifiableTableAdapter(VerifiableTable delegate, int... keyColumnIndices) {
         super(delegate);
         this.keyColumnIndices = new boolean[delegate.getColumnCount()];
-        for (int keyColumnIndex : keyColumnIndices)
-        {
+        for (int keyColumnIndex : keyColumnIndices) {
             this.keyColumnIndices[keyColumnIndex] = true;
         }
     }
 
     @Override
-    public boolean isKeyColumn(int columnIndex)
-    {
-        return columnIndex >= 0 && columnIndex< this.keyColumnIndices.length && this.keyColumnIndices[columnIndex];
+    public boolean isKeyColumn(int columnIndex) {
+        return columnIndex >= 0 && columnIndex < this.keyColumnIndices.length && this.keyColumnIndices[columnIndex];
     }
 }

@@ -16,33 +16,27 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-public class IndexMap implements Comparable<IndexMap>
-{
+public class IndexMap implements Comparable<IndexMap> {
     private final int expectedIndex;
     private final int actualIndex;
     private boolean isOutOfOrder;
 
-    public IndexMap(int expectedIndex, int actualIndex)
-    {
+    public IndexMap(int expectedIndex, int actualIndex) {
         this.expectedIndex = expectedIndex;
         this.actualIndex = actualIndex;
         this.isOutOfOrder = false;
-        if (expectedIndex < 0 && actualIndex < 0)
-        {
+        if (expectedIndex < 0 && actualIndex < 0) {
             throw new IllegalStateException("Only one index can be negative: " + this);
         }
     }
 
-    void setOutOfOrder()
-    {
+    void setOutOfOrder() {
         this.isOutOfOrder = true;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj instanceof IndexMap)
-        {
+    public boolean equals(Object obj) {
+        if (obj instanceof IndexMap) {
             IndexMap that = (IndexMap) obj;
             return this.expectedIndex == that.expectedIndex && this.actualIndex == that.actualIndex;
         }
@@ -50,95 +44,75 @@ public class IndexMap implements Comparable<IndexMap>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.isMissing() ? this.expectedIndex : this.actualIndex;
     }
 
     @Override
-    public int compareTo(IndexMap that)
-    {
-        if (this.equals(that))
-        {
+    public int compareTo(IndexMap that) {
+        if (this.equals(that)) {
             return 0;
         }
-        if (this.isMatched())
-        {
-            if (that.actualIndex >= 0)
-            {
+        if (this.isMatched()) {
+            if (that.actualIndex >= 0) {
                 return compareUnequals(this.actualIndex, that.actualIndex, this.isSurplus());
             }
             return compareUnequals(this.expectedIndex, that.expectedIndex, this.isSurplus());
         }
-        if (this.isSurplus())
-        {
-            if (that.actualIndex >= 0)
-            {
+        if (this.isSurplus()) {
+            if (that.actualIndex >= 0) {
                 return compareUnequals(this.actualIndex, that.actualIndex, this.isSurplus());
             }
             return compareUnequals(this.actualIndex, that.expectedIndex, this.isSurplus());
         }
-        if (that.expectedIndex >= 0)
-        {
+        if (that.expectedIndex >= 0) {
             return compareUnequals(this.expectedIndex, that.expectedIndex, this.isSurplus());
         }
         return compareUnequals(this.expectedIndex, that.actualIndex, this.isSurplus());
     }
 
-    public boolean isMissing()
-    {
+    public boolean isMissing() {
         return this.expectedIndex >= 0 && this.actualIndex < 0;
     }
 
-    public boolean isSurplus()
-    {
+    public boolean isSurplus() {
         return this.actualIndex >= 0 && this.expectedIndex < 0;
     }
 
-    public boolean isMatched()
-    {
+    public boolean isMatched() {
         return this.actualIndex >= 0 && this.expectedIndex >= 0;
     }
 
-    boolean isOutOfOrder()
-    {
+    boolean isOutOfOrder() {
         return this.isOutOfOrder;
     }
 
-    private static int compareUnequals(int thisIndex, int thatIndex, boolean thisIsSurplus)
-    {
-        if (thisIndex < thatIndex)
-        {
+    private static int compareUnequals(int thisIndex, int thatIndex, boolean thisIsSurplus) {
+        if (thisIndex < thatIndex) {
             return -1;
         }
-        if (thisIndex > thatIndex)
-        {
+        if (thisIndex > thatIndex) {
             return 1;
         }
-        if (thisIsSurplus)
-        {
+        if (thisIsSurplus) {
             return -1;
         }
         return 1;
     }
 
     @Override
-    public String toString()
-    {
-        return "IndexMap{" +
-                "expectedIndex=" + expectedIndex +
-                ", actualIndex=" + actualIndex +
-                ", isOutOfOrder=" + isOutOfOrder +
-                '}';
+    public String toString() {
+        return "IndexMap{" + "expectedIndex="
+                + expectedIndex + ", actualIndex="
+                + actualIndex + ", isOutOfOrder="
+                + isOutOfOrder + '}';
     }
 
-    int getExpectedIndex()
-    {
+    int getExpectedIndex() {
         return expectedIndex;
     }
 
-    int getActualIndex()
-    {
+    int getActualIndex() {
         return actualIndex;
     }
 }

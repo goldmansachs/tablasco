@@ -18,19 +18,16 @@ package com.gs.tablasco.results.parser;
 
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.ExpectedResultsLoader;
-
 import java.io.File;
 import java.util.Objects;
 
-public class ExpectedResultsCache
-{
+public class ExpectedResultsCache {
     private static File lastExpectedResultsFile;
     private static ExpectedResults lastExpectedResults;
 
-    public static synchronized ExpectedResults getExpectedResults(ExpectedResultsLoader expectedResultsLoader, File expectedResultsFile)
-    {
-        if (!Objects.equals(lastExpectedResultsFile, expectedResultsFile))
-        {
+    public static synchronized ExpectedResults getExpectedResults(
+            ExpectedResultsLoader expectedResultsLoader, File expectedResultsFile) {
+        if (!Objects.equals(lastExpectedResultsFile, expectedResultsFile)) {
             lastExpectedResultsFile = expectedResultsFile;
             lastExpectedResults = new ExpectedResultsParser(expectedResultsLoader, expectedResultsFile).parse();
         }

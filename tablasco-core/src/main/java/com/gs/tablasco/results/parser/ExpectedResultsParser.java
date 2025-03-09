@@ -18,7 +18,6 @@ package com.gs.tablasco.results.parser;
 
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.ExpectedResultsLoader;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +28,7 @@ import java.io.StreamTokenizer;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
-public class ExpectedResultsParser
-{
+public class ExpectedResultsParser {
     static final String SECTION_IDENTIFIER = "Section";
     static final String METADATA_IDENTIFIER = "Metadata";
 
@@ -44,22 +42,19 @@ public class ExpectedResultsParser
     private DataReaderState dataReaderState;
     private MetadataReaderState metadataReaderState;
 
-    public ExpectedResultsParser(ExpectedResultsLoader loader, File file)
-    {
+    public ExpectedResultsParser(ExpectedResultsLoader loader, File file) {
         this.loader = loader;
         this.file = file;
         this.initializeStates();
     }
 
-    void startNewSection(String testName, String tableName)
-    {
+    void startNewSection(String testName, String tableName) {
         this.expectedTable = new ExpectedTable();
         this.results.addTable(testName, tableName, this.expectedTable);
         this.dataReaderState.setSectionName(testName);
     }
 
-    private void initializeStates()
-    {
+    private void initializeStates() {
         this.sectionReaderState = new SectionReaderState(this);
         this.headerState = new HeaderParserState(this);
         this.beginningOfLineState = new BeginningOfLineState(this);
@@ -67,62 +62,48 @@ public class ExpectedResultsParser
         this.metadataReaderState = new MetadataReaderState(this);
     }
 
-    ExpectedTable getExpectedTable()
-    {
+    ExpectedTable getExpectedTable() {
         return this.expectedTable;
     }
 
-    ExpectedResults getExpectedResults()
-    {
+    ExpectedResults getExpectedResults() {
         return this.results;
     }
 
-    DataReaderState getDataReaderState()
-    {
+    DataReaderState getDataReaderState() {
         return this.dataReaderState;
     }
 
-    HeaderParserState getHeaderState()
-    {
+    HeaderParserState getHeaderState() {
         return this.headerState;
     }
 
-    SectionReaderState getSectionReaderState()
-    {
+    SectionReaderState getSectionReaderState() {
         return this.sectionReaderState;
     }
 
-    BeginningOfLineState getBeginningOfLineState()
-    {
+    BeginningOfLineState getBeginningOfLineState() {
         return this.beginningOfLineState;
     }
 
-    ParserState getMetadataReaderState()
-    {
+    ParserState getMetadataReaderState() {
         return this.metadataReaderState;
     }
 
-    public ExpectedResults parse()
-    {
+    public ExpectedResults parse() {
         this.results = new ExpectedResults();
-        try (InputStream inputStream = this.loader.load(this.file))
-        {
+        try (InputStream inputStream = this.loader.load(this.file)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             parse(reader);
             return this.results;
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        catch (ParseException e)
-        {
+        } catch (ParseException e) {
             throw new RuntimeException("Parsing error reading '" + this.file + '\'', e);
         }
     }
 
-    private void parse(Reader reader) throws ParseException, IOException
-    {
+    private void parse(Reader reader) throws ParseException, IOException {
         StreamTokenizer st = new StreamTokenizer(reader);
         st.eolIsSignificant(true);
         st.wordChars('_', '_');
@@ -134,8 +115,7 @@ public class ExpectedResultsParser
 
         // Parse the file
         ParserState currentState = this.getBeginningOfLineState();
-        while (currentState != null)
-        {
+        while (currentState != null) {
             currentState = currentState.parse(st);
         }
     }

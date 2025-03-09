@@ -17,7 +17,6 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -35,21 +34,17 @@ public class ResultSetTable {
      * @return a verifiable table
      * @throws SQLException from reading ResultSet
      */
-    public static VerifiableTable create(ResultSet resultSet) throws SQLException
-    {
+    public static VerifiableTable create(ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
         List<String> headers = new ArrayList<>(columnCount);
-        for (int n = 1; n <= columnCount; n++)
-        {
+        for (int n = 1; n <= columnCount; n++) {
             headers.add(metaData.getColumnName(n));
         }
         List<List> rows = new ArrayList<>();
-        while (resultSet.next())
-        {
+        while (resultSet.next()) {
             List<Object> row = new ArrayList<>(columnCount);
-            for (int n = 1; n <= columnCount; n++)
-            {
+            for (int n = 1; n <= columnCount; n++) {
                 row.add(resultSet.getObject(n));
             }
             rows.add(row);

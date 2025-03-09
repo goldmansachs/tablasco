@@ -16,16 +16,14 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
-public class MetadataTest
-{
+public class MetadataTest {
     @Test
-    public void testMetadataCreatedForRecordingResults() throws Exception
-    {
+    public void testMetadataCreatedForRecordingResults() throws Exception {
         Metadata metadata = Metadata.newWithRecordedAt();
         metadata.add("App Server URL", "http://test");
         metadata.add("testKey", "testValue");
@@ -35,8 +33,7 @@ public class MetadataTest
     }
 
     @Test
-    public void testMetadataCreatedForParsingResults() throws Exception
-    {
+    public void testMetadataCreatedForParsingResults() throws Exception {
         Metadata metadata = Metadata.newEmpty();
         metadata.add("testKey", "testValue");
         metadata.add("App Server URL", "http://test");

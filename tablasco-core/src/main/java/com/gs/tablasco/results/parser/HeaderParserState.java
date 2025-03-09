@@ -20,50 +20,38 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.text.ParseException;
 
-public class HeaderParserState extends ParserState
-{
-    HeaderParserState(ExpectedResultsParser parserState)
-    {
+public class HeaderParserState extends ParserState {
+    HeaderParserState(ExpectedResultsParser parserState) {
         super(parserState);
     }
 
     private static final int QUOTE_TOKEN = '"';
 
     @Override
-    public ParserState parse(StreamTokenizer st) throws IOException, ParseException
-    {
+    public ParserState parse(StreamTokenizer st) throws IOException, ParseException {
         parseAttributes(st);
         return this.getParser().getBeginningOfLineState();
     }
 
-    private void parseAttributes(StreamTokenizer st) throws IOException, ParseException
-    {
+    private void parseAttributes(StreamTokenizer st) throws IOException, ParseException {
         int token = st.nextToken();
         boolean wantAttribute = true;
-        while (token != StreamTokenizer.TT_EOL)
-        {
-            if (wantAttribute)
-            {
-                if (token != StreamTokenizer.TT_WORD && token != QUOTE_TOKEN)
-                {
+        while (token != StreamTokenizer.TT_EOL) {
+            if (wantAttribute) {
+                if (token != StreamTokenizer.TT_WORD && token != QUOTE_TOKEN) {
                     throw new ParseException("expected an column name on line " + st.lineno(), st.lineno());
                 }
                 this.getParser().getExpectedTable().addColumnHeader(st.sval);
-            }
-            else
-            {
-                if (token != ',')
-                {
+            } else {
+                if (token != ',') {
                     throw new ParseException("Expected a comma on line " + st.lineno(), st.lineno());
                 }
             }
             wantAttribute = !wantAttribute;
             token = st.nextToken();
         }
-        if (wantAttribute)
-        {
+        if (wantAttribute) {
             throw new ParseException("extra comma at the end of line " + st.lineno(), st.lineno());
         }
     }
-
 }
