@@ -17,8 +17,9 @@
 package com.gs.tablasco.investigation;
 
 import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.core.HtmlConfig;
+import com.gs.tablasco.core.VerifierConfig;
 import com.gs.tablasco.verify.*;
-import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 
 import java.io.File;
 import java.util.*;
@@ -38,8 +39,8 @@ class Watson
     Watson(File outputFile)
     {
         this.outputFile = outputFile;
-        ColumnComparators columnComparators = new ColumnComparators.Builder().withTolerance(1.0).build();
-        this.multiTableVerifier = new MultiTableVerifier(new IndexMapTableVerifier(columnComparators, false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD));
+        VerifierConfig verifierConfig = new VerifierConfig().withTolerance(1.0).withVerifyRowOrder(false);
+        this.multiTableVerifier = new MultiTableVerifier(verifierConfig);
     }
 
     List<Object> assist(String levelName, InvestigationLevel nextLevel, int drilldownLimit)
@@ -63,7 +64,8 @@ class Watson
 
         String levelDescription = nextLevel.getLevelDescription();
         ResultTable results = this.findBreaks(levelDescription, actualResults, expectedResults);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, true, false, Collections.emptySet()));
+        HtmlConfig htmlConfig = new HtmlConfig().withHideMatchedRows(true);
+        HtmlFormatter htmlFormatter = new HtmlFormatter(this.outputFile, htmlConfig);
         htmlFormatter.appendResults(levelName, Collections.singletonMap(levelDescription, results), Metadata.newEmpty());
         return getRowKeys(results, drilldownLimit);
     }

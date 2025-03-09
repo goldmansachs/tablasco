@@ -18,6 +18,7 @@ package com.gs.tablasco.verify;
 
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.core.HtmlConfig;
 import com.gs.tablasco.rebase.RebaseFileWriter;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
@@ -86,7 +87,7 @@ public class RealVerificationExamplesTest
         Assert.assertTrue(!actualTables.isEmpty());
         Assert.assertEquals(actualTables.keySet(), expectedTables.keySet());
         ResultTable verify = new IndexMapTableVerifier(columnComparators, false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false).verify(actualTables.get(tableName), expectedTables.get(tableName));
-        HtmlFormatter htmlFormatter = new HtmlFormatter(new File(TableTestUtils.getOutputDirectory(), RealVerificationExamplesTest.class.getSimpleName() + '_' + className + '_' + methodName + ".html"), new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet()));
+        HtmlFormatter htmlFormatter = new HtmlFormatter(new File(TableTestUtils.getOutputDirectory(), RealVerificationExamplesTest.class.getSimpleName() + '_' + className + '_' + methodName + ".html"), new HtmlConfig());
         htmlFormatter.appendResults(methodName, Collections.singletonMap(tableName, new SummaryResultTable(verify)), Metadata.newEmpty());
         int failedCells = verify.getTotalCellCount() - verify.getPassedCellCount();
         Assert.assertEquals(expectedBrokenCells, failedCells);

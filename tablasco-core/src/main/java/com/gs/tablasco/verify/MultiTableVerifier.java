@@ -17,6 +17,8 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.core.VerifierConfig;
+import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,15 +33,23 @@ import java.util.Map;
 
 public class MultiTableVerifier
 {
-    private final SingleTableVerifier singleTableVerifier;
+    private final VerifierConfig verifierConfig;
 
-    public MultiTableVerifier(SingleTableVerifier singleSingleTableVerifier)
-    {
-        this.singleTableVerifier = singleSingleTableVerifier;
+    public MultiTableVerifier(VerifierConfig verifierConfig) {
+        this.verifierConfig = verifierConfig;
     }
 
     public Map<String, ResultTable> verifyTables(Map<String, ? extends VerifiableTable> expectedResults, Map<String, ? extends VerifiableTable> actualResults)
     {
+        SingleTableVerifier singleTableVerifier = new IndexMapTableVerifier(
+                this.verifierConfig.getColumnComparators(),
+                this.verifierConfig.isVerifyRowOrder(),
+                IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD,
+                this.verifierConfig.isIgnoreSurplusRows(),
+                this.verifierConfig.isIgnoreMissingRows(),
+                this.verifierConfig.isIgnoreSurplusColumns(),
+                this.verifierConfig.isIgnoreMissingColumns(),
+                this.verifierConfig.getPartialMatchTimeoutMillis());
         Map<String, ResultTable> results = new LinkedHashMap<>();
         List<String> allTableNames = new ArrayList<>(expectedResults.keySet());
         for (String actualTable : actualResults.keySet())
@@ -51,12 +61,12 @@ public class MultiTableVerifier
         }
         for (String tableName : allTableNames)
         {
-            verifyTable(tableName, actualResults, expectedResults, results);
+            verifyTable(tableName, actualResults, expectedResults, results, singleTableVerifier);
         }
         return results;
     }
 
-    private void verifyTable(String tableName, Map<String, ? extends VerifiableTable> actualResults, Map<String, ? extends VerifiableTable> expectedResults, Map<String, ResultTable> resultsMap)
+    private void verifyTable(String tableName, Map<String, ? extends VerifiableTable> actualResults, Map<String, ? extends VerifiableTable> expectedResults, Map<String, ResultTable> resultsMap, SingleTableVerifier singleTableVerifier)
     {
         VerifiableTable actualData = actualResults.get(tableName);
         VerifiableTable expectedData = expectedResults.get(tableName);
@@ -69,7 +79,7 @@ public class MultiTableVerifier
         {
             throw new IllegalStateException("Expected table '" + tableName + "' has no columns");
         }
-        ResultTable results = this.singleTableVerifier.verify(actualData, expectedData);
+        ResultTable results = singleTableVerifier.verify(actualData, expectedData);
         resultsMap.put(tableName, results);
     }
 }

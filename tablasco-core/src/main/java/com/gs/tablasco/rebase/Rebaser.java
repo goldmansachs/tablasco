@@ -17,8 +17,8 @@
 package com.gs.tablasco.rebase;
 
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.ColumnComparators;
 import com.gs.tablasco.verify.Metadata;
+import com.gs.tablasco.core.VerifierConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class Rebaser
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Rebaser.class);
     private static Boolean rebaseMode;
-    private final ColumnComparators columnComparators;
+    private final VerifierConfig verifierConfig;
     private final Metadata metadata;
     private final String[] baselineHeaders;
 
@@ -42,32 +42,28 @@ public class Rebaser
         return rebaseMode;
     }
 
-    public Rebaser(ColumnComparators columnComparators, Metadata metadata, String[] baselineHeaders)
+    public Rebaser(VerifierConfig verifierConfig, Metadata metadata, String[] baselineHeaders)
     {
-        this.columnComparators = columnComparators;
+        this.verifierConfig = verifierConfig;
         this.metadata = metadata;
         this.baselineHeaders = baselineHeaders;
     }
 
     public void rebase(String methodName, Map<String, VerifiableTable> actualResults, File outputFile)
     {
-        new RebaseFileWriter(this.metadata, this.baselineHeaders, this.columnComparators, outputFile).writeRebasedResults(methodName, actualResults);
+        LOGGER.warn("Stand back from the platform edge - here comes the");
+        LOGGER.warn("        ___    ___    ___    ___    ___    ___   _  _    ___    ");
+        LOGGER.warn("       | _ \\  | __|  | _ )  /   \\  / __|  |_ _| | \\| |  / __|");
+        LOGGER.warn("       |   /  | _|   | _ \\  | - |  \\__ \\   | |  | .` | | (_ |");
+        LOGGER.warn("       |_|_\\  |___|  |___/  |_|_|  |___/  |___| |_|\\_|  \\___|");
+        LOGGER.warn("     _|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|");
+        LOGGER.warn("      `-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'");
+        LOGGER.warn("train.... ");
+        new RebaseFileWriter(this.metadata, this.baselineHeaders, this.verifierConfig.getColumnComparators(), outputFile).writeRebasedResults(methodName, actualResults);
     }
 
     private static Boolean initializeRebaseFlag()
     {
-        Boolean rebaseEnabled = Boolean.valueOf(System.getProperty("rebase", "false"));
-        if (rebaseEnabled)
-        {
-            LOGGER.warn("Stand back from the platform edge - here comes the");
-            LOGGER.warn("        ___    ___    ___    ___    ___    ___   _  _    ___    ");
-            LOGGER.warn("       | _ \\  | __|  | _ )  /   \\  / __|  |_ _| | \\| |  / __|");
-            LOGGER.warn("       |   /  | _|   | _ \\  | - |  \\__ \\   | |  | .` | | (_ |");
-            LOGGER.warn("       |_|_\\  |___|  |___/  |_|_|  |___/  |___| |_|\\_|  \\___|");
-            LOGGER.warn("     _|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|");
-            LOGGER.warn("      `-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'");
-            LOGGER.warn("train.... ");
-        }
-        return rebaseEnabled;
+        return Boolean.valueOf(System.getProperty("rebase", "false"));
     }
 }

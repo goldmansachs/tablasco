@@ -23,9 +23,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExpectedResultsLoaderTest implements ExpectedResultsLoader
@@ -50,7 +50,7 @@ public class ExpectedResultsLoaderTest implements ExpectedResultsLoader
     {
         loadCount.incrementAndGet();
         File file = new File(expectedFile.getPath().replace(".raw.txt", ".txt"));
-        return new FileInputStream(file);
+        return Files.newInputStream(file.toPath());
     }
 
     @Test

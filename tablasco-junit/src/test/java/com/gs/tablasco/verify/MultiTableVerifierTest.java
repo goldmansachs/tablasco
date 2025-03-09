@@ -18,7 +18,8 @@ package com.gs.tablasco.verify;
 
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
+import com.gs.tablasco.core.HtmlConfig;
+import com.gs.tablasco.core.VerifierConfig;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.w3c.dom.Document;
@@ -44,8 +45,7 @@ public class MultiTableVerifierTest
     {
         this.resultsFile = new File(TableTestUtils.getOutputDirectory(), MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName.getMethodName() + ".html");
         this.resultsFile.delete();
-        ColumnComparators columnComparators = new ColumnComparators.Builder().build();
-        this.verifier = new MultiTableVerifier(new IndexMapTableVerifier(columnComparators, true, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false));
+        this.verifier = new MultiTableVerifier(new VerifierConfig().withVerifyRowOrder(true));
     }
 
     @After
@@ -107,7 +107,7 @@ public class MultiTableVerifierTest
     private Map<String, ResultTable> verifyTables(Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults)
     {
         Map<String, ResultTable> results = this.verifier.verifyTables(expectedResults, actualResults);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet()));
+        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlConfig());
         htmlFormatter.appendResults(this.testName.getMethodName(), results, null);
         return results;
     }

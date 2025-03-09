@@ -17,6 +17,8 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.adapters.TableAdapters;
+import com.gs.tablasco.core.HtmlConfig;
+import com.gs.tablasco.core.VerifierConfig;
 import com.gs.tablasco.files.*;
 import com.gs.tablasco.investigation.Investigation;
 import com.gs.tablasco.investigation.Sherlock;
@@ -30,9 +32,8 @@ import com.gs.tablasco.results.ExpectedResultsLoader;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsCache;
 import com.gs.tablasco.verify.*;
-import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import org.junit.Assert;
-import org.junit.internal.AssumptionViolatedException;
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -81,39 +82,27 @@ public final class TableVerifier extends TestWatcher
         return thread;
     });
 
+    private final VerifierConfig verifierConfig = new VerifierConfig();
+    private final HtmlConfig htmlConfig = new HtmlConfig();
+
     private File fixedExpectedDir;
     private File fixedOutputDir;
     private boolean isRebasing = Rebaser.inRebaseMode();
     private Description description;
     private FilenameStrategy fileStrategy = new FilePerMethodStrategy();
     private DirectoryStrategy directoryStrategy = new FixedDirectoryStrategy();
-    private boolean verifyRowOrder = true;
-    private boolean hideMatchedRows = false;
-    private boolean hideMatchedTables = false;
-    private boolean hideMatchedColumns = false;
     private boolean createActualResults = true;
     private boolean createActualResultsOnFailure = false;
-    private boolean assertionSummary = false;
-    private final ColumnComparators.Builder columnComparatorsBuilder = new ColumnComparators.Builder();
-    private boolean ignoreSurplusRows = false;
-    private boolean ignoreMissingRows = false;
-    private boolean ignoreSurplusColumns = false;
-    private boolean ignoreMissingColumns = false;
-    private Function<VerifiableTable, VerifiableTable> actualAdapter = verifiableTable -> verifiableTable;
-    private Function<VerifiableTable, VerifiableTable> expectedAdapter = verifiableTable -> verifiableTable;
     private String[] baselineHeaders = null;
-    private long partialMatchTimeoutMillis = IndexMapTableVerifier.DEFAULT_PARTIAL_MATCH_TIMEOUT_MILLIS;
 
     private final Metadata metadata = Metadata.newWithRecordedAt();
     private Map<String, VerifiableTable> expectedTables;
     private Metadata expectedMetadata;
-    private final Set<String> tablesToAlwaysShowMatchedRowsFor = new HashSet<>();
     private final Set<String> tablesNotToAdapt = new HashSet<>();
     private Predicate<String> tableFilter = s -> true;
     private ExpectedResultsLoader expectedResultsLoader = new FileSystemExpectedResultsLoader();
     private Future<ExpectedResults> expectedResultsFuture;
     private int verifyCount = 0;
-    private int htmlRowLimit = HtmlFormatter.DEFAULT_ROW_LIMIT;
     private boolean summarisedResults = false;
     private LifecycleEventHandler lifecycleEventHandler = new DefaultLifecycleEventHandler();
     private ExceptionHandler exceptionHandler = new DefaultExceptionHandler();
@@ -270,7 +259,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withVerifyRowOrder(boolean verifyRowOrder)
     {
-        this.verifyRowOrder = verifyRowOrder;
+        this.verifierConfig.withVerifyRowOrder(verifyRowOrder);
         return this;
     }
 
@@ -300,7 +289,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withTolerance(double tolerance)
     {
-        this.columnComparatorsBuilder.withTolerance(tolerance);
+        this.verifierConfig.withTolerance(tolerance);
         return this;
     }
 
@@ -314,7 +303,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withTolerance(String columnName, double tolerance)
     {
-        this.columnComparatorsBuilder.withTolerance(columnName, tolerance);
+        this.verifierConfig.withTolerance(columnName, tolerance);
         return this;
     }
 
@@ -331,7 +320,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withVarianceThreshold(double varianceThreshold)
     {
-        this.columnComparatorsBuilder.withVarianceThreshold(varianceThreshold);
+        this.verifierConfig.withVarianceThreshold(varianceThreshold);
         return this;
     }
 
@@ -345,7 +334,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withVarianceThreshold(String columnName, double varianceThreshold)
     {
-        this.columnComparatorsBuilder.withVarianceThreshold(columnName, varianceThreshold);
+        this.verifierConfig.withVarianceThreshold(columnName, varianceThreshold);
         return this;
     }
 
@@ -358,7 +347,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withHideMatchedRows(boolean hideMatchedRows)
     {
-        this.hideMatchedRows = hideMatchedRows;
+        this.htmlConfig.withHideMatchedRows(hideMatchedRows);
         return this;
     }
 
@@ -371,7 +360,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withAlwaysShowMatchedRowsFor(String... tableNames)
     {
-        this.tablesToAlwaysShowMatchedRowsFor.addAll(Arrays.asList(tableNames));
+        this.htmlConfig.withAlwaysShowMatchedRowsFor(tableNames);
         return this;
     }
 
@@ -384,7 +373,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withHideMatchedColumns(boolean hideMatchedColumns)
     {
-        this.hideMatchedColumns = hideMatchedColumns;
+        this.htmlConfig.withHideMatchedColumns(hideMatchedColumns);
         return this;
     }
 
@@ -413,7 +402,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withHideMatchedTables(boolean hideMatchedTables)
     {
-        this.hideMatchedTables = hideMatchedTables;
+        this.htmlConfig.withHideMatchedTables(hideMatchedTables);
         return this;
     }
 
@@ -426,7 +415,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withHtmlRowLimit(int htmlRowLimit)
     {
-        this.htmlRowLimit = htmlRowLimit;
+        this.htmlConfig.withHtmlRowLimit(htmlRowLimit);
         return this;
     }
 
@@ -461,7 +450,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withAssertionSummary(boolean assertionSummary)
     {
-        this.assertionSummary = assertionSummary;
+        this.htmlConfig.withAssertionSummary(assertionSummary);
         return this;
     }
 
@@ -474,7 +463,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withActualAdapter(Function<VerifiableTable, VerifiableTable> actualAdapter)
     {
-        this.actualAdapter = actualAdapter;
+        this.verifierConfig.withActualAdapter(actualAdapter);
         return this;
     }
 
@@ -484,7 +473,7 @@ public final class TableVerifier extends TestWatcher
      */
     public Function<VerifiableTable, VerifiableTable> getActualAdapter()
     {
-        return actualAdapter;
+        return this.verifierConfig.getActualAdapter();
     }
 
     /**
@@ -496,7 +485,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withExpectedAdapter(Function<VerifiableTable, VerifiableTable> expectedAdapter)
     {
-        this.expectedAdapter = expectedAdapter;
+        this.verifierConfig.withExpectedAdapter(expectedAdapter);
         return this;
     }
 
@@ -506,7 +495,7 @@ public final class TableVerifier extends TestWatcher
      */
     public Function<VerifiableTable, VerifiableTable> getExpectedAdapter()
     {
-        return expectedAdapter;
+        return this.verifierConfig.getExpectedAdapter();
     }
 
     /**
@@ -516,7 +505,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withIgnoreSurplusRows()
     {
-        this.ignoreSurplusRows = true;
+        this.verifierConfig.withIgnoreSurplusRows();
         return this;
     }
 
@@ -527,7 +516,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withIgnoreMissingRows()
     {
-        this.ignoreMissingRows = true;
+        this.verifierConfig.withIgnoreMissingRows();
         return this;
     }
 
@@ -538,7 +527,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withIgnoreSurplusColumns()
     {
-        this.ignoreSurplusColumns = true;
+        this.verifierConfig.withIgnoreSurplusColumns();
         return this;
     }
 
@@ -549,7 +538,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withIgnoreMissingColumns()
     {
-        this.ignoreMissingColumns = true;
+        this.verifierConfig.withIgnoreMissingColumns();
         return this;
     }
 
@@ -651,7 +640,7 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withPartialMatchTimeoutMillis(long partialMatchTimeoutMillis)
     {
-        this.partialMatchTimeoutMillis = partialMatchTimeoutMillis;
+        this.verifierConfig.withPartialMatchTimeoutMillis(partialMatchTimeoutMillis);
         return this;
     }
 
@@ -662,7 +651,8 @@ public final class TableVerifier extends TestWatcher
      */
     public TableVerifier withoutPartialMatchTimeout()
     {
-        return this.withPartialMatchTimeoutMillis(0);
+        this.verifierConfig.withoutPartialMatchTimeout();
+        return this;
     }
 
     /**
@@ -808,7 +798,7 @@ public final class TableVerifier extends TestWatcher
 
         if (this.isRebasing)
         {
-            this.newRebaser().rebase(this.description.getMethodName(), adaptAndFilterTables(actualTables, this.actualAdapter), this.getExpectedFile());
+            this.newRebaser().rebase(this.description.getMethodName(), adaptAndFilterTables(actualTables, this.getActualAdapter()), this.getExpectedFile());
         }
         else
         {
@@ -841,7 +831,7 @@ public final class TableVerifier extends TestWatcher
 
     private Rebaser newRebaser()
     {
-        return new Rebaser(this.columnComparatorsBuilder.build(), this.metadata, this.baselineHeaders);
+        return new Rebaser(this.verifierConfig, this.metadata, this.baselineHeaders);
     }
 
     /**
@@ -890,8 +880,8 @@ public final class TableVerifier extends TestWatcher
 
     private void verifyTables(Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables, Metadata metadata)
     {
-        Map<String, VerifiableTable> adaptedExpectedTables = adaptAndFilterTables(expectedTables, this.expectedAdapter);
-        Map<String, VerifiableTable> adaptedActualTables = adaptAndFilterTables(actualTables, this.actualAdapter);
+        Map<String, VerifiableTable> adaptedExpectedTables = adaptAndFilterTables(expectedTables, this.getExpectedAdapter());
+        Map<String, VerifiableTable> adaptedActualTables = adaptAndFilterTables(actualTables, this.getActualAdapter());
         Map<String, FormattableTable> allResults = getVerifiedResults(adaptedExpectedTables, adaptedActualTables);
         boolean verificationSuccess = allResults.values().stream().allMatch(FormattableTable::isSuccess);
         boolean createActual = this.createActualResults;
@@ -922,12 +912,12 @@ public final class TableVerifier extends TestWatcher
 
     public HtmlFormatter newHtmlFormatter()
     {
-        return new HtmlFormatter(this.getOutputFile(), new HtmlOptions(this.assertionSummary, this.htmlRowLimit, this.hideMatchedTables, this.hideMatchedRows, this.hideMatchedColumns, this.tablesToAlwaysShowMatchedRowsFor));
+        return new HtmlFormatter(this.getOutputFile(), this.htmlConfig);
     }
 
     private Map<String, FormattableTable> getVerifiedResults(Map<String, VerifiableTable> adaptedExpectedTables, Map<String, VerifiableTable> adaptedActualTables)
     {
-        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(newSingleTableVerifier());
+        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(this.verifierConfig);
         Map<String, ResultTable> resultTables = multiTableVerifier.verifyTables(adaptedExpectedTables, adaptedActualTables);
         Map<String, FormattableTable> resultTableInterfaces = new LinkedHashMap<>(resultTables.size());
         for (Map.Entry<String, ResultTable> resultTableEntry : resultTables.entrySet())
@@ -936,11 +926,6 @@ public final class TableVerifier extends TestWatcher
             resultTableInterfaces.put(resultTableEntry.getKey(), this.summarisedResults ? new SummaryResultTable(resultTable) : resultTable);
         }
         return resultTableInterfaces;
-    }
-
-    public SingleTableVerifier newSingleTableVerifier()
-    {
-        return new IndexMapTableVerifier(this.columnComparatorsBuilder.build(), this.verifyRowOrder, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, this.ignoreSurplusRows, this.ignoreMissingRows, this.ignoreSurplusColumns, this.ignoreMissingColumns, this.partialMatchTimeoutMillis);
     }
 
     private Map<String, VerifiableTable> adaptAndFilterTables(final Map<String, VerifiableTable> tables, final Function<VerifiableTable, VerifiableTable> adapter)

@@ -42,7 +42,7 @@ public final class RebaseFileWriter
     private static final Pattern BACKSLASH_PATTERN = Pattern.compile("\\\\");
     private static final String DOUBLE_QUOTE_REPLACEMENT = Matcher.quoteReplacement("\\\"");
     private static final String BACKSLASH_REPLACEMENT = Matcher.quoteReplacement("\\\\");
-    private static final Set<String> SPECIAL_NUMBERS = new HashSet<>(Arrays.asList("" + '\u221E', "-" + '\u221E', "NaN"));
+    private static final Set<String> SPECIAL_NUMBERS = new HashSet<>(Arrays.asList("∞", "-∞", "NaN"));
     private final Metadata metadata;
     private final String[] baselineHeaders;
     private final ColumnComparators columnComparators;
@@ -71,14 +71,19 @@ public final class RebaseFileWriter
             {
                 printHeaderAndMetadata(printWriter);
             }
-            for (Map.Entry<String, VerifiableTable> namedTabled : actualResults.entrySet())
-            {
-                printTable(printWriter, methodName, namedTabled.getKey(), namedTabled.getValue());
-            }
+            writeTables(methodName, actualResults, printWriter);
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void writeTables(String methodName, Map<String, VerifiableTable> actualResults, PrintWriter printWriter) {
+        for (Map.Entry<String, VerifiableTable> namedTable : actualResults.entrySet())
+        {
+            LOGGER.info("Writing results for '{} {}' to '{}'", methodName, namedTable.getKey(), this.outputFile);
+            printTable(printWriter, methodName, namedTable.getKey(), namedTable.getValue(), this.columnComparators);
         }
     }
 
@@ -115,9 +120,8 @@ public final class RebaseFileWriter
         }
     }
 
-    private void printTable(PrintWriter printWriter, String methodName, String tableName, VerifiableTable verifiableTable)
+    public static void printTable(PrintWriter printWriter, String methodName, String tableName, VerifiableTable verifiableTable, ColumnComparators columnComparators)
     {
-        LOGGER.info("Writing results for '" + methodName + ' ' + tableName + "' to '" + this.outputFile + '\'');
         printWriter.print("Section ");
         printWriter.print('"');
         printWriter.print(methodName);
@@ -128,11 +132,11 @@ public final class RebaseFileWriter
             printString(printWriter, tableName);
         }
         printWriter.println();
-        printTableContents(printWriter, verifiableTable);
+        printTableContents(printWriter, verifiableTable, columnComparators);
         printWriter.println();
     }
 
-    private void printTableContents(PrintWriter printWriter, VerifiableTable table)
+    public static void printTableContents(PrintWriter printWriter, VerifiableTable table, ColumnComparators columnComparators)
     {
         for (int column = 0; column < table.getColumnCount(); column++)
         {
@@ -146,7 +150,7 @@ public final class RebaseFileWriter
         {
             for (int column = 0; column < table.getColumnCount(); column++)
             {
-                CellComparator comparator = this.columnComparators.getComparatorForRebase(table.getColumnName(column));
+                CellComparator comparator = columnComparators.getComparatorForRebase(table.getColumnName(column));
                 Object cell = table.getValueAt(row, column);
                 String formattedCell = comparator.getFormatter().format(cell);
                 if (cell instanceof Number && !SPECIAL_NUMBERS.contains(formattedCell))

@@ -16,6 +16,7 @@
 
 package com.gs.tablasco.verify;
 
+import com.gs.tablasco.core.HtmlConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -72,16 +73,28 @@ public class HtmlFormatter
 
     private final File outputFile;
     private final HtmlOptions htmlOptions;
+    private final Set<File> initializedFiles;
 
-    public HtmlFormatter(File outputFile, HtmlOptions htmlOptions)
+    public HtmlFormatter(File outputFile, HtmlConfig htmlConfig)
+    {
+        this(outputFile, htmlConfig, INITIALIZED_FILES);
+    }
+    public HtmlFormatter(File outputFile, HtmlConfig htmlConfig, Set<File> initializedFiles)
     {
         this.outputFile = outputFile;
-        this.htmlOptions = htmlOptions;
+        this.htmlOptions = new HtmlOptions(
+                htmlConfig.isShowAssertionSummary(),
+                htmlConfig.getHtmlRowLimit(),
+                htmlConfig.isHideMatchedTables(),
+                htmlConfig.isHideMatchedRows(),
+                htmlConfig.isHideMatchedColumns(),
+                htmlConfig.getTablesToAlwaysShowMatchedRowsFor());
+        this.initializedFiles = initializedFiles;
     }
 
     private Document initialize(Metadata metadata)
     {
-        if (INITIALIZED_FILES.add(this.outputFile) && this.outputFile.exists() && !this.outputFile.delete())
+        if (initializedFiles.add(this.outputFile) && this.outputFile.exists() && !this.outputFile.delete())
         {
             throw new RuntimeException("Cannot delete output file " + this.outputFile.getName());
         }

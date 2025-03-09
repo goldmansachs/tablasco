@@ -18,6 +18,7 @@ package com.gs.tablasco.verify;
 
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.core.HtmlConfig;
 import com.gs.tablasco.rebase.RebaseFileWriter;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
@@ -123,7 +124,7 @@ public abstract class AbstractSingleTableVerifierTest
     private void writeResults(String tableName, List<List<ResultCell>> verify)
     {
         File outputFile = new File(TableTestUtils.getOutputDirectory(), this.getClass().getSimpleName() + ".html");
-        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet()));
+        HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlConfig());
         htmlFormatter.appendResults(this.testName.getMethodName(), Collections.singletonMap(tableName, new ResultTable(new boolean[verify.get(0).size()], verify)), Metadata.newEmpty());
     }
 
