@@ -42,41 +42,42 @@ public class HideMatchedTablesTest
                 TableTestUtils.toNamedTables("match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
                 TableTestUtils.toNamedTables("match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual)));
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\"/>\n" +
-                "<h1>matchedTablesAreHidden</h1>\n" +
-                "<div id=\"matchedTablesAreHidden.break\">\n" +
-                "<h2>break</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">B<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">A<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<div id=\"matchedTablesAreHidden.outOfOrder\">\n" +
-                "<h2>outOfOrder</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"outoforder\">Col 2<p>Out of order</p>\n" +
-                "</th>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"outoforder\">B<p>Out of order</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">A</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>"
+                """
+                        <body>
+                        <div class="metadata"/>
+                        <h1>matchedTablesAreHidden</h1>
+                        <div id="matchedTablesAreHidden.break">
+                        <h2>break</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col</th>
+                        </tr>
+                        <tr>
+                        <td class="surplus">B<p>Surplus</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="missing">A<p>Missing</p>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        <div id="matchedTablesAreHidden.outOfOrder">
+                        <h2>outOfOrder</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="outoforder">Col 2<p>Out of order</p>
+                        </th>
+                        <th class="pass">Col 1</th>
+                        </tr>
+                        <tr>
+                        <td class="outoforder">B<p>Out of order</p>
+                        </td>
+                        <td class="pass">A</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>"""
         , TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 }

@@ -46,52 +46,6 @@ public class ExceptionHtmlTest
         Assert.assertTrue(stackTraces.get(2).getValue().size() > 1);
     }
 
-    /*
-    @Test
-    public void testCollectedException() throws IOException
-    {
-        String stackTraceToString = ""; //ExceptionHtml.stackTraceToString(buildIntricateCollectedException());
-        List<Pair<String, List<String>>> stackTraces = getStackLineCount(stackTraceToString);
-        Assert.assertEquals(9, stackTraces.size());
-        int index = 0;
-        Assert.assertEquals("com.gs.fw.common.base.exception.CollectedException: foo", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** Begin Collected Exception 1 of 2 *****************", stackTraces.get(index++).getOne());
-        Assert.assertEquals("java.lang.IllegalArgumentException: m1", stackTraces.get(index++).getOne());
-        Assert.assertEquals("Caused by: java.lang.UnsupportedOperationException: m2", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** End Collected Exception 1 of 2 *****************", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** Begin Collected Exception 2 of 2 *****************", stackTraces.get(index++).getOne());
-        Assert.assertEquals("java.lang.UnsupportedOperationException: m3", stackTraces.get(index++).getOne());
-        Assert.assertEquals("Caused by: java.lang.IllegalArgumentException: m4", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** End Collected Exception 2 of 2 *****************", stackTraces.get(index).getOne());
-    }
-
-    @Test
-    public void testCollectedExceptionAsCause() throws IOException
-    {
-        String stackTraceToString = "";// ExceptionHtml.stackTraceToString(new IllegalArgumentException(buildIntricateCollectedException()));
-        List<Pair<String, List<String>>> stackTraces = getStackLineCount(stackTraceToString);
-        Assert.assertEquals(10, stackTraces.size());
-        int index = 0;
-        Assert.assertEquals("java.lang.IllegalArgumentException: com.gs.fw.common.base.exception.CollectedException: foo", stackTraces.get(index++).getOne());
-        Assert.assertEquals("Caused by: com.gs.fw.common.base.exception.CollectedException: foo", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** Begin Collected Exception 1 of 2 *****************", stackTraces.get(index++).getOne());
-        Assert.assertEquals("java.lang.IllegalArgumentException: m1", stackTraces.get(index++).getOne());
-        Assert.assertEquals("Caused by: java.lang.UnsupportedOperationException: m2", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** End Collected Exception 1 of 2 *****************", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** Begin Collected Exception 2 of 2 *****************", stackTraces.get(index++).getOne());
-        Assert.assertEquals("java.lang.UnsupportedOperationException: m3", stackTraces.get(index++).getOne());
-        Assert.assertEquals("Caused by: java.lang.IllegalArgumentException: m4", stackTraces.get(index++).getOne());
-        Assert.assertEquals("***************** End Collected Exception 2 of 2 *****************", stackTraces.get(index).getOne());
-    }
-
-    private static CollectedException buildIntricateCollectedException()
-    {
-        return new CollectedException("foo", FastList.<Throwable>newListWith(
-                new IllegalArgumentException("m1", new UnsupportedOperationException("m2")),
-                new UnsupportedOperationException("m3", new IllegalArgumentException("m4"))));
-    }
-    */
-
     private static List<Map.Entry<String, List<String>>> getStackLineCount(String string) throws IOException
     {
         Map<String, List<String>> stackTraces = new LinkedHashMap<>();

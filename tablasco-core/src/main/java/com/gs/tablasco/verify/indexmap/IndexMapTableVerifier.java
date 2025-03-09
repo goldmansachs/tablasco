@@ -106,7 +106,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier
         int lastUnMatchedOffset = reversePathResults.size();
         LOGGER.debug("Matched {} rows", lastUnMatchedOffset);
 
-        LOGGER.debug("Generating row indices from index " + firstUnMatchedIndex + '.');
+        LOGGER.debug("Generating row indices from index {}.", firstUnMatchedIndex);
         ActualRowIterator actualRowIterator = new ActualRowIterator(actualData, columnIndices, columnComparators, firstUnMatchedIndex, lastUnMatchedOffset);
         ExpectedRowIterator expectedRowIterator = new ExpectedRowIterator(expectedData, columnIndices, columnComparators, firstUnMatchedIndex, lastUnMatchedOffset);
         IndexMapGenerator<RowView> rowGenerator = new IndexMapGenerator<>(expectedRowIterator, actualRowIterator, firstUnMatchedIndex);

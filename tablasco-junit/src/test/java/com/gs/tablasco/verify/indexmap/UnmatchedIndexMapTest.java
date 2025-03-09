@@ -21,9 +21,9 @@ import org.junit.Test;
 
 public class UnmatchedIndexMapTest
 {
-    private UnmatchedIndexMap unmatched = new UnmatchedIndexMap(0, 0);
-    private UnmatchedIndexMap unmatched1 = new UnmatchedIndexMap(1, 1);
-    private UnmatchedIndexMap unmatched2 = new UnmatchedIndexMap(2, 2);
+    private final UnmatchedIndexMap unmatched = new UnmatchedIndexMap(0, 0);
+    private final UnmatchedIndexMap unmatched1 = new UnmatchedIndexMap(1, 1);
+    private final UnmatchedIndexMap unmatched2 = new UnmatchedIndexMap(2, 2);
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddPartialMatchFailsIfSelf()

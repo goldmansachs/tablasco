@@ -125,7 +125,7 @@ public abstract class AbstractSingleTableVerifierTest
     {
         File outputFile = new File(TableTestUtils.getOutputDirectory(), this.getClass().getSimpleName() + ".html");
         HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlConfig());
-        htmlFormatter.appendResults(this.testName.getMethodName(), Collections.singletonMap(tableName, new ResultTable(new boolean[verify.get(0).size()], verify)), Metadata.newEmpty());
+        htmlFormatter.appendResults(this.testName.getMethodName(), Collections.singletonMap(tableName, new ResultTable(new boolean[verify.getFirst().size()], verify)), Metadata.newEmpty());
     }
 
     protected static List row(Object... values)

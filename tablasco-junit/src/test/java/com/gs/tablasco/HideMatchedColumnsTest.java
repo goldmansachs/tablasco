@@ -37,17 +37,18 @@ public class HideMatchedColumnsTest
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">\u00A0</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">\u00A0</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -65,34 +66,35 @@ public class HideMatchedColumnsTest
                 "D1", "D2", "D3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">\u00A0</td>\n" +
-                "<td class=\"missing\">A3<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"fail\">B3<p>Expected</p>\n" +
-                "<hr/>B9<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"fail\">C3<p>Expected</p>\n" +
-                "<hr/>C9<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">\u00A0</td>\n" +
-                "<td class=\"surplus\">D3<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        <th class="pass">Col 3</th>
+                        </tr>
+                        <tr>
+                        <td class="missing">\u00A0</td>
+                        <td class="missing">A3<p>Missing</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">\u00A0</td>
+                        <td class="fail">B3<p>Expected</p>
+                        <hr/>B9<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">\u00A0</td>
+                        <td class="fail">C3<p>Expected</p>
+                        <hr/>C9<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="surplus">\u00A0</td>
+                        <td class="surplus">D3<p>Surplus</p>
+                        </td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -108,33 +110,34 @@ public class HideMatchedColumnsTest
                 "B", "B", "X", "B", "B", "B", "B", "B");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "<th class=\"pass\">Col 6</th>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"pass\">A</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"fail\">A<p>Expected</p>\n" +
-                "<hr/>X<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"fail\">B<p>Expected</p>\n" +
-                "<hr/>X<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"pass\">B</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        <th class="pass">Col 3</th>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        <th class="pass">Col 6</th>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">\u00A0</td>
+                        <td class="pass">A</td>
+                        <td class="pass">\u00A0</td>
+                        <td class="fail">A<p>Expected</p>
+                        <hr/>X<p>Actual</p>
+                        </td>
+                        <td class="pass">\u00A0</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">\u00A0</td>
+                        <td class="fail">B<p>Expected</p>
+                        <hr/>X<p>Actual</p>
+                        </td>
+                        <td class="pass">\u00A0</td>
+                        <td class="pass">B</td>
+                        <td class="pass">\u00A0</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -143,16 +146,17 @@ public class HideMatchedColumnsTest
         VerifiableTable table = new KeyedVerifiableTableAdapter(TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
         this.tableVerifier.verify("name", table, table);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A</td>
+                        <td class="pass">\u00A0</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -172,29 +176,30 @@ public class HideMatchedColumnsTest
                 "X", "D", "D", "D");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass multi\" title=\"2 matched columns\">...</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"fail\">A<p>Expected</p>\n" +
-                "<hr/>X<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"4\">2 matched rows...</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">D<p>Expected</p>\n" +
-                "<hr/>X<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">\u00A0</td>\n" +
-                "<td class=\"pass\">D</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass multi" title="2 matched columns">...</th>
+                        <th class="pass">Col 3</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A</td>
+                        <td class="pass">\u00A0</td>
+                        <td class="fail">A<p>Expected</p>
+                        <hr/>X<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="4">2 matched rows...</td>
+                        </tr>
+                        <tr>
+                        <td class="fail">D<p>Expected</p>
+                        <hr/>X<p>Actual</p>
+                        </td>
+                        <td class="pass">\u00A0</td>
+                        <td class="pass">D</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }

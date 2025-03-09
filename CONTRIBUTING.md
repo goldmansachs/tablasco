@@ -2,9 +2,7 @@
 
 This file contains information about reporting issues as well as contributing code. Make sure
 you read our [Contributor Covenant Code of Conduct](CONTRIBUTOR_COVENANT.md) before you
-start participating.
-
-For code contributions, read the [BUILD.md](BUILD.md) instructions. If you're considering a larger piece of
+start participating. If you're considering a larger piece of
 work, start with an enhancement request and make sure committers are supportive of the work.
 
 ## Reporting Issues
@@ -15,10 +13,6 @@ To contribute a test case follow the same process as contributing a feature.
 Code contributions are accepted via the normal GitHub pull request mechanism. Code must pass existing tests,
 have its own set of tests, be formatted correctly and be consistent with the overall Tablasco vision.
 It must follow the pull request procedure outlined below.
-
-### Coding Style
-* Use 4 spaces for indentation. No tabs.
-* Use the [https://en.wikipedia.org/wiki/Indent_style#Allman_style](Allman style) for braces.
 
 ### Before your first code pull request
 

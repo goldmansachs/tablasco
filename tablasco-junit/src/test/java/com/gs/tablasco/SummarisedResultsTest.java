@@ -55,173 +55,174 @@ public class SummarisedResultsTest {
         );
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify(TableTestUtils.toNamedTables("name1", table1, "name2", table1), TableTestUtils.toNamedTables("name1", table2, "name2", table2)));
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\"/>\n" +
-                "<h1>summarisedResults</h1>\n" +
-                "<div id=\"summarisedResults.name1\">\n" +
-                "<h2>name1</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">key</th>\n" +
-                "<th class=\"pass\">v1</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"blank_row\" colspan=\"2\"/>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">d</td>\n" +
-                "<td class=\"pass\">4</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">d</td>\n" +
-                "<td class=\"pass\">4</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">d</td>\n" +
-                "<td class=\"pass\">4</td>\n" +
-                "</tr>\n" +
-                "<tr onclick=\"toggleVisibility('summarisedResults.name1.summaryRow0')\">\n" +
-                "<td class=\"summary\" colspan=\"2\">\n" +
-                "<a class=\"link\">1 more matched row...</a>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr id=\"summarisedResults.name1.summaryRow0\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">d\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "<td class=\"summary small\">4\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"blank_row\" colspan=\"2\"/>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">e</td>\n" +
-                "<td class=\"fail\">5<p>Expected</p>\n" +
-                "<hr/>x<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">e</td>\n" +
-                "<td class=\"fail\">5<p>Expected</p>\n" +
-                "<hr/>x<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">e</td>\n" +
-                "<td class=\"fail\">5<p>Expected</p>\n" +
-                "<hr/>x<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr onclick=\"toggleVisibility('summarisedResults.name1.summaryRow1')\">\n" +
-                "<td class=\"summary\" colspan=\"2\">\n" +
-                "<a class=\"link\">1 more break like this...</a>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr id=\"summarisedResults.name1.summaryRow1\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">e\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "<td class=\"summary small\"><span class=\"grey\">Expected </span>\n" +
-                "5\n" +
-                "<span class=\"grey\">Actual </span>\n" +
-                "x\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<div id=\"summarisedResults.name2\">\n" +
-                "<h2>name2</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">key</th>\n" +
-                "<th class=\"pass\">v1</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"blank_row\" colspan=\"2\"/>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">d</td>\n" +
-                "<td class=\"pass\">4</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">d</td>\n" +
-                "<td class=\"pass\">4</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">d</td>\n" +
-                "<td class=\"pass\">4</td>\n" +
-                "</tr>\n" +
-                "<tr onclick=\"toggleVisibility('summarisedResults.name2.summaryRow0')\">\n" +
-                "<td class=\"summary\" colspan=\"2\">\n" +
-                "<a class=\"link\">1 more matched row...</a>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr id=\"summarisedResults.name2.summaryRow0\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">d\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "<td class=\"summary small\">4\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"blank_row\" colspan=\"2\"/>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">e</td>\n" +
-                "<td class=\"fail\">5<p>Expected</p>\n" +
-                "<hr/>x<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">e</td>\n" +
-                "<td class=\"fail\">5<p>Expected</p>\n" +
-                "<hr/>x<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">e</td>\n" +
-                "<td class=\"fail\">5<p>Expected</p>\n" +
-                "<hr/>x<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr onclick=\"toggleVisibility('summarisedResults.name2.summaryRow1')\">\n" +
-                "<td class=\"summary\" colspan=\"2\">\n" +
-                "<a class=\"link\">1 more break like this...</a>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr id=\"summarisedResults.name2.summaryRow1\" style=\"display:none\">\n" +
-                "<td class=\"summary small\">e\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "<td class=\"summary small\"><span class=\"grey\">Expected </span>\n" +
-                "5\n" +
-                "<span class=\"grey\">Actual </span>\n" +
-                "x\n" +
-                "<span class=\"grey\">- </span>\n" +
-                "<span class=\"italic blue\">1 row</span>\n" +
-                "<br/>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata"/>
+                        <h1>summarisedResults</h1>
+                        <div id="summarisedResults.name1">
+                        <h2>name1</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">key</th>
+                        <th class="pass">v1</th>
+                        </tr>
+                        <tr>
+                        <td class="blank_row" colspan="2"/>
+                        </tr>
+                        <tr>
+                        <td class="pass">d</td>
+                        <td class="pass">4</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">d</td>
+                        <td class="pass">4</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">d</td>
+                        <td class="pass">4</td>
+                        </tr>
+                        <tr onclick="toggleVisibility('summarisedResults.name1.summaryRow0')">
+                        <td class="summary" colspan="2">
+                        <a class="link">1 more matched row...</a>
+                        </td>
+                        </tr>
+                        <tr id="summarisedResults.name1.summaryRow0" style="display:none">
+                        <td class="summary small">d
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        <td class="summary small">4
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="blank_row" colspan="2"/>
+                        </tr>
+                        <tr>
+                        <td class="pass">e</td>
+                        <td class="fail">5<p>Expected</p>
+                        <hr/>x<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">e</td>
+                        <td class="fail">5<p>Expected</p>
+                        <hr/>x<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">e</td>
+                        <td class="fail">5<p>Expected</p>
+                        <hr/>x<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr onclick="toggleVisibility('summarisedResults.name1.summaryRow1')">
+                        <td class="summary" colspan="2">
+                        <a class="link">1 more break like this...</a>
+                        </td>
+                        </tr>
+                        <tr id="summarisedResults.name1.summaryRow1" style="display:none">
+                        <td class="summary small">e
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        <td class="summary small"><span class="grey">Expected </span>
+                        5
+                        <span class="grey">Actual </span>
+                        x
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        <div id="summarisedResults.name2">
+                        <h2>name2</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">key</th>
+                        <th class="pass">v1</th>
+                        </tr>
+                        <tr>
+                        <td class="blank_row" colspan="2"/>
+                        </tr>
+                        <tr>
+                        <td class="pass">d</td>
+                        <td class="pass">4</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">d</td>
+                        <td class="pass">4</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">d</td>
+                        <td class="pass">4</td>
+                        </tr>
+                        <tr onclick="toggleVisibility('summarisedResults.name2.summaryRow0')">
+                        <td class="summary" colspan="2">
+                        <a class="link">1 more matched row...</a>
+                        </td>
+                        </tr>
+                        <tr id="summarisedResults.name2.summaryRow0" style="display:none">
+                        <td class="summary small">d
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        <td class="summary small">4
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="blank_row" colspan="2"/>
+                        </tr>
+                        <tr>
+                        <td class="pass">e</td>
+                        <td class="fail">5<p>Expected</p>
+                        <hr/>x<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">e</td>
+                        <td class="fail">5<p>Expected</p>
+                        <hr/>x<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">e</td>
+                        <td class="fail">5<p>Expected</p>
+                        <hr/>x<p>Actual</p>
+                        </td>
+                        </tr>
+                        <tr onclick="toggleVisibility('summarisedResults.name2.summaryRow1')">
+                        <td class="summary" colspan="2">
+                        <a class="link">1 more break like this...</a>
+                        </td>
+                        </tr>
+                        <tr id="summarisedResults.name2.summaryRow1" style="display:none">
+                        <td class="summary small">e
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        <td class="summary small"><span class="grey">Expected </span>
+                        5
+                        <span class="grey">Actual </span>
+                        x
+                        <span class="grey">- </span>
+                        <span class="italic blue">1 row</span>
+                        <br/>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 }

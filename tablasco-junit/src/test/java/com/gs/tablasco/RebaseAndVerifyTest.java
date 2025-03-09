@@ -38,16 +38,12 @@ import java.util.stream.Collectors;
 public class RebaseAndVerifyTest
 {
     private static final String ADAPT = "adapt";
-    private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<VerifiableTable, VerifiableTable>()
-    {
+    private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<>() {
         @Override
-        public VerifiableTable apply(VerifiableTable table)
-        {
-            return new DefaultVerifiableTableAdapter(table)
-            {
+        public VerifiableTable apply(VerifiableTable table) {
+            return new DefaultVerifiableTableAdapter(table) {
                 @Override
-                public Object getValueAt(int rowIndex, int columnIndex)
-                {
+                public Object getValueAt(int rowIndex, int columnIndex) {
                     Object valueAt = super.getValueAt(rowIndex, columnIndex);
                     return valueAt == ADAPT ? ADAPT.toUpperCase() : valueAt;
                 }
@@ -68,22 +64,14 @@ public class RebaseAndVerifyTest
     public void assertMetadata() throws IOException
     {
         int rebaseMetadataCount = 0;
-        BufferedReader reader = new BufferedReader(new FileReader(this.expectedFile));
-        try
-        {
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.expectedFile))) {
             String line = reader.readLine();
-            while (line != null)
-            {
-                if (line.contains("Metadata Key"))
-                {
+            while (line != null) {
+                if (line.contains("Metadata Key")) {
                     rebaseMetadataCount++;
                 }
                 line = reader.readLine();
             }
-        }
-        finally
-        {
-            reader.close();
         }
         Assert.assertEquals(1, rebaseMetadataCount);
 

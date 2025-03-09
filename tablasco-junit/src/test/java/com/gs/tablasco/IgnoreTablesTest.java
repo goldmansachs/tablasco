@@ -39,20 +39,21 @@ public class IgnoreTablesTest
                 TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
 
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\"/>\n" +
-                "<h1>ignoreTables</h1>\n" +
-                "<div id=\"ignoreTables.table2\">\n" +
-                "<h2>table2</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata"/>
+                        <h1>ignoreTables</h1>
+                        <div id="ignoreTables.table2">
+                        <h2>table2</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 }

@@ -29,7 +29,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -103,10 +102,10 @@ public class ExceptionHtml
     static String stackTraceToString(Throwable e) throws UnsupportedEncodingException
     {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(bytes, false, "UTF-8");
+        PrintStream out = new PrintStream(bytes, false, StandardCharsets.UTF_8);
         stackTraceToString(e, out);
         out.close();
-        return bytes.toString("UTF-8");
+        return bytes.toString(StandardCharsets.UTF_8);
     }
 
     private static void stackTraceToString(Throwable e, PrintStream out)

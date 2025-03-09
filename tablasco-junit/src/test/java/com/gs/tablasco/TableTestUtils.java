@@ -108,10 +108,9 @@ public class TableTestUtils
                 ;
     }
 
-    /**
-     * @deprecated use TestTable instead
+    /*
+     * Use TestTable instead
      */
-    @Deprecated
     public static VerifiableTable createTable(int cols, Object... values)
     {
         List<List<Object>> headersAndRows = new ArrayList<>();

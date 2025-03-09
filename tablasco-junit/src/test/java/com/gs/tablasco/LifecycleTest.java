@@ -28,6 +28,7 @@ import org.junit.runner.Result;
 import java.io.File;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class LifecycleTest
 {
     private static final Map<Class, List<String>> EVENTS = new HashMap<>();

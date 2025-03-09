@@ -35,36 +35,26 @@ import java.util.*;
 public class HtmlFormatter
 {
     public static final int DEFAULT_ROW_LIMIT = 10000;
-    private static final LazyValue<DocumentBuilder> DOCUMENT_BUILDER = new LazyValue<DocumentBuilder>()
-    {
+    private static final LazyValue<DocumentBuilder> DOCUMENT_BUILDER = new LazyValue<>() {
         @Override
-        protected DocumentBuilder initialize()
-        {
-            try
-            {
+        protected DocumentBuilder initialize() {
+            try {
                 return DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            }
-            catch (ParserConfigurationException e)
-            {
+            } catch (ParserConfigurationException e) {
                 throw new RuntimeException(e);
             }
         }
     };
-    private static final LazyValue<Transformer> TRANSFORMER = new LazyValue<Transformer>()
-    {
+    private static final LazyValue<Transformer> TRANSFORMER = new LazyValue<>() {
         @Override
-        protected Transformer initialize()
-        {
-            try
-            {
+        protected Transformer initialize() {
+            try {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.METHOD, "xml");
                 transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 return transformer;
-            }
-            catch (TransformerConfigurationException e)
-            {
+            } catch (TransformerConfigurationException e) {
                 throw new RuntimeException(e);
             }
         }

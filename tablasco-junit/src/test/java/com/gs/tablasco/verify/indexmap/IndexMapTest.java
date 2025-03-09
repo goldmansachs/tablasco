@@ -159,7 +159,7 @@ public class IndexMapTest
 
     private void assertIndices(IndexMap... cols)
     {
-        IndexMapGenerator<String> generator = new IndexMapGenerator<String>(this.expected.iterator(), this.actual.iterator(), 0);
+        IndexMapGenerator<String> generator = new IndexMapGenerator<>(this.expected.iterator(), this.actual.iterator(), 0);
         generator.generate();
         Assert.assertEquals(Arrays.asList(cols), generator.getAll());
     }

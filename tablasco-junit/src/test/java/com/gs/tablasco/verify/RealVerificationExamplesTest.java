@@ -84,7 +84,7 @@ public class RealVerificationExamplesTest
             new RebaseFileWriter(expectedResults.getMetadata(), new String[0], columnComparators, expected).writeRebasedResults(methodName, expectedTables);
         }
         Assert.assertFalse("Obfuscation is only to help prepare results for checkin", OBFUSCATE);
-        Assert.assertTrue(!actualTables.isEmpty());
+        Assert.assertFalse(actualTables.isEmpty());
         Assert.assertEquals(actualTables.keySet(), expectedTables.keySet());
         ResultTable verify = new IndexMapTableVerifier(columnComparators, false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false).verify(actualTables.get(tableName), expectedTables.get(tableName));
         HtmlFormatter htmlFormatter = new HtmlFormatter(new File(TableTestUtils.getOutputDirectory(), RealVerificationExamplesTest.class.getSimpleName() + '_' + className + '_' + methodName + ".html"), new HtmlConfig());
@@ -126,8 +126,8 @@ public class RealVerificationExamplesTest
 
         private static final Random rand = new Random(12345987345909L);
 
-        private HashSet<String> immutables = new HashSet<>();
-        private HashMap<String, String> replacements = new HashMap<>();
+        private final HashSet<String> immutables = new HashSet<>();
+        private final HashMap<String, String> replacements = new HashMap<>();
 
         private String makeWord(int length)
         {

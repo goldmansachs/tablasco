@@ -32,11 +32,11 @@ public class ListVerifiableTableTest
     {
         // old usages prior to allowing String headers
         List<Object> headersAsObjects = Collections.singletonList("Col");
-        List<List<Object>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.<Object>singletonList("Val"));
+        List<List<Object>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.singletonList("Val"));
         Assert.assertEquals("Test constructor with headers and rows in one List<List<Object>>", 1, new ListVerifiableTable(headersAndDataAsObjects).getRowCount());
         Assert.assertEquals("Test constructor with headers as List<Object>", 2, new ListVerifiableTable(headersAsObjects, headersAndDataAsObjects).getRowCount());
         List<String> headersAsStrings = Collections.singletonList("Col");
-        Assert.assertEquals("Test cast that used to be necessary for headers as List<String>", 2, new ListVerifiableTable((List) headersAsStrings, headersAndDataAsObjects).getRowCount());
+        Assert.assertEquals("Test cast that used to be necessary for headers as List<String>", 2, new ListVerifiableTable(headersAsStrings, headersAndDataAsObjects).getRowCount());
 
         // allow passing string headers
         Assert.assertEquals("Test headers as List<String> can now be passed in as-is", 2, new ListVerifiableTable(headersAsStrings, headersAndDataAsObjects).getRowCount());

@@ -87,65 +87,66 @@ public class InvestigationTest
             }
         }
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\">\n" +
-                "<i/>\n" +
-                "</div>\n" +
-                "<h1>Initial Results</h1>\n" +
-                "<div id=\"Initial_Results.Initial_Query\">\n" +
-                "<h2>Initial Query</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>1<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K1</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"2\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 1 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_1_Top_100_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>3<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K3</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">4<p>Expected</p>\n" +
-                "<hr/>9<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K4</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 2 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_2_Top_100_.Second_Drilldown\">\n" +
-                "<h2>Second Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"2\">2 matched rows...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata">
+                        <i/>
+                        </div>
+                        <h1>Initial Results</h1>
+                        <div id="Initial_Results.Initial_Query">
+                        <h2>Initial Query</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C</th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>1<p>Actual</p>
+                        </td>
+                        <td class="pass">K1</td>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="2">1 matched row...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 1 (Top 100)</h1>
+                        <div id="Investigation_Level_1_Top_100_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C</th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>3<p>Actual</p>
+                        </td>
+                        <td class="pass">K3</td>
+                        </tr>
+                        <tr>
+                        <td class="fail">4<p>Expected</p>
+                        <hr/>9<p>Actual</p>
+                        </td>
+                        <td class="pass">K4</td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 2 (Top 100)</h1>
+                        <div id="Investigation_Level_2_Top_100_.Second_Drilldown">
+                        <h2>Second Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C</th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="2">2 matched rows...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
@@ -205,103 +206,104 @@ public class InvestigationTest
             }
         }
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\">\n" +
-                "<i/>\n" +
-                "</div>\n" +
-                "<h1>Initial Results</h1>\n" +
-                "<div id=\"Initial_Results.Initial_Query\">\n" +
-                "<h2>Initial Query</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C1</th>\n" +
-                "<th class=\"surplus\">C2<p>Surplus</p>\n" +
-                "</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>1<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus\">X<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K1</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"3\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">3<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus\">X<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus\">K3<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 1 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_1_Top_100_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C1</th>\n" +
-                "<th class=\"missing\">C2<p>Missing</p>\n" +
-                "</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">1<p>Expected</p>\n" +
-                "<hr/>9<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">X<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K1</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"3\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">3<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">X<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">K3<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 2 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_2_Top_100_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C1</th>\n" +
-                "<th class=\"missing\">C2<p>Missing</p>\n" +
-                "</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">1<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">X<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">K1<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 3 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_3_Top_100_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C1</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata">
+                        <i/>
+                        </div>
+                        <h1>Initial Results</h1>
+                        <div id="Initial_Results.Initial_Query">
+                        <h2>Initial Query</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C1</th>
+                        <th class="surplus">C2<p>Surplus</p>
+                        </th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>1<p>Actual</p>
+                        </td>
+                        <td class="surplus">X<p>Surplus</p>
+                        </td>
+                        <td class="pass">K1</td>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="3">1 matched row...</td>
+                        </tr>
+                        <tr>
+                        <td class="surplus">3<p>Surplus</p>
+                        </td>
+                        <td class="surplus">X<p>Surplus</p>
+                        </td>
+                        <td class="surplus">K3<p>Surplus</p>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 1 (Top 100)</h1>
+                        <div id="Investigation_Level_1_Top_100_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C1</th>
+                        <th class="missing">C2<p>Missing</p>
+                        </th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="fail">1<p>Expected</p>
+                        <hr/>9<p>Actual</p>
+                        </td>
+                        <td class="missing">X<p>Missing</p>
+                        </td>
+                        <td class="pass">K1</td>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="3">1 matched row...</td>
+                        </tr>
+                        <tr>
+                        <td class="missing">3<p>Missing</p>
+                        </td>
+                        <td class="missing">X<p>Missing</p>
+                        </td>
+                        <td class="missing">K3<p>Missing</p>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 2 (Top 100)</h1>
+                        <div id="Investigation_Level_2_Top_100_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C1</th>
+                        <th class="missing">C2<p>Missing</p>
+                        </th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="missing">1<p>Missing</p>
+                        </td>
+                        <td class="missing">X<p>Missing</p>
+                        </td>
+                        <td class="missing">K1<p>Missing</p>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 3 (Top 100)</h1>
+                        <div id="Investigation_Level_3_Top_100_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C1</th>
+                        <th class="pass">K</th>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
@@ -320,24 +322,25 @@ public class InvestigationTest
                 100);
         this.tableVerifier.investigate(investigation);
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\">\n" +
-                "<i/>\n" +
-                "</div>\n" +
-                "<h1>Initial Results</h1>\n" +
-                "<div id=\"Initial_Results.Initial_Query\">\n" +
-                "<h2>Initial Query</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"2\">2 matched rows...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata">
+                        <i/>
+                        </div>
+                        <h1>Initial Results</h1>
+                        <div id="Initial_Results.Initial_Query">
+                        <h2>Initial Query</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C</th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="2">2 matched rows...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
@@ -380,69 +383,70 @@ public class InvestigationTest
             }
         }
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\">\n" +
-                "<i/>\n" +
-                "</div>\n" +
-                "<h1>Initial Results</h1>\n" +
-                "<div id=\"Initial_Results.Initial_Query\">\n" +
-                "<h2>Initial Query</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C</th>\n" +
-                "<th class=\"pass\">I</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">1<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus number\">1<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>2<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass number\">2</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"2\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">4<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing number\">9<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">4<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus number\">4<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">5<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing number\">5<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"2\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 1 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_1_Top_100_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"1\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-        "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata">
+                        <i/>
+                        </div>
+                        <h1>Initial Results</h1>
+                        <div id="Initial_Results.Initial_Query">
+                        <h2>Initial Query</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C</th>
+                        <th class="pass">I</th>
+                        </tr>
+                        <tr>
+                        <td class="surplus">1<p>Surplus</p>
+                        </td>
+                        <td class="surplus number">1<p>Surplus</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>2<p>Actual</p>
+                        </td>
+                        <td class="pass number">2</td>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="2">1 matched row...</td>
+                        </tr>
+                        <tr>
+                        <td class="missing">4<p>Missing</p>
+                        </td>
+                        <td class="missing number">9<p>Missing</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="surplus">4<p>Surplus</p>
+                        </td>
+                        <td class="surplus number">4<p>Surplus</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="missing">5<p>Missing</p>
+                        </td>
+                        <td class="missing number">5<p>Missing</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="2">1 matched row...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 1 (Top 100)</h1>
+                        <div id="Investigation_Level_1_Top_100_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="1">1 matched row...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
@@ -473,51 +477,52 @@ public class InvestigationTest
             }
         }
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\">\n" +
-                "<i/>\n" +
-                "</div>\n" +
-                "<h1>Initial Results</h1>\n" +
-                "<div id=\"Initial_Results.Initial_Query\">\n" +
-                "<h2>Initial Query</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">C</th>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>1<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K1</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>2<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K2</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"fail\">9<p>Expected</p>\n" +
-                "<hr/>3<p>Actual</p>\n" +
-                "</td>\n" +
-                "<td class=\"pass\">K3</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 1 (Top 2)</h1>\n" +
-                "<div id=\"Investigation_Level_1_Top_2_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"1\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata">
+                        <i/>
+                        </div>
+                        <h1>Initial Results</h1>
+                        <div id="Initial_Results.Initial_Query">
+                        <h2>Initial Query</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">C</th>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>1<p>Actual</p>
+                        </td>
+                        <td class="pass">K1</td>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>2<p>Actual</p>
+                        </td>
+                        <td class="pass">K2</td>
+                        </tr>
+                        <tr>
+                        <td class="fail">9<p>Expected</p>
+                        <hr/>3<p>Actual</p>
+                        </td>
+                        <td class="pass">K3</td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 1 (Top 2)</h1>
+                        <div id="Investigation_Level_1_Top_2_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="1">1 matched row...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     @Test
@@ -552,40 +557,41 @@ public class InvestigationTest
             }
         }
         Assert.assertEquals(
-                "<body>\n" +
-                "<div class=\"metadata\">\n" +
-                "<i/>\n" +
-                "</div>\n" +
-                "<h1>Initial Results</h1>\n" +
-                "<div id=\"Initial_Results.Initial_Query\">\n" +
-                "<h2>Initial Query</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">K1<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">K9<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "<h1>Investigation Level 1 (Top 100)</h1>\n" +
-                "<div id=\"Investigation_Level_1_Top_100_.First_Drilldown\">\n" +
-                "<h2>First Drilldown</h2>\n" +
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">K</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass multi\" colspan=\"1\">1 matched row...</td>\n" +
-                "</tr>\n" +
-                "</table>\n" +
-                "</div>\n" +
-                "</body>", TableTestUtils.getHtml(this.tableVerifier, "body"));
+                """
+                        <body>
+                        <div class="metadata">
+                        <i/>
+                        </div>
+                        <h1>Initial Results</h1>
+                        <div id="Initial_Results.Initial_Query">
+                        <h2>Initial Query</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="surplus">K1<p>Surplus</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="missing">K9<p>Missing</p>
+                        </td>
+                        </tr>
+                        </table>
+                        </div>
+                        <h1>Investigation Level 1 (Top 100)</h1>
+                        <div id="Investigation_Level_1_Top_100_.First_Drilldown">
+                        <h2>First Drilldown</h2>
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">K</th>
+                        </tr>
+                        <tr>
+                        <td class="pass multi" colspan="1">1 matched row...</td>
+                        </tr>
+                        </table>
+                        </div>
+                        </body>""", TableTestUtils.getHtml(this.tableVerifier, "body"));
     }
 
     private static class TableCallable implements Callable<VerifiableTable>
@@ -606,7 +612,7 @@ public class InvestigationTest
 
     private static class SimpleInvestigation implements Investigation
     {
-        private SimpleInvestigationLevel investigationLevel;
+        private final SimpleInvestigationLevel investigationLevel;
 
         private SimpleInvestigation(String levelDescription, VerifiableTable actualTable, VerifiableTable expectedTable)
         {
@@ -681,7 +687,7 @@ public class InvestigationTest
         @Override
         public InvestigationLevel getFirstLevel()
         {
-            return this.investigationLevels.get(0);
+            return this.investigationLevels.getFirst();
         }
 
         @Override

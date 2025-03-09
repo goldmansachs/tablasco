@@ -41,12 +41,12 @@ public class Sherlock
             return;
         }
 
-        LOGGER.info("Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
+        LOGGER.info("Got {} broken drilldown keys - {}", drilldownKeys.size(), outputFile);
         int level = 1;
         while (!drilldownKeys.isEmpty() && (currentLevel = investigation.getNextLevel(drilldownKeys)) != null)
         {
             drilldownKeys = watson.assist("Investigation Level " + level + " (Top " + investigation.getRowKeyLimit() + ')', currentLevel, investigation.getRowKeyLimit());
-            LOGGER.info("Got " + drilldownKeys.size() + " broken drilldown keys - " + outputFile);
+            LOGGER.info("Got {} broken drilldown keys - {}", drilldownKeys.size(), outputFile);
             level++;
         }
 

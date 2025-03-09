@@ -37,15 +37,16 @@ public class IgnoreColumnsTest
         this.tableVerifier.withIgnoreColumns("Col 2", "Col 4").verify("name", table1, table2);
 
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A3</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 3</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        <td class="pass">A3</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }

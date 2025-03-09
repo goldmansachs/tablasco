@@ -9,7 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.*;
 public class TablascoTest {
 
     private static final VerifiableTable T1 = new ListVerifiableTable(
@@ -46,74 +44,76 @@ public class TablascoTest {
         Path path = this.temporaryFolder.newFile("results.html").toPath();
         tablasco.writeResults(path, verifiedTables);
         Assert.assertEquals(
-                "<html>\n" +
-                "    <head>\n" +
-                "        <script>\n" +
-                "function toggleVisibility(id){\n" +
-                "var summary = document.getElementById(id);\n" +
-                "if (summary.style.display === 'none') {\n" +
-                "summary.style.display = 'table-row';\n" +
-                "} else {\n" +
-                "summary.style.display = 'none';\n" +
-                "}\n" +
-                "}\n" +
-                "</script>\n" +
-                "        <style type=\"text/css\">\n" +
-                "* { padding: 0;margin: 0; }\n" +
-                "body { color: black; padding: 4px; font-family: Verdana, Geneva, sans-serif; }\n" +
-                "table { border-collapse: collapse; border: 0px; margin-bottom: 12px; }\n" +
-                "th { font-weight: bold; }\n" +
-                "td, th { white-space: nowrap; border: 1px solid black; vertical-align: top; font-size: small; padding: 2px; }\n" +
-                ".pass { background-color: #c0ffc0; }\n" +
-                ".fail { background-color: #ff8080; }\n" +
-                ".outoforder { background-color: #d0b0ff; }\n" +
-                ".missing { background-color: #cccccc; }\n" +
-                ".surplus { background-color: #ffffcc; }\n" +
-                ".summary { background-color: #f3f6f8; }\n" +
-                ".number { text-align: right; }\n" +
-                ".metadata { margin-bottom: 12px; }\n" +
-                ".multi { font-style: italic; }\n" +
-                ".blank_row { height: 10px; border: 0px; background-color: #ffffff; }\n" +
-                ".grey { color: #999999; }\n" +
-                ".blue { color: blue; }\n" +
-                ".italic { font-style: italic; }\n" +
-                ".link { color: blue; text-decoration: underline; cursor:pointer; font-style: italic }\n" +
-                ".small { font-size: x-small; }\n" +
-                "hr { border: 0px; color: black; background-color: black; height: 1px; margin: 2px 0px 2px 0px; }\n" +
-                "p { font-style: italic; font-size: x-small; color: blue; padding: 3px 0 0 0; }\n" +
-                "h1 { font-size: medium; margin-bottom: 4px; }\n" +
-                "h2 { font-size: small; margin-bottom: 4px; }\n" +
-                "</style>\n" +
-                "        <meta content=\"text/html;charset=UTF-8\" http-equiv=\"Content-type\"/>\n" +
-                "        <title>Test Results</title>\n" +
-                "    </head>\n" +
-                "    <body>\n" +
-                "        <div class=\"metadata\"/>\n" +
-                "        <h1>myTest</h1>\n" +
-                "        <div id=\"myTest.table1\">\n" +
-                "            <h2>table1</h2>\n" +
-                "            <table border=\"1\" cellspacing=\"0\">\n" +
-                "                <tr>\n" +
-                "                    <th class=\"pass\">key</th>\n" +
-                "                    <th class=\"pass\">value</th>\n" +
-                "                </tr>\n" +
-                "                <tr>\n" +
-                "                    <td class=\"pass\">a</td>\n" +
-                "                    <td class=\"fail number\">\n" +
-                "                        1\n" +
-                "                        <p>Expected</p>\n" +
-                "                        <hr/>\n" +
-                "                        2\n" +
-                "                        <p>Actual</p>\n" +
-                "                        <hr/>\n" +
-                "                        -1 / 100%\n" +
-                "                        <p>Difference / Variance</p>\n" +
-                "                    </td>\n" +
-                "                </tr>\n" +
-                "            </table>\n" +
-                "        </div>\n" +
-                "    </body>\n" +
-                "</html>\n", new String(Files.readAllBytes(path), StandardCharsets.UTF_8).replaceAll("[\n\r]+", "\n"));
+                """
+                        <html>
+                            <head>
+                                <script>
+                        function toggleVisibility(id){
+                        var summary = document.getElementById(id);
+                        if (summary.style.display === 'none') {
+                        summary.style.display = 'table-row';
+                        } else {
+                        summary.style.display = 'none';
+                        }
+                        }
+                        </script>
+                                <style type="text/css">
+                        * { padding: 0;margin: 0; }
+                        body { color: black; padding: 4px; font-family: Verdana, Geneva, sans-serif; }
+                        table { border-collapse: collapse; border: 0px; margin-bottom: 12px; }
+                        th { font-weight: bold; }
+                        td, th { white-space: nowrap; border: 1px solid black; vertical-align: top; font-size: small; padding: 2px; }
+                        .pass { background-color: #c0ffc0; }
+                        .fail { background-color: #ff8080; }
+                        .outoforder { background-color: #d0b0ff; }
+                        .missing { background-color: #cccccc; }
+                        .surplus { background-color: #ffffcc; }
+                        .summary { background-color: #f3f6f8; }
+                        .number { text-align: right; }
+                        .metadata { margin-bottom: 12px; }
+                        .multi { font-style: italic; }
+                        .blank_row { height: 10px; border: 0px; background-color: #ffffff; }
+                        .grey { color: #999999; }
+                        .blue { color: blue; }
+                        .italic { font-style: italic; }
+                        .link { color: blue; text-decoration: underline; cursor:pointer; font-style: italic }
+                        .small { font-size: x-small; }
+                        hr { border: 0px; color: black; background-color: black; height: 1px; margin: 2px 0px 2px 0px; }
+                        p { font-style: italic; font-size: x-small; color: blue; padding: 3px 0 0 0; }
+                        h1 { font-size: medium; margin-bottom: 4px; }
+                        h2 { font-size: small; margin-bottom: 4px; }
+                        </style>
+                                <meta content="text/html;charset=UTF-8" http-equiv="Content-type"/>
+                                <title>Test Results</title>
+                            </head>
+                            <body>
+                                <div class="metadata"/>
+                                <h1>myTest</h1>
+                                <div id="myTest.table1">
+                                    <h2>table1</h2>
+                                    <table border="1" cellspacing="0">
+                                        <tr>
+                                            <th class="pass">key</th>
+                                            <th class="pass">value</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="pass">a</td>
+                                            <td class="fail number">
+                                                1
+                                                <p>Expected</p>
+                                                <hr/>
+                                                2
+                                                <p>Actual</p>
+                                                <hr/>
+                                                -1 / 100%
+                                                <p>Difference / Variance</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </body>
+                        </html>
+                        """, new String(Files.readAllBytes(path), StandardCharsets.UTF_8).replaceAll("[\n\r]+", "\n"));
     }
 
     @Test

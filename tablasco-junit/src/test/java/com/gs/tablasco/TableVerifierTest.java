@@ -293,7 +293,7 @@ public class TableVerifierTest
         this.verifier.succeeded(this.description.get());
     }
 
-    private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<VerifiableTable, VerifiableTable>() {
+    private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<>() {
         @Override
         public VerifiableTable apply(VerifiableTable actual) {
             return new DefaultVerifiableTableAdapter(actual) {
@@ -333,7 +333,7 @@ public class TableVerifierTest
         this.verifier.succeeded(this.description.get());
     }
 
-    private static final Function<VerifiableTable, VerifiableTable> EXPECTED_ADAPTER = new Function<VerifiableTable, VerifiableTable>() {
+    private static final Function<VerifiableTable, VerifiableTable> EXPECTED_ADAPTER = new Function<>() {
         @Override
         public VerifiableTable apply(VerifiableTable actual) {
             return new DefaultVerifiableTableAdapter(actual) {

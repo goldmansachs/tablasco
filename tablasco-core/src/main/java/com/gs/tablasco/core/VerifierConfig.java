@@ -19,7 +19,6 @@ package com.gs.tablasco.core;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.adapters.TableAdapters;
 import com.gs.tablasco.verify.ColumnComparators;
-import com.gs.tablasco.verify.SingleTableVerifier;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 
 import java.util.Arrays;

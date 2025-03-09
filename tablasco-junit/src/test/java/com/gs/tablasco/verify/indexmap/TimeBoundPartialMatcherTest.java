@@ -30,7 +30,14 @@ public class TimeBoundPartialMatcherTest
     {
         try
         {
-            PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> { while (true); };
+            PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
+                try {
+                    Thread.sleep(10_000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    Assert.fail("Unexpected interrupt");
+                }
+            };
             new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null);
             Assert.fail("timeout expected");
         }

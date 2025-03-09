@@ -123,7 +123,7 @@ public class MavenStyleDirectoryStrategy implements DirectoryStrategy
 
     private boolean isEmptyString(String string)
     {
-        return string == null || string.length() == 0;
+        return string == null || string.isEmpty();
     }
 
     private boolean hasAnchorFile(Path path)

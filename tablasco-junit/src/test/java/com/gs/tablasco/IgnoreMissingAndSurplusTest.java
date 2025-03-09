@@ -35,20 +35,21 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table, table);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A2</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        <td class="pass">A2</td>
+                        </tr>
+                        <tr>
+                        <td class="pass">B1</td>
+                        <td class="pass">B2</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -60,22 +61,23 @@ public class IgnoreMissingAndSurplusTest
         TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().verify("name", table1, table2));
 
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">C1<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus\">C2<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        <tr>
+                        <td class="surplus">C1<p>Surplus</p>
+                        </td>
+                        <td class="surplus">C2<p>Surplus</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">B1</td>
+                        <td class="pass">B2</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -86,22 +88,23 @@ public class IgnoreMissingAndSurplusTest
 
         TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreSurplusRows().verify("name", table1, table2));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">A1<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">A2<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        <tr>
+                        <td class="missing">A1<p>Missing</p>
+                        </td>
+                        <td class="missing">A2<p>Missing</p>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td class="pass">B1</td>
+                        <td class="pass">B2</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -111,16 +114,17 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">B1</td>
+                        <td class="pass">B2</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -130,22 +134,23 @@ public class IgnoreMissingAndSurplusTest
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 3", "C1", "C2", "B1", "B2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"surplus\">Col 3<p>Surplus</p>\n" +
-                "</th>\n" +
-                "<th class=\"missing\">Col 2<p>Missing</p>\n" +
-                "</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"surplus\">B2<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">B2<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="surplus">Col 3<p>Surplus</p>
+                        </th>
+                        <th class="missing">Col 2<p>Missing</p>
+                        </th>
+                        </tr>
+                        <tr>
+                        <td class="pass">B1</td>
+                        <td class="surplus">B2<p>Surplus</p>
+                        </td>
+                        <td class="missing">B2<p>Missing</p>
+                        </td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -155,18 +160,19 @@ public class IgnoreMissingAndSurplusTest
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"fail\">B2<p>Expected</p>\n" +
-                "<hr/>B3<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">B1</td>
+                        <td class="fail">B2<p>Expected</p>
+                        <hr/>B3<p>Actual</p>
+                        </td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -176,12 +182,13 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -191,12 +198,13 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 2</th>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -206,16 +214,17 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable actual = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         this.tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A3</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 3</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        <td class="pass">A3</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -225,18 +234,19 @@ public class IgnoreMissingAndSurplusTest
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"missing\">Col 3<p>Missing</p>\n" +
-                "</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"missing\">A3<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="missing">Col 3<p>Missing</p>
+                        </th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        <td class="missing">A3<p>Missing</p>
+                        </td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -246,16 +256,17 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A3</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="pass">Col 3</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        <td class="pass">A3</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -265,18 +276,19 @@ public class IgnoreMissingAndSurplusTest
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual));
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"surplus\">Col 3<p>Surplus</p>\n" +
-                "</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"surplus\">A3<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        <th class="surplus">Col 3<p>Surplus</p>
+                        </th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        <td class="surplus">A3<p>Surplus</p>
+                        </td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 
     @Test
@@ -286,13 +298,14 @@ public class IgnoreMissingAndSurplusTest
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().withIgnoreSurplusColumns().verify("name", expected, actual);
         Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+                """
+                        <table border="1" cellspacing="0">
+                        <tr>
+                        <th class="pass">Col 1</th>
+                        </tr>
+                        <tr>
+                        <td class="pass">A1</td>
+                        </tr>
+                        </table>""", TableTestUtils.getHtml(this.tableVerifier, "table"));
     }
 }
