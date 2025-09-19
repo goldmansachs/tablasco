@@ -16,6 +16,9 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.gs.tablasco.adapters.TableAdapters;
 import com.gs.tablasco.core.HtmlConfig;
 import com.gs.tablasco.core.VerifierConfig;
@@ -42,7 +45,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.junit.Assert;
 import org.junit.AssumptionViolatedException;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -652,7 +654,7 @@ public final class TableVerifier extends TestWatcher {
         }
         this.lifecycleEventHandler.onSucceeded(description);
         if (this.isRebasing) {
-            Assert.fail("REBASE SUCCESSFUL - failing test in case rebase flag is set by mistake");
+            fail("REBASE SUCCESSFUL - failing test in case rebase flag is set by mistake");
         }
     }
 
@@ -824,7 +826,7 @@ public final class TableVerifier extends TestWatcher {
         }
         HtmlFormatter htmlFormatter = newHtmlFormatter();
         htmlFormatter.appendResults(this.description.getMethodName(), allResults, metadata, ++this.verifyCount);
-        Assert.assertTrue("Some tests failed. See " + getOutputFileUrl() + " for more details.", verificationSuccess);
+        assertTrue(verificationSuccess, "Some tests failed. See " + getOutputFileUrl() + " for more details.");
     }
 
     private URL getOutputFileUrl() {

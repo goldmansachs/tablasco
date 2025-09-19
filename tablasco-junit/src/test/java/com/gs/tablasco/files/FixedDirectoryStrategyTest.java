@@ -16,21 +16,24 @@
 
 package com.gs.tablasco.files;
 
-import java.io.File;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FixedDirectoryStrategyTest {
+import java.io.File;
+import org.junit.jupiter.api.Test;
+
+class FixedDirectoryStrategyTest {
     @Test
-    public void testDefault() {
+    void testDefault() {
         FixedDirectoryStrategy directoryStrategy = new FixedDirectoryStrategy();
         File outputDirectory = directoryStrategy.getOutputDirectory(null);
         File expectedDirectory = directoryStrategy.getExpectedDirectory(null);
         File actualDirectory = directoryStrategy.getActualDirectory(null);
-        Assert.assertTrue(outputDirectory.exists());
-        Assert.assertTrue(expectedDirectory.exists());
-        Assert.assertTrue(actualDirectory.exists());
-        Assert.assertEquals(actualDirectory, outputDirectory);
-        Assert.assertNotEquals(expectedDirectory, outputDirectory);
+        assertTrue(outputDirectory.exists());
+        assertTrue(expectedDirectory.exists());
+        assertTrue(actualDirectory.exists());
+        assertEquals(actualDirectory, outputDirectory);
+        assertNotEquals(expectedDirectory, outputDirectory);
     }
 }

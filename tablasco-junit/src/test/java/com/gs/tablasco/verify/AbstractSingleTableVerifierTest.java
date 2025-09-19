@@ -16,6 +16,9 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.core.HtmlConfig;
@@ -25,26 +28,27 @@ import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
 import com.gs.tablasco.results.parser.ExpectedResultsParser;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestName;
-import org.junit.runners.MethodSorters;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.io.TempDir;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public abstract class AbstractSingleTableVerifierTest {
     private static final CellComparator CELL_COMPARATOR = new ToleranceCellComparator(new CellFormatter(1.0, true));
 
-    @Rule
-    public final TestName testName = new TestName();
+    
+    public final String testName;
 
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder(TableTestUtils.getOutputDirectory());
+    @TempDir
+    public File temporaryFolder;
 
     private VerifiableTable expected;
     private VerifiableTable actual;
@@ -70,12 +74,12 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     private void actualTable(List... headerAndRows) {
-        Assert.assertNull(this.actual);
+        assertNull(this.actual);
         this.actual = ListVerifiableTable.create(Arrays.asList(headerAndRows));
     }
 
     private void expectedTable(List... headerAndRows) {
-        Assert.assertNull(this.expected);
+        assertNull(this.expected);
         this.expected = ListVerifiableTable.create(Arrays.asList(headerAndRows));
     }
 
@@ -88,18 +92,18 @@ public abstract class AbstractSingleTableVerifierTest {
         VerifiableTable rebasedExpected = getRebasedExpected();
         List<List<ResultCell>> rebasedActualVerification =
                 verifier.verify(this.actual, rebasedExpected).getVerifiedRows();
-        List<List<ResultCell>> expectedVerification = this.getExpectedVerification(this.testName.getMethodName());
+        List<List<ResultCell>> expectedVerification = this.getExpectedVerification( this.testName);
         this.writeResults("ACTUAL", actualVerification);
         this.writeResults("ACTUAL (REBASE)", rebasedActualVerification);
         this.writeResults("EXPECTED", expectedVerification);
-        Assert.assertEquals("Verification with actual results", expectedVerification, actualVerification);
-        Assert.assertEquals(
-                "Verification with REBASED actual results", expectedVerification, rebasedActualVerification);
+        assertEquals(expectedVerification, actualVerification, "Verification with actual results");
+        assertEquals(
+                expectedVerification, rebasedActualVerification, "Verification with REBASED actual results");
     }
 
     private VerifiableTable getRebasedExpected() {
         try {
-            File rebaseFile = this.temporaryFolder.newFile("table.txt");
+            File rebaseFile = File.createTempFile("table.txt", null, this.temporaryFolder);
             new RebaseFileWriter(
                             Metadata.newWithRecordedAt(), null, new ColumnComparators.Builder().build(), rebaseFile)
                     .writeRebasedResults("method", Collections.singletonMap("table", this.expected));
@@ -119,8 +123,7 @@ public abstract class AbstractSingleTableVerifierTest {
         File outputFile =
                 new File(TableTestUtils.getOutputDirectory(), this.getClass().getSimpleName() + ".html");
         HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlConfig());
-        htmlFormatter.appendResults(
-                this.testName.getMethodName(),
+        htmlFormatter.appendResults( this.testName,
                 Collections.singletonMap(
                         tableName, new ResultTable(new boolean[verify.getFirst().size()], verify)),
                 Metadata.newEmpty());
@@ -131,112 +134,112 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void columnHeadersMatch() {
+    void columnHeadersMatch() {
         this.actualTable(row("Entity", "Account", "Notional"));
         this.expectedTable(row("Entity", "Account", "Notional"));
         this.assertVerification();
     }
 
     @Test
-    public void columnHeadersAndRowsMatch() {
+    void columnHeadersAndRowsMatch() {
         this.actualTable(row("Entity", "Account", "Notional"), row("GSIL", "76543210.01", 1000000));
         this.expectedTable(row("Entity", "Account", "Notional"), row("GSIL", "76543210.01", 1000000));
         this.assertVerification();
     }
 
     @Test
-    public void stringCellMismatch() {
+    void stringCellMismatch() {
         this.actualTable(row("Entity", "Account", "Notional"), row("GSE", "76543210.01", 1000000));
         this.expectedTable(row("Entity", "Account", "Notional"), row("GSI", "76543210.01", 1000000));
         this.assertVerification();
     }
 
     @Test
-    public void oneHeaderIsDifferent() {
+    void oneHeaderIsDifferent() {
         this.actualTable(row("Entity", "Account", "Notional (USD)"));
         this.expectedTable(row("Entity", "Account", "Notional"));
         this.assertVerification();
     }
 
     @Test
-    public void surplusColumnAtEnd() {
+    void surplusColumnAtEnd() {
         this.actualTable(row("column1", "column2", "column3", "column4", "column5"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void surplusColumnAtFront() {
+    void surplusColumnAtFront() {
         this.actualTable(row("column1", "column2", "column3", "column4", "column5"));
         this.expectedTable(row(/*      */ "column2", "column3", "column4", "column5"));
         this.assertVerification();
     }
 
     @Test
-    public void surplusColumnInMiddle() {
+    void surplusColumnInMiddle() {
         this.actualTable(row("column1", "column2", "column3", "column4", "column5"));
         this.expectedTable(row("column1", "column2", /*      */ "column4", "column5"));
         this.assertVerification();
     }
 
     @Test
-    public void twoSurplusColumnsInMiddle() {
+    void twoSurplusColumnsInMiddle() {
         this.actualTable(row("column1", "column2", "column3", "column4", "column5"));
         this.expectedTable(row("column1", /*                 */ "column4", "column5"));
         this.assertVerification();
     }
 
     @Test
-    public void surplusColumnWithRowMismatch() {
+    void surplusColumnWithRowMismatch() {
         this.actualTable(row("Entity", "Account", "Notional"), row("GSE", "76543210.01", 1000000));
         this.expectedTable(row("Entity", "Notional"), row("GSI", 1000000));
         this.assertVerification();
     }
 
     @Test
-    public void missingColumnWithRowMismatch() {
+    void missingColumnWithRowMismatch() {
         this.actualTable(row("Entity", "Notional"), row("GSE", 1000000));
         this.expectedTable(row("Entity", "Account", "Notional"), row("GSI", "76543210.01", 1000000));
         this.assertVerification();
     }
 
     @Test
-    public void missingColumnAtFront() {
+    void missingColumnAtFront() {
         this.actualTable(row(/*      */ "column2", "column3", "column4"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void missingColumnAtEnd() {
+    void missingColumnAtEnd() {
         this.actualTable(row("column1", "column2", "column3" /*     */));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void missingColumnInMiddle() {
+    void missingColumnInMiddle() {
         this.actualTable(row("column1", /*      */ "column3", "column4"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void twoMissingColumnsInMiddle() {
+    void twoMissingColumnsInMiddle() {
         this.actualTable(row("column1", "column4"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void multipleSurplusAndMissingColumns() {
+    void multipleSurplusAndMissingColumns() {
         this.actualTable(row("column1", "column4", "column5" /*   */, "column7", "column8"));
         this.expectedTable(row("column1", "column2", "column3", "column4", "column6" /*   */, "column7" /*      */));
         this.assertVerification();
     }
 
     @Test
-    public void numericMismatchesWithTolerance() {
+    void numericMismatchesWithTolerance() {
         // testing tolerance of 0.001
         // todo: kernjo: The tolerance should be defined per test rather than globally
         // todo: kernjo: Follow up on what makes sense to display for column 5 when it goes green --
@@ -252,7 +255,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void surplusRowAtBottom() {
+    void surplusRowAtBottom() {
         this.actualTable(
                 row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"), row("--d--", "--e--", "--f--"));
         this.expectedTable(row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"));
@@ -260,7 +263,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void missingRowAtBottom() {
+    void missingRowAtBottom() {
         this.actualTable(row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"));
         this.expectedTable(
                 row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"), row("--d--", "--e--", "--f--"));
@@ -268,7 +271,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void unmatchedRowsWithNans() {
+    void unmatchedRowsWithNans() {
         this.actualTable(
                 row("column1", "column2", "column3"), row("c1--", Double.NaN, 100.002), row("c1--", 65.2, 100.002));
         this.expectedTable(
@@ -279,35 +282,35 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void singleColumnMissingActualInMiddle() {
+    void singleColumnMissingActualInMiddle() {
         this.actualTable(row("Single"), row("10"), row("20"), row("40"));
         this.expectedTable(row("Single"), row("10"), row("20"), row("30"), row("40"));
         this.assertVerification();
     }
 
     @Test
-    public void singleColumnMissingActualAtEnd() {
+    void singleColumnMissingActualAtEnd() {
         this.actualTable(row("Single"), row("10"), row("20"), row("30"));
         this.expectedTable(row("Single"), row("10"), row("20"), row("30"), row("40"));
         this.assertVerification();
     }
 
     @Test
-    public void singleColumnExtraActual() {
+    void singleColumnExtraActual() {
         this.actualTable(row("Single"), row("10"), row("20"), row("25"), row("30"), row("40"));
         this.expectedTable(row("Single"), row("10"), row("20"), row("30"), row("40"));
         this.assertVerification();
     }
 
     @Test
-    public void singleColumnOutOfOrder() {
+    void singleColumnOutOfOrder() {
         this.actualTable(row("Single"), row("10"), row("30"), row("20"), row("40"));
         this.expectedTable(row("Single"), row("10"), row("20"), row("30"), row("40"));
         this.assertVerification();
     }
 
     @Test
-    public void matchFirstDuplicateRowAndShowSecondAsSurplus() {
+    void matchFirstDuplicateRowAndShowSecondAsSurplus() {
         this.actualTable(
                 row("Entity", "Account", "Notional"),
                 row("GSI", "76543210.01", 1000000),
@@ -317,7 +320,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void matchFirstDuplicateRowAndShowSecondAsMissing() {
+    void matchFirstDuplicateRowAndShowSecondAsMissing() {
         this.actualTable(row("Entity", "Account", "Notional"), row("GSI", "76543210.01", 1000000));
         this.expectedTable(
                 row("Entity", "Account", "Notional"),
@@ -327,7 +330,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void matchFirstPartialRowAndShowSecondAsSurplus() {
+    void matchFirstPartialRowAndShowSecondAsSurplus() {
         this.actualTable(
                 row("Entity", "Account", "Notional"),
                 row("GSE", "76543210.01", 1000000),
@@ -337,7 +340,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void matchFirstPartialRowAndShowSecondAsMissing() {
+    void matchFirstPartialRowAndShowSecondAsMissing() {
         this.actualTable(row("Entity", "Account", "Notional"), row("GSU", "76543210.01", 1000000));
         this.expectedTable(
                 row("Entity", "Account", "Notional"),
@@ -347,7 +350,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void matchBestPartialRowAndShowSecondAsSurplus() {
+    void matchBestPartialRowAndShowSecondAsSurplus() {
         this.actualTable(
                 row("Entity", "Account", "Notional"),
                 row("GSE", "76543210.99", 1000000),
@@ -357,7 +360,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void matchBestPartialRowAndShowSecondAsMissing() {
+    void matchBestPartialRowAndShowSecondAsMissing() {
         this.actualTable(row("Entity", "Account", "Notional"), row("GSU", "76543210.01", 1000000));
         this.expectedTable(
                 row("Entity", "Account", "Notional"),
@@ -367,7 +370,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void stringColumnAtEndIsTreatedAsAnyOtherValueWouldBe() {
+    void stringColumnAtEndIsTreatedAsAnyOtherValueWouldBe() {
         this.actualTable(
                 row("Entity", "Account", "Notional", "Strings"), row("GSI", "76543210.01", 1000000, "a diff string"));
         this.expectedTable(
@@ -376,35 +379,35 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void outOfOrderColumns2() {
+    void outOfOrderColumns2() {
         this.actualTable(row("column4", "column1", "column3", "column2"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void outOfOrderColumns3() {
+    void outOfOrderColumns3() {
         this.actualTable(row("column4", "column1", "column2", "column3"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void outOfOrderColumns4() {
+    void outOfOrderColumns4() {
         this.actualTable(row("column3", "column2", "column1"));
         this.expectedTable(row("column1", "column2", "column3"));
         this.assertVerification();
     }
 
     @Test
-    public void outOfOrderColumns() {
+    void outOfOrderColumns() {
         this.actualTable(row("column1", "column2", "column4", "column3"));
         this.expectedTable(row("column1", "column2", "column3", "column4"));
         this.assertVerification();
     }
 
     @Test
-    public void surplusRowAtStart() {
+    void surplusRowAtStart() {
         this.actualTable(
                 row("column1", "column2", "column3"), row("--d--", "--e--", "--f--"), row("--a--", "--b--", "--c--"));
         this.expectedTable(row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"));
@@ -412,7 +415,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void missingRowAtStart() {
+    void missingRowAtStart() {
         this.actualTable(row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"));
         this.expectedTable(
                 row("column1", "column2", "column3"), row("--d--", "--e--", "--f--"), row("--a--", "--b--", "--c--"));
@@ -420,7 +423,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void proximityIsIncludedInMatch() {
+    void proximityIsIncludedInMatch() {
         this.actualTable(
                 row("Key 1", "Key 2", "Bal 1", "Bal 2", "Bal 3"),
                 row("A", "A", 10, 20, 3),
@@ -437,7 +440,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void proximityIsIncludedInMatch2() {
+    void proximityIsIncludedInMatch2() {
         this.expectedTable(row("Key 1", "Bal 1", "Bal 2", "Bal 3"), row("A", 1, 0, 0), row("E", 2, 0, 0));
         this.actualTable(
                 row("Key 1", "Bal 1", "Bal 2", "Bal 3"),
@@ -450,7 +453,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void surplusRowInMiddle() {
+    void surplusRowInMiddle() {
         this.actualTable(
                 row("column1", "column2", "column3"),
                 row("--a--", "--b--", "--c--"),
@@ -462,7 +465,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void missingRowInMiddle() {
+    void missingRowInMiddle() {
         this.actualTable(
                 row("column1", "column2", "column3"), row("--a--", "--b--", "--c--"), row("--g--", "--h--", "--i--"));
         this.expectedTable(
@@ -474,7 +477,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void brokenRowInMiddle() {
+    void brokenRowInMiddle() {
         this.actualTable(
                 row("column1", "column2", "column3"),
                 row("--a--", "--b--", "--c--"),
@@ -491,7 +494,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void adaptiveMatcherLeavesLeastUnmatchedRows() {
+    void adaptiveMatcherLeavesLeastUnmatchedRows() {
         this.actualTable(
                 row("Col 1", "Col 2", "Col 3"),
                 row("A", "A", 0),
@@ -516,42 +519,42 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void duplicateActualRow() {
+    void duplicateActualRow() {
         this.actualTable(row("Col 1", "Col 2"), row("A", "B"), row("C", "D"), row("C", "D"), row("E", "F"));
         this.expectedTable(row("Col 1", "Col 2"), row("A", "A"), row("C", "D"), row("E", "E"));
         this.assertVerification();
     }
 
     @Test
-    public void duplicateExpectedRow() {
+    void duplicateExpectedRow() {
         this.actualTable(row("Col 1", "Col 2"), row("A", "B"), row("C", "D"), row("E", "F"));
         this.expectedTable(row("Col 1", "Col 2"), row("A", "A"), row("C", "D"), row("C", "D"), row("E", "E"));
         this.assertVerification();
     }
 
     @Test
-    public void duplicateActualColumn() {
+    void duplicateActualColumn() {
         this.actualTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "B"));
         this.expectedTable(row("Col 1", "Col 2"), row("A", "B"));
         this.assertVerification();
     }
 
     @Test
-    public void duplicateExpectedColumn() {
+    void duplicateExpectedColumn() {
         this.actualTable(row("Col 1", "Col 2"), row("A", "B"));
         this.expectedTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "B"));
         this.assertVerification();
     }
 
     @Test
-    public void duplicateColumnName() {
+    void duplicateColumnName() {
         this.actualTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "C"));
         this.expectedTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "C"));
         this.assertVerification();
     }
 
     @Test
-    public void keyColumn() {
+    void keyColumn() {
         this.actualTable(
                 row("Col 1", "Col 2", "Col 3", "Col 4", "Col 5"),
                 row("A", "B", "C", "D", "E"),
@@ -567,7 +570,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void keyColumnWithDupes() {
+    void keyColumnWithDupes() {
         this.actualTable(
                 row("Col 1", "Col 2", "Col 3"),
                 row("A", "A", "K1"),
@@ -589,7 +592,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void keyColumnWithOutOfOrderMissingAndSurplusColumns() {
+    void keyColumnWithOutOfOrderMissingAndSurplusColumns() {
         this.actualTable(
                 row("Col 1", "Col 2", "Col 3"),
                 row("A", "A", "K1"),
@@ -609,7 +612,7 @@ public abstract class AbstractSingleTableVerifierTest {
     }
 
     @Test
-    public void keyColumnWithMissingKey() {
+    void keyColumnWithMissingKey() {
         this.actualTable(
                 row("Col 1", "Col 2", "Col 3"),
                 row("A", "A", "K1"),
@@ -619,5 +622,13 @@ public abstract class AbstractSingleTableVerifierTest {
         this.actual = new KeyedVerifiableTableAdapter(this.actual, 0, 2);
         this.expectedTable(row("Col 2", "Col 3"), row("Z", "K1"), row("Z", "K1"), row("A", "K2"), row("B", "K2"));
         this.assertVerification();
+    }
+
+    @BeforeEach
+    public void setup(TestInfo testInfo) {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        if (testMethod.isPresent()) {
+            this.testName = testMethod.get().getName();
+        }
     }
 }

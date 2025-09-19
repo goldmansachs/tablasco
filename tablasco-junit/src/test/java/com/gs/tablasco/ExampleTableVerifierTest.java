@@ -19,14 +19,14 @@ package com.gs.tablasco;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExampleTableVerifierTest {
     @Rule
     public final TableVerifier tableVerifier = new TableVerifier().withMavenDirectoryStrategy();
 
     @Test
-    public void example() {
+    void example() {
         List<Movie> movieRanks = Arrays.asList(
                 new Movie("The Batman", "2022", 1, 8.3),
                 new Movie("Deep Water", "2022", 2, 5.4),

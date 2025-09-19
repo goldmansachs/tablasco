@@ -18,7 +18,7 @@ package com.gs.tablasco;
 
 import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MavenStyleDirectoryStrategyTest {
     @Rule
@@ -30,7 +30,7 @@ public class MavenStyleDirectoryStrategyTest {
                     .withOutputSubDir("maven_output"));
 
     @Test
-    public void testMavenStyleDirectoryStrategy() {
+    void testMavenStyleDirectoryStrategy() {
         this.tableVerifier.verify(
                 "maven", new TestTable("h1", "h2").withRow("r11", "r12").withRow("r21", "r22"));
     }

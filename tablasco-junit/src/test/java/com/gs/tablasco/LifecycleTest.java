@@ -16,13 +16,17 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import java.io.File;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -35,63 +39,63 @@ public class LifecycleTest {
     // todo: rebase, missing table, rebase exception
 
     @Test
-    public void passedTest() {
+    void passedTest() {
         Class testClass = LifecycleTestPassedInnerTest.class;
         Result result = runInnerTest(testClass);
-        Assert.assertTrue(result.wasSuccessful());
-        Assert.assertTrue(getOutputFile(testClass).exists());
-        Assert.assertEquals(Arrays.asList("onStarted", "onSucceeded", "onFinished"), EVENTS.get(testClass));
+        assertTrue(result.wasSuccessful());
+        assertTrue(getOutputFile(testClass).exists());
+        assertEquals(Arrays.asList("onStarted", "onSucceeded", "onFinished"), EVENTS.get(testClass));
     }
 
     @Test
-    public void failedTest() {
+    void failedTest() {
         Class testClass = LifecycleTestFailedInnerTest.class;
         Result result = runInnerTest(testClass);
-        Assert.assertFalse(result.wasSuccessful());
-        Assert.assertTrue(getOutputFile(testClass).exists());
-        Assert.assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
+        assertFalse(result.wasSuccessful());
+        assertTrue(getOutputFile(testClass).exists());
+        assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
     }
 
     @Test
-    public void exceptionTest() {
+    void exceptionTest() {
         Class testClass = LifecycleTestExceptionInnerTest.class;
         Result result = runInnerTest(testClass);
-        Assert.assertFalse(result.wasSuccessful());
-        Assert.assertTrue(getOutputFile(testClass).exists());
-        Assert.assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
+        assertFalse(result.wasSuccessful());
+        assertTrue(getOutputFile(testClass).exists());
+        assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
     }
 
     @Test
-    public void rebaseTest() {
+    void rebaseTest() {
         Class testClass = LifecycleTestRebaseInnerTest.class;
         Result result = runInnerTest(testClass);
-        Assert.assertFalse(result.wasSuccessful());
-        Assert.assertFalse(getOutputFile(testClass).exists());
-        Assert.assertTrue(
+        assertFalse(result.wasSuccessful());
+        assertFalse(getOutputFile(testClass).exists());
+        assertTrue(
                 new File(new File(TableTestUtils.getOutputDirectory(), "expected"), testClass.getSimpleName() + ".txt")
                         .exists());
-        Assert.assertEquals(Arrays.asList("onStarted", "onSucceeded", "onFinished"), EVENTS.get(testClass));
+        assertEquals(Arrays.asList("onStarted", "onSucceeded", "onFinished"), EVENTS.get(testClass));
     }
 
     @Test
-    public void rebaseExceptionTest() {
+    void rebaseExceptionTest() {
         Class testClass = LifecycleTestRebaseExceptionInnerTest.class;
         Result result = runInnerTest(testClass);
-        Assert.assertFalse(result.wasSuccessful());
-        Assert.assertTrue(getOutputFile(testClass).exists());
-        Assert.assertFalse(
+        assertFalse(result.wasSuccessful());
+        assertTrue(getOutputFile(testClass).exists());
+        assertFalse(
                 new File(new File(TableTestUtils.getOutputDirectory(), "expected"), testClass.getSimpleName() + ".txt")
                         .exists());
-        Assert.assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
+        assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
     }
 
     @Test
-    public void missingTableTest() {
+    void missingTableTest() {
         Class testClass = LifecycleTestMissingTableInnerTest.class;
         Result result = runInnerTest(testClass);
-        Assert.assertFalse(result.wasSuccessful());
-        Assert.assertTrue(getOutputFile(testClass).exists());
-        Assert.assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
+        assertFalse(result.wasSuccessful());
+        assertTrue(getOutputFile(testClass).exists());
+        assertEquals(Arrays.asList("onStarted", "onFailed", "onFinished"), EVENTS.get(testClass));
     }
 
     private static File getOutputFile(Class innerClass) {
@@ -102,7 +106,7 @@ public class LifecycleTest {
         EVENTS.put(innerClass, new ArrayList<>());
         File ouputFile = new File(TableTestUtils.getOutputDirectory(), innerClass.getSimpleName() + ".html");
         if (ouputFile.exists()) {
-            Assert.assertTrue("Deleting " + ouputFile, ouputFile.delete());
+            assertTrue(ouputFile.delete(), "Deleting " + ouputFile);
         }
         try {
             System.setProperty(INNER_TEST_EXECUTION, Boolean.TRUE.toString());
@@ -113,74 +117,80 @@ public class LifecycleTest {
     }
 
     private static void assumeInnerTestExecution() {
-        Assume.assumeTrue(Boolean.getBoolean(INNER_TEST_EXECUTION));
+        Assumptions.assumeTrue(Boolean.getBoolean(INNER_TEST_EXECUTION));
     }
 
-    public static class LifecycleTestPassedInnerTest {
+    @Nested
+    public class LifecycleTestPassedInnerTest {
         @Rule
         public final TableVerifier verifier = newInnerClassVerifier(EVENTS.get(this.getClass()));
 
         @Test
-        public void test() {
+        void test() {
             assumeInnerTestExecution();
             this.verifier.verify("table", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL);
         }
     }
 
-    public static class LifecycleTestFailedInnerTest {
+    @Nested
+    public class LifecycleTestFailedInnerTest {
         @Rule
         public final TableVerifier verifier = newInnerClassVerifier(EVENTS.get(this.getClass()));
 
         @Test
-        public void test() {
+        void test() {
             assumeInnerTestExecution();
             this.verifier.verify("table", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL_2);
         }
     }
 
-    public static class LifecycleTestExceptionInnerTest {
+    @Nested
+    public class LifecycleTestExceptionInnerTest {
         @Rule
         public final TableVerifier verifier = newInnerClassVerifier(EVENTS.get(this.getClass()));
 
         @Test
-        public void test() {
+        void test() {
             assumeInnerTestExecution();
             throw new RuntimeException();
         }
     }
 
-    public static class LifecycleTestRebaseInnerTest {
+    @Nested
+    public class LifecycleTestRebaseInnerTest {
         @Rule
         public final TableVerifier verifier = newInnerClassVerifier(EVENTS.get(this.getClass()))
                 .withExpectedDir(new File(TableTestUtils.getOutputDirectory(), "expected"))
                 .withRebase();
 
         @Test
-        public void test() {
+        void test() {
             assumeInnerTestExecution();
             this.verifier.verify("table", TableTestUtils.ACTUAL);
         }
     }
 
-    public static class LifecycleTestRebaseExceptionInnerTest {
+    @Nested
+    public class LifecycleTestRebaseExceptionInnerTest {
         @Rule
         public final TableVerifier verifier = newInnerClassVerifier(EVENTS.get(this.getClass()))
                 .withExpectedDir(new File(TableTestUtils.getOutputDirectory(), "expected"))
                 .withRebase();
 
         @Test
-        public void test() {
+        void test() {
             assumeInnerTestExecution();
             throw new RuntimeException();
         }
     }
 
-    public static class LifecycleTestMissingTableInnerTest {
+    @Nested
+    public class LifecycleTestMissingTableInnerTest {
         @Rule
         public final TableVerifier verifier = newInnerClassVerifier(EVENTS.get(this.getClass()));
 
         @Test
-        public void test() {
+        void test() {
             assumeInnerTestExecution();
             this.verifier.verify(
                     TableTestUtils.toNamedTables("table_1", TableTestUtils.ACTUAL, "table_2", TableTestUtils.ACTUAL_2));

@@ -16,10 +16,11 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IgnoreMissingAndSurplusTest {
     @Rule
@@ -27,10 +28,10 @@ public class IgnoreMissingAndSurplusTest {
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void allRowsMatch() throws IOException {
+    void allRowsMatch() throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table, table);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -50,14 +51,14 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void failsWithSurplusAndToldToIgnoreJustMissing() throws IOException {
+    void failsWithSurplusAndToldToIgnoreJustMissing() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
 
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreMissingRows().verify("name", table1, table2));
 
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -79,13 +80,13 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void failsWithMissingAndToldToIgnoreJustSurplus() throws IOException {
+    void failsWithMissingAndToldToIgnoreJustSurplus() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
 
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreSurplusRows().verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -107,11 +108,11 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void passesWithSurplusAndMissing() throws IOException {
+    void passesWithSurplusAndMissing() throws IOException {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -127,12 +128,12 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void failsWithMissingSurplusHeader() throws IOException {
+    void failsWithMissingSurplusHeader() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 3", "C1", "C2", "B1", "B2");
         TableTestUtils.assertAssertionError(() ->
                 tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -154,12 +155,12 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void failsWithDifferenceInCommonRow() throws IOException {
+    void failsWithDifferenceInCommonRow() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B3");
         TableTestUtils.assertAssertionError(() ->
                 tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -177,11 +178,11 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void passesWithEmptyExpected() throws IOException {
+    void passesWithEmptyExpected() throws IOException {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -193,11 +194,11 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void passesWithEmptyActual() throws IOException {
+    void passesWithEmptyActual() throws IOException {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -209,11 +210,11 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void ignoreSurplusColumnsPassesWithSurplus() throws IOException {
+    void ignoreSurplusColumnsPassesWithSurplus() throws IOException {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         VerifiableTable actual = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         this.tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -229,12 +230,12 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void ignoreSurplusColumnsFailsWithMissing() throws IOException {
+    void ignoreSurplusColumnsFailsWithMissing() throws IOException {
         final VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -252,11 +253,11 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void ignoreMissingColumnsPassesWithMissing() throws IOException {
+    void ignoreMissingColumnsPassesWithMissing() throws IOException {
         VerifiableTable expected = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -272,12 +273,12 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void ignoreMissingColumnsFailsWithSurplus() throws IOException {
+    void ignoreMissingColumnsFailsWithSurplus() throws IOException {
         final VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -295,11 +296,11 @@ public class IgnoreMissingAndSurplusTest {
     }
 
     @Test
-    public void ignoreMissingAndSurplusColumnsPasses() throws IOException {
+    void ignoreMissingAndSurplusColumnsPasses() throws IOException {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().withIgnoreSurplusColumns().verify("name", expected, actual);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>

@@ -16,10 +16,11 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HideMatchedRowsTest {
     @Rule
@@ -27,10 +28,10 @@ public class HideMatchedRowsTest {
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedRows(true);
 
     @Test
-    public void allRowsMatch() throws IOException {
+    void allRowsMatch() throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -45,14 +46,14 @@ public class HideMatchedRowsTest {
     }
 
     @Test
-    public void alwaysShowMatchedRowsFor() throws IOException {
+    void alwaysShowMatchedRowsFor() throws IOException {
         final VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         TableTestUtils.assertAssertionError(() -> tableVerifier
                 .withAlwaysShowMatchedRowsFor("name2")
                 .verify(
                         TableTestUtils.toNamedTables("name", table, "name2", table, "name3", table),
                         TableTestUtils.toNamedTables("name", table, "name2", table, "name4", table)));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>
@@ -137,11 +138,11 @@ public class HideMatchedRowsTest {
     }
 
     @Test
-    public void outOfOrderRowMatch() throws IOException {
+    void outOfOrderRowMatch() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "B1", "B2", "A1", "A2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -162,11 +163,11 @@ public class HideMatchedRowsTest {
     }
 
     @Test
-    public void allRowsFail() throws IOException {
+    void allRowsFail() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -190,13 +191,13 @@ public class HideMatchedRowsTest {
     }
 
     @Test
-    public void missingSurplusColumns() throws IOException {
+    void missingSurplusColumns() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3");
         final VerifiableTable table2 = TableTestUtils.createTable(
                 3, "Col 3", "Col 4", "Col 1", "A3", "A2", "A1", "B3", "B2", "B9", "C3", "C2", "C1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -230,7 +231,7 @@ public class HideMatchedRowsTest {
     }
 
     @Test
-    public void someRowsMatch() throws IOException {
+    void someRowsMatch() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2",
                 "H1", "H2");
@@ -238,7 +239,7 @@ public class HideMatchedRowsTest {
                 2, "Col 1", "Col 2", "A1", "A2", "B1", "X2", "C1", "C2", "D1", "D2", "E1", "X2", "F1", "F2", "G1", "G2",
                 "H1", "H2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>

@@ -16,6 +16,9 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,12 +26,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SummaryResultTableTest {
+class SummaryResultTableTest {
     @Test
-    public void isSerializable() throws IOException, ClassNotFoundException {
+    void isSerializable() throws IOException, ClassNotFoundException {
         CellComparator cellComparator = new ToleranceCellComparator(new CellFormatter(1.0, false));
         List<ResultCell> row = Arrays.asList(
                 ResultCell.createMatchedCell(cellComparator, "A", "A"),
@@ -43,13 +45,13 @@ public class SummaryResultTableTest {
         }
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(out.toByteArray()))) {
             SummaryResultTable tableOverWire = (SummaryResultTable) objectInputStream.readObject();
-            Assert.assertFalse(tableOverWire.isSuccess());
-            Assert.assertEquals(10, tableOverWire.getTotalCellCount());
+            assertFalse(tableOverWire.isSuccess());
+            assertEquals(10, tableOverWire.getTotalCellCount());
         }
     }
 
     @Test
-    public void merge() {
+    void merge() {
         CellComparator cellComparator = new ToleranceCellComparator(new CellFormatter(1.0, false));
         SummaryResultTable table1 = new SummaryResultTable(new ResultTable(
                 new boolean[2],
@@ -68,9 +70,9 @@ public class SummaryResultTableTest {
                         Arrays.asList(ResultCell.createMatchedCell(cellComparator, "A", "B")))));
         table1.merge(table2);
         table1.merge(table3);
-        Assert.assertEquals("{0={firstFew=1, totalRows=1}, 31={firstFew=2, totalRows=2}}", asString(table1));
-        Assert.assertEquals("{31={firstFew=1, totalRows=1}}", asString(table2));
-        Assert.assertEquals("{31={firstFew=1, totalRows=1}}", asString(table3));
+        assertEquals("{0={firstFew=1, totalRows=1}, 31={firstFew=2, totalRows=2}}", asString(table1));
+        assertEquals("{31={firstFew=1, totalRows=1}}", asString(table2));
+        assertEquals("{31={firstFew=1, totalRows=1}}", asString(table3));
     }
 
     private String asString(SummaryResultTable table) {

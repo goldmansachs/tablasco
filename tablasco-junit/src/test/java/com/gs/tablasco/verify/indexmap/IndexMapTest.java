@@ -16,97 +16,100 @@
 
 package com.gs.tablasco.verify.indexmap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class IndexMapTest {
+class IndexMapTest {
     private List<String> actual;
     private List<String> expected;
 
     @Test
-    public void testStates() {
-        Assert.assertTrue(im(0, 0).isMatched());
-        Assert.assertTrue(im(2, 1).isMatched());
-        Assert.assertFalse(im(1, -1).isMatched());
-        Assert.assertFalse(im(-1, 0).isMatched());
-        Assert.assertTrue(im(-1, 0).isSurplus());
-        Assert.assertTrue(im(1, -1).isMissing());
+    void testStates() {
+        assertTrue(im(0, 0).isMatched());
+        assertTrue(im(2, 1).isMatched());
+        assertFalse(im(1, -1).isMatched());
+        assertFalse(im(-1, 0).isMatched());
+        assertTrue(im(-1, 0).isSurplus());
+        assertTrue(im(1, -1).isMissing());
     }
 
     @Test
-    public void testMatchingColumns() {
+    void testMatchingColumns() {
         this.expectHeaderRow("column1", "column2", "column3");
         this.actualHeaderRow("column1", "column2", "column3");
         this.assertIndices(im(0, 0), im(1, 1), im(2, 2));
     }
 
     @Test
-    public void testSurplusColumnAtEnd() {
+    void testSurplusColumnAtEnd() {
         this.expectHeaderRow("column1", "column2", "column3", "column4");
         this.actualHeaderRow("column1", "column2", "column3", "column4", "column5");
         this.assertIndices(im(0, 0), im(1, 1), im(2, 2), im(3, 3), im(-1, 4));
     }
 
     @Test
-    public void testSurplusColumnAtFront() {
+    void testSurplusColumnAtFront() {
         this.expectHeaderRow(/*      */ "column2", "column3", "column4", "column5");
         this.actualHeaderRow("column1", "column2", "column3", "column4", "column5");
         this.assertIndices(im(-1, 0), im(0, 1), im(1, 2), im(2, 3), im(3, 4));
     }
 
     @Test
-    public void testSurplusColumnInMiddle() {
+    void testSurplusColumnInMiddle() {
         this.expectHeaderRow("column1", "column2", /*      */ "column4", "column5");
         this.actualHeaderRow("column1", "column2", "column3", "column4", "column5");
         this.assertIndices(im(0, 0), im(1, 1), im(-1, 2), im(2, 3), im(3, 4));
     }
 
     @Test
-    public void testTwoSurplusColumnsInMiddle() {
+    void testTwoSurplusColumnsInMiddle() {
         this.expectHeaderRow("column1", /*                 */ "column4", "column5");
         this.actualHeaderRow("column1", "column2", "column3", "column4", "column5");
         this.assertIndices(im(0, 0), im(-1, 1), im(-1, 2), im(1, 3), im(2, 4));
     }
 
     @Test
-    public void testMissingColumnAtFront() {
+    void testMissingColumnAtFront() {
         this.expectHeaderRow("column1", "column2", "column3", "column4");
         this.actualHeaderRow(/*      */ "column2", "column3", "column4");
         this.assertIndices(im(0, -1), im(1, 0), im(2, 1), im(3, 2));
     }
 
     @Test
-    public void testMissingColumnAtEnd() {
+    void testMissingColumnAtEnd() {
         this.expectHeaderRow("column1", "column2", "column3", "column4");
         this.actualHeaderRow("column1", "column2", "column3" /*     */);
         this.assertIndices(im(0, 0), im(1, 1), im(2, 2), im(3, -1));
     }
 
     @Test
-    public void testMissingColumnInMiddle() {
+    void testMissingColumnInMiddle() {
         this.expectHeaderRow("column1", "column2", "column3", "column4");
         this.actualHeaderRow("column1", /*      */ "column3", "column4");
         this.assertIndices(im(0, 0), im(1, -1), im(2, 1), im(3, 2));
     }
 
     @Test
-    public void testTwoMissingColumnsInMiddle() {
+    void testTwoMissingColumnsInMiddle() {
         this.expectHeaderRow("column1", "column2", "column3", "column4");
         this.actualHeaderRow("column1", /*                 */ "column4");
         this.assertIndices(im(0, 0), im(1, -1), im(2, -1), im(3, 1));
     }
 
     @Test
-    public void testMultipleSurplusAndMissingColumns() {
+    void testMultipleSurplusAndMissingColumns() {
         this.expectHeaderRow("column1", "column2", "column3", "column4", "column6", "column7");
         this.actualHeaderRow("column1", "column4", "column5", "column7", "column8");
         this.assertIndices(im(0, 0), im(1, -1), im(2, -1), im(3, 1), im(-1, 2), im(4, -1), im(5, 3), im(-1, 4));
     }
 
     @Test
-    public void testOutOfOrderColumns() {
+    void testOutOfOrderColumns() {
         this.expectHeaderRow("column1", "column2", "column3", "column4");
         this.actualHeaderRow("column1", "column2", "column4", "column3");
         this.assertIndices(im(0, 0), im(1, 1), im(3, 2), im(2, 3));
@@ -126,26 +129,26 @@ public class IndexMapTest {
     */
 
     @Test
-    public void compareTo1() {
+    void compareTo1() {
         IndexMap im1 = new IndexMap(1, 2);
         IndexMap im2 = new IndexMap(2, 1);
-        Assert.assertTrue(im1.compareTo(im2) > 0);
-        Assert.assertTrue(im2.compareTo(im1) < 0);
+        assertTrue(im1.compareTo(im2) > 0);
+        assertTrue(im2.compareTo(im1) < 0);
     }
 
     @Test
-    public void compareTo2() {
+    void compareTo2() {
         IndexMap im1 = new IndexMap(1, 2);
         IndexMap im2 = new IndexMap(2, -1);
-        Assert.assertTrue(im1.compareTo(im2) < 0);
-        Assert.assertTrue(im2.compareTo(im1) > 0);
+        assertTrue(im1.compareTo(im2) < 0);
+        assertTrue(im2.compareTo(im1) > 0);
     }
 
     private void assertIndices(IndexMap... cols) {
         IndexMapGenerator<String> generator =
                 new IndexMapGenerator<>(this.expected.iterator(), this.actual.iterator(), 0);
         generator.generate();
-        Assert.assertEquals(Arrays.asList(cols), generator.getAll());
+        assertEquals(Arrays.asList(cols), generator.getAll());
     }
 
     private static IndexMap im(int ei, int ai) {

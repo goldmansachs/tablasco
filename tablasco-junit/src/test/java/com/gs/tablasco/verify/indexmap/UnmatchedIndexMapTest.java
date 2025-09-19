@@ -16,47 +16,53 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UnmatchedIndexMapTest {
+import org.junit.jupiter.api.Test;
+
+class UnmatchedIndexMapTest {
     private final UnmatchedIndexMap unmatched = new UnmatchedIndexMap(0, 0);
     private final UnmatchedIndexMap unmatched1 = new UnmatchedIndexMap(1, 1);
     private final UnmatchedIndexMap unmatched2 = new UnmatchedIndexMap(2, 2);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddPartialMatchFailsIfSelf() {
-        this.unmatched.addMatch(2, this.unmatched);
+    @Test
+    void testAddPartialMatchFailsIfSelf() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.unmatched.addMatch(2, this.unmatched);
+        });
     }
 
     @Test
-    public void testInitialState() {
-        Assert.assertNull(this.unmatched.getBestMutualMatch());
+    void testInitialState() {
+        assertNull(this.unmatched.getBestMutualMatch());
     }
 
     @Test
-    public void addSinglePartialMatch() {
+    void addSinglePartialMatch() {
         this.unmatched.addMatch(1, this.unmatched1);
-        Assert.assertTrue(this.unmatched.match());
-        Assert.assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
-        Assert.assertEquals(this.unmatched, this.unmatched1.getBestMutualMatch());
+        assertTrue(this.unmatched.match());
+        assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
+        assertEquals(this.unmatched, this.unmatched1.getBestMutualMatch());
     }
 
     @Test
-    public void bestMatchAddedFirst() {
+    void bestMatchAddedFirst() {
         this.unmatched.addMatch(2, this.unmatched1);
         this.unmatched.addMatch(1, this.unmatched2);
-        Assert.assertTrue(this.unmatched.match());
-        Assert.assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
-        Assert.assertEquals(this.unmatched, this.unmatched1.getBestMutualMatch());
+        assertTrue(this.unmatched.match());
+        assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
+        assertEquals(this.unmatched, this.unmatched1.getBestMutualMatch());
     }
 
     @Test
-    public void bestMatchAddedLast() {
+    void bestMatchAddedLast() {
         this.unmatched.addMatch(1, this.unmatched2);
         this.unmatched.addMatch(2, this.unmatched1);
-        Assert.assertTrue(this.unmatched.match());
-        Assert.assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
-        Assert.assertEquals(this.unmatched, this.unmatched1.getBestMutualMatch());
+        assertTrue(this.unmatched.match());
+        assertEquals(this.unmatched1, this.unmatched.getBestMutualMatch());
+        assertEquals(this.unmatched, this.unmatched1.getBestMutualMatch());
     }
 }

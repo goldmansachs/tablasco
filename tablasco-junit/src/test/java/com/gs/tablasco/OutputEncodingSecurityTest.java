@@ -16,10 +16,11 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OutputEncodingSecurityTest {
     @Rule
@@ -27,7 +28,7 @@ public class OutputEncodingSecurityTest {
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void htmlTagsAreEncoded() throws IOException {
+    void htmlTagsAreEncoded() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 1,
                 "Col",
@@ -39,7 +40,7 @@ public class OutputEncodingSecurityTest {
                 "<script language=\"javascript\">alert(\"boo\")</script>",
                 "<script language=\"javascript\">alert(\"foo\")</script>");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>

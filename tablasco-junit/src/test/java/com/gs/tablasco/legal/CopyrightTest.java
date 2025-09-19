@@ -16,21 +16,23 @@
 
 package com.gs.tablasco.legal;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CopyrightTest {
+class CopyrightTest {
     @Test
-    public void test() throws IOException {
+    void test() throws IOException {
         List<File> javaSource = new ArrayList<>();
         scan(new File("src"), javaSource);
-        Assert.assertFalse(javaSource.isEmpty());
+        assertFalse(javaSource.isEmpty());
         for (File file : javaSource) {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
             boolean foundApacheLicence = false;
@@ -43,8 +45,8 @@ public class CopyrightTest {
                     foundApacheUrl = true;
                 }
             }
-            Assert.assertTrue("Found Apache license in " + file.getName(), foundApacheLicence);
-            Assert.assertTrue("Found Apache license URL in " + file.getName(), foundApacheUrl);
+            assertTrue(foundApacheLicence, "Found Apache license in " + file.getName());
+            assertTrue(foundApacheUrl, "Found Apache license URL in " + file.getName());
         }
     }
 

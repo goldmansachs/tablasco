@@ -16,10 +16,11 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IgnoreTablesTest {
     @Rule
@@ -27,7 +28,7 @@ public class IgnoreTablesTest {
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void ignoreTables() throws IOException {
+    void ignoreTables() throws IOException {
         VerifiableTable tableA = TableTestUtils.createTable(1, "Col 1", "A");
         VerifiableTable tableX = TableTestUtils.createTable(1, "Col 1", "X");
         this.tableVerifier
@@ -36,7 +37,7 @@ public class IgnoreTablesTest {
                         TableTestUtils.toNamedTables("table1", tableA, "table2", tableA, "table3", tableX),
                         TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
 
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>

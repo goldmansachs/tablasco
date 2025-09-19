@@ -21,10 +21,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingleTableVerifierTest {
     @Override
     protected IndexMapTableVerifier createSingleTableVerifier(ColumnComparators columnComparators) {

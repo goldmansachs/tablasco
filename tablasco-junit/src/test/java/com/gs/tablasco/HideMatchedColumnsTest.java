@@ -16,11 +16,12 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.gs.tablasco.verify.KeyedVerifiableTableAdapter;
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HideMatchedColumnsTest {
     @Rule
@@ -28,10 +29,10 @@ public class HideMatchedColumnsTest {
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedColumns(true);
 
     @Test
-    public void allColumnsMatch() throws IOException {
+    void allColumnsMatch() throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -48,13 +49,13 @@ public class HideMatchedColumnsTest {
     }
 
     @Test
-    public void missingAndSurplusRows() throws IOException {
+    void missingAndSurplusRows() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3");
         final VerifiableTable table2 = TableTestUtils.createTable(
                 3, "Col 1", "Col 2", "Col 3", "B1", "B2", "B9", "C1", "C2", "C9", "D1", "D2", "D3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -88,7 +89,7 @@ public class HideMatchedColumnsTest {
     }
 
     @Test
-    public void multiMatchedColumns() throws IOException {
+    void multiMatchedColumns() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "A",
                 "A", "A", "B", "B", "B", "B", "B", "B", "B", "B");
@@ -96,7 +97,7 @@ public class HideMatchedColumnsTest {
                 8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "X",
                 "A", "A", "B", "B", "X", "B", "B", "B", "B", "B");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -129,11 +130,11 @@ public class HideMatchedColumnsTest {
     }
 
     @Test
-    public void keyColumnIgnored() throws IOException {
+    void keyColumnIgnored() throws IOException {
         VerifiableTable table = new KeyedVerifiableTableAdapter(
                 TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
         this.tableVerifier.verify("name", table, table);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -149,7 +150,7 @@ public class HideMatchedColumnsTest {
     }
 
     @Test
-    public void matchedRowsAndColumns() throws IOException {
+    void matchedRowsAndColumns() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 4, "Col 1", "Col 2", "Col 3", "Col 3", "A", "A", "A", "A", "B", "B", "B", "B", "C", "C", "C", "C", "D",
                 "D", "D", "D");
@@ -158,7 +159,7 @@ public class HideMatchedColumnsTest {
                 "D", "D", "D");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>

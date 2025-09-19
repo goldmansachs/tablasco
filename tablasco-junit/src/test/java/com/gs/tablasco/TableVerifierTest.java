@@ -16,14 +16,19 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gs.tablasco.lifecycle.ExceptionHandler;
 import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.Description;
 
 public class TableVerifierTest {
@@ -36,20 +41,22 @@ public class TableVerifierTest {
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     @Test
-    public void validationSuccess() {
+    void validationSuccess() {
         this.verifier.starting(this.description.get());
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 
-    @Test(expected = AssertionError.class)
-    public void validationFailure() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+    @Test
+    void validationFailure() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        });
     }
 
     @Test
-    public void toleranceSuccess() {
+    void toleranceSuccess() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withTolerance(0.2d)
@@ -59,21 +66,21 @@ public class TableVerifierTest {
     }
 
     @Test
-    public void toleranceSuccessForFirstColumn() {
+    void toleranceSuccessForFirstColumn() {
         this.verifier.starting(this.description.get());
         this.verifier.withTolerance("Age", 0.2d).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
         this.verifier.succeeded(this.description.get());
     }
 
     @Test
-    public void toleranceSuccessForSecondColumn() {
+    void toleranceSuccessForSecondColumn() {
         this.verifier.starting(this.description.get());
         this.verifier.withTolerance("Weight", 0.06d).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
         this.verifier.succeeded(this.description.get());
     }
 
     @Test
-    public void toleranceSuccessForTwoColumns() {
+    void toleranceSuccessForTwoColumns() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withTolerance("Weight", 0.06d)
@@ -83,7 +90,7 @@ public class TableVerifierTest {
     }
 
     @Test
-    public void toleranceSuccessWithGeneralCase() {
+    void toleranceSuccessWithGeneralCase() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withTolerance("Weight", 0.06d)
@@ -92,98 +99,110 @@ public class TableVerifierTest {
         this.verifier.succeeded(this.description.get());
     }
 
-    @Test(expected = AssertionError.class)
-    public void toleranceFailure() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withTolerance(0.1d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+    @Test
+    void toleranceFailure() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier
+                    .withTolerance(0.1d)
+                    .withVerifyRowOrder(true)
+                    .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        });
     }
 
-    @Test(expected = AssertionError.class)
-    public void toleranceFailureForTwoColumns() {
+    @Test
+    void toleranceFailureForTwoColumns() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier
+                    .withTolerance("Age", 0.2d)
+                    .withTolerance("Weight", 0.06d)
+                    .withVerifyRowOrder(true)
+                    .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
+        });
+    }
+
+    @Test
+    void toleranceFailureWithGeneralCase() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier
+                    .withTolerance("Weight", 0.06d)
+                    .withTolerance(1.0d)
+                    .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
+        });
+    }
+
+    @Test
+    void varianceSuccess() {
         this.verifier.starting(this.description.get());
         this.verifier
+                .withVarianceThreshold(5.0d)
+                .withVerifyRowOrder(true)
+                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        this.verifier.succeeded(this.description.get());
+    }
+
+    @Test
+    void varianceSuccessForTwoColumns() {
+        this.verifier.starting(this.description.get());
+        this.verifier
+                .withVarianceThreshold("Weight", 1.0d)
+                .withVarianceThreshold("Age", 5.0d)
+                .withVerifyRowOrder(true)
+                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
+        this.verifier.succeeded(this.description.get());
+    }
+
+    @Test
+    void varianceSuccessWithTolerance() {
+        this.verifier.starting(this.description.get());
+        this.verifier
+                .withVarianceThreshold("Weight", 1.0d)
+                .withVarianceThreshold("Age", 5.0d)
                 .withTolerance("Age", 0.2d)
                 .withTolerance("Weight", 0.06d)
                 .withVerifyRowOrder(true)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void toleranceFailureWithGeneralCase() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withTolerance("Weight", 0.06d)
-                .withTolerance(1.0d)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-    }
-
-    @Test
-    public void varianceSuccess() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withVarianceThreshold(5.0d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 
     @Test
-    public void varianceSuccessForTwoColumns() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withVarianceThreshold("Weight", 1.0d)
-                .withVarianceThreshold("Age", 5.0d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+    void varianceFailure() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier
+                    .withVarianceThreshold(5.0d)
+                    .withVerifyRowOrder(true)
+                    .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        });
     }
 
     @Test
-    public void varianceSuccessWithTolerance() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withVarianceThreshold("Weight", 1.0d)
-                .withVarianceThreshold("Age", 5.0d)
-                .withTolerance("Age", 0.2d)
-                .withTolerance("Weight", 0.06d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
-    }
-
-    @Test(expected = AssertionError.class)
-    public void varianceFailure() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withVarianceThreshold(5.0d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void varianceFailureForTwoColumns() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withVarianceThreshold("Age", 5.0d)
-                .withVarianceThreshold("Weight", 1.0d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void mismatchedTypesFormatting() {
-        this.verifier.starting(this.description.get());
-        this.verifier
-                .withVarianceThreshold(5.0d)
-                .withVerifyRowOrder(true)
-                .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+    void varianceFailureForTwoColumns() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier
+                    .withVarianceThreshold("Age", 5.0d)
+                    .withVarianceThreshold("Weight", 1.0d)
+                    .withVerifyRowOrder(true)
+                    .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
+        });
     }
 
     @Test
-    public void rowOrderSuccess() {
+    void mismatchedTypesFormatting() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier
+                    .withVarianceThreshold(5.0d)
+                    .withVerifyRowOrder(true)
+                    .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        });
+    }
+
+    @Test
+    void rowOrderSuccess() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withTolerance(1.0)
@@ -192,26 +211,32 @@ public class TableVerifierTest {
         this.verifier.succeeded(this.description.get());
     }
 
-    @Test(expected = AssertionError.class)
-    public void rowOrderFailure() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void expectedAndOutputDirsMustBeDifferent() {
-        this.verifier.withOutputDir(TableTestUtils.getExpectedDirectory()).starting(this.description.get());
-        this.verifier.verify("", null);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void ensureStartingIsCalled() {
-        TableVerifier localVerifier = new TableVerifier().withExpectedDir(TableTestUtils.getExpectedDirectory());
-        localVerifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+    @Test
+    void rowOrderFailure() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        });
     }
 
     @Test
-    public void multiTableSuccess() {
+    void expectedAndOutputDirsMustBeDifferent() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.verifier.withOutputDir(TableTestUtils.getExpectedDirectory()).starting(this.description.get());
+            this.verifier.verify("", null);
+        });
+    }
+
+    @Test
+    void ensureStartingIsCalled() {
+        assertThrows(IllegalStateException.class, () -> {
+            TableVerifier localVerifier = new TableVerifier().withExpectedDir(TableTestUtils.getExpectedDirectory());
+            localVerifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+        });
+    }
+
+    @Test
+    void multiTableSuccess() {
         this.verifier.starting(this.description.get());
         this.verifier.verify(
                 TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
@@ -219,86 +244,98 @@ public class TableVerifierTest {
         this.verifier.succeeded(this.description.get());
     }
 
-    @Test(expected = AssertionError.class)
-    public void multiTableFailure1() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify(
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void multiTableFailure2() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify(
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void multiTableMissingTable() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify(
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void multiTableSurplusTable() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify(
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL),
-                TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
+    @Test
+    void multiTableFailure1() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify(
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
+        });
     }
 
     @Test
-    public void multiVerifySuccess() {
+    void multiTableFailure2() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify(
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
+        });
+    }
+
+    @Test
+    void multiTableMissingTable() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify(
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL));
+        });
+    }
+
+    @Test
+    void multiTableSurplusTable() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify(
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL),
+                    TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
+        });
+    }
+
+    @Test
+    void multiVerifySuccess() {
         this.verifier.starting(this.description.get());
         this.verifier.verify("table1", TableTestUtils.ACTUAL);
         this.verifier.verify("table2", TableTestUtils.ACTUAL_2);
         this.verifier.succeeded(this.description.get());
     }
 
-    @Test(expected = AssertionError.class)
-    public void multiVerifySurplus() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify("table1", TableTestUtils.ACTUAL);
-        this.verifier.verify("table2", TableTestUtils.ACTUAL_2);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void multiVerifyMissing() {
-        this.verifier.starting(this.description.get());
-        this.verifier.verify("table1", TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+    @Test
+    void multiVerifySurplus() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify("table1", TableTestUtils.ACTUAL);
+            this.verifier.verify("table2", TableTestUtils.ACTUAL_2);
+        });
     }
 
     @Test
-    public void onFailedCalledWhenMissingTable() {
+    void multiVerifyMissing() {
+        assertThrows(AssertionError.class, () -> {
+            this.verifier.starting(this.description.get());
+            this.verifier.verify("table1", TableTestUtils.ACTUAL);
+            this.verifier.succeeded(this.description.get());
+        });
+    }
+
+    @Test
+    void onFailedCalledWhenMissingTable() {
         TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
         this.verifier.withLifecycleEventHandler(handler);
         this.verifier.starting(this.description.get());
         this.verifier.verify("table1", TableTestUtils.ACTUAL);
         TableTestUtils.assertAssertionError(() -> verifier.succeeded(description.get()));
-        Assert.assertEquals("started failed ", handler.lifecycle);
+        assertEquals("started failed ", handler.lifecycle);
     }
 
     @Test
-    public void exceptionHandlerTest() {
+    void exceptionHandlerTest() {
         final RuntimeException exception = new RuntimeException();
         final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         ExceptionHandler exceptionHandler = (outputFile, throwable) -> {
-            Assert.assertTrue(outputFile.exists());
-            Assert.assertSame(exception, throwable);
+            assertTrue(outputFile.exists());
+            assertSame(exception, throwable);
             atomicBoolean.set(true);
         };
         this.verifier.withExceptionHandler(exceptionHandler).starting(this.description.get());
         this.verifier.failed(exception, this.description.get());
-        Assert.assertTrue(atomicBoolean.get());
+        assertTrue(atomicBoolean.get());
     }
 
     @Test
-    public void withoutPartialMatchTimeout() {
+    void withoutPartialMatchTimeout() {
         this.verifier.starting(this.description.get());
         this.verifier.withoutPartialMatchTimeout().verify("table1", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
@@ -317,14 +354,14 @@ public class TableVerifierTest {
     };
 
     @Test
-    public void actualAdapter() {
+    void actualAdapter() {
         this.verifier.starting(this.description.get());
         this.verifier.withActualAdapter(ACTUAL_ADAPTER).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 
     @Test
-    public void actualAdapterWithTableNotToAdapt() {
+    void actualAdapterWithTableNotToAdapt() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withActualAdapter(ACTUAL_ADAPTER)
@@ -335,11 +372,11 @@ public class TableVerifierTest {
     }
 
     @Test
-    public void actualAdapterNoExpectedFile() {
+    void actualAdapterNoExpectedFile() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withActualAdapter(actual -> {
-                    Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
+                    assertSame(TableTestUtils.ACTUAL_2, actual);
                     return TableTestUtils.ACTUAL;
                 })
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL, TableTestUtils.ACTUAL_2);
@@ -359,14 +396,14 @@ public class TableVerifierTest {
     };
 
     @Test
-    public void expectedAdapter() {
+    void expectedAdapter() {
         this.verifier.starting(this.description.get());
         this.verifier.withExpectedAdapter(EXPECTED_ADAPTER).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 
     @Test
-    public void expectedAdapterWithTableNotToAdapt() {
+    void expectedAdapterWithTableNotToAdapt() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withExpectedAdapter(EXPECTED_ADAPTER)
@@ -377,34 +414,36 @@ public class TableVerifierTest {
     }
 
     @Test
-    public void expectedAdapterNoExpectedFile() {
+    void expectedAdapterNoExpectedFile() {
         this.verifier.starting(this.description.get());
         this.verifier
                 .withExpectedAdapter(actual -> {
-                    Assert.assertSame(TableTestUtils.ACTUAL_2, actual);
+                    assertSame(TableTestUtils.ACTUAL_2, actual);
                     return TableTestUtils.ACTUAL;
                 })
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
     }
 
-    @Test(expected = AssertionError.class)
-    public void rebaseLifecycle() {
-        TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
-        TableVerifier watcher =
-                new TableVerifier().withLifecycleEventHandler(handler).withRebase();
-        try {
-            watcher.succeeded(this.description.get());
-        } finally {
-            Assert.assertEquals("succeeded ", handler.lifecycle);
-        }
+    @Test
+    void rebaseLifecycle() {
+        assertThrows(AssertionError.class, () -> {
+            TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
+            TableVerifier watcher =
+                    new TableVerifier().withLifecycleEventHandler(handler).withRebase();
+            try {
+                watcher.succeeded(this.description.get());
+            } finally {
+                assertEquals("succeeded ", handler.lifecycle);
+            }
+        });
     }
 
     @Test
-    public void rebaseAccessor() {
+    void rebaseAccessor() {
         TableVerifier tableVerifier = new TableVerifier();
-        Assert.assertFalse(tableVerifier.isRebasing());
-        Assert.assertTrue(tableVerifier.withRebase().isRebasing());
+        assertFalse(tableVerifier.isRebasing());
+        assertTrue(tableVerifier.withRebase().isRebasing());
     }
 
     private static class TestLifecycleEventHandler implements LifecycleEventHandler {

@@ -16,6 +16,8 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import com.gs.tablasco.verify.ListVerifiableTable;
 import java.io.*;
@@ -27,7 +29,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.junit.Assert;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.w3c.dom.Document;
@@ -162,6 +163,6 @@ public class TableTestUtils {
         } catch (AssertionError e) {
             assertionError = e;
         }
-        Assert.assertNotNull("Expected AssertionError", assertionError);
+        assertNotNull(assertionError, "Expected AssertionError");
     }
 }

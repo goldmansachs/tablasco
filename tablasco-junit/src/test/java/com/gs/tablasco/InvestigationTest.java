@@ -16,37 +16,43 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.gs.tablasco.investigation.Investigation;
 import com.gs.tablasco.investigation.InvestigationLevel;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class InvestigationTest {
     @Rule
     public final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
-    @Test(expected = IllegalArgumentException.class)
-    public void keyColumnMismatch() {
-        Investigation investigation = new SimpleInvestigation(
-                "Table", TableTestUtils.createTable(2, "A", "K"), TableTestUtils.createTable(2, "A", "X"));
-        this.tableVerifier.investigate(investigation);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void noOtherColumnsMatch() {
-        Investigation investigation = new SimpleInvestigation(
-                "Table", TableTestUtils.createTable(2, "A", "K"), TableTestUtils.createTable(2, "B", "K"));
-        this.tableVerifier.investigate(investigation);
+    @Test
+    void keyColumnMismatch() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Investigation investigation = new SimpleInvestigation(
+                    "Table", TableTestUtils.createTable(2, "A", "K"), TableTestUtils.createTable(2, "A", "X"));
+            this.tableVerifier.investigate(investigation);
+        });
     }
 
     @Test
-    public void investigateFailure() throws IOException {
+    void noOtherColumnsMatch() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Investigation investigation = new SimpleInvestigation(
+                    "Table", TableTestUtils.createTable(2, "A", "K"), TableTestUtils.createTable(2, "B", "K"));
+            this.tableVerifier.investigate(investigation);
+        });
+    }
+
+    @Test
+    void investigateFailure() throws IOException {
         Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
                         new SimpleInvestigationLevel(
@@ -70,7 +76,7 @@ public class InvestigationTest {
                 throw e;
             }
         }
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata">
@@ -135,7 +141,7 @@ public class InvestigationTest {
     }
 
     @Test
-    public void missingSurplusColumns() throws IOException {
+    void missingSurplusColumns() throws IOException {
         Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
                         new SimpleInvestigationLevel(
@@ -165,7 +171,7 @@ public class InvestigationTest {
                 throw e;
             }
         }
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata">
@@ -268,7 +274,7 @@ public class InvestigationTest {
     }
 
     @Test
-    public void investigateSuccess() throws IOException {
+    void investigateSuccess() throws IOException {
         Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
                         new SimpleInvestigationLevel(
@@ -282,7 +288,7 @@ public class InvestigationTest {
                 Arrays.asList((List<Object>) null),
                 100);
         this.tableVerifier.investigate(investigation);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata">
@@ -306,7 +312,7 @@ public class InvestigationTest {
     }
 
     @Test
-    public void investigationFailureIntegerKey() throws IOException {
+    void investigationFailureIntegerKey() throws IOException {
         Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
                         new SimpleInvestigationLevel(
@@ -326,7 +332,7 @@ public class InvestigationTest {
                 throw e;
             }
         }
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata">
@@ -395,7 +401,7 @@ public class InvestigationTest {
     }
 
     @Test
-    public void drilldownLimit() throws IOException {
+    void drilldownLimit() throws IOException {
         Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
                         new SimpleInvestigationLevel(
@@ -415,7 +421,7 @@ public class InvestigationTest {
                 throw e;
             }
         }
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata">
@@ -466,7 +472,7 @@ public class InvestigationTest {
     }
 
     @Test
-    public void drilldownShortCircuit() throws IOException {
+    void drilldownShortCircuit() throws IOException {
         Investigation investigation = new ComplexInvestigation(
                 Arrays.asList(
                         new SimpleInvestigationLevel(
@@ -490,7 +496,7 @@ public class InvestigationTest {
                 throw e;
             }
         }
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata">
@@ -615,7 +621,7 @@ public class InvestigationTest {
 
         @Override
         public InvestigationLevel getNextLevel(List<Object> drilldownKeys) {
-            Assert.assertEquals(this.expectedKeys.get(this.levelIndex), drilldownKeys);
+            assertEquals(this.expectedKeys.get(this.levelIndex), drilldownKeys);
             final int nextTableIndex = this.levelIndex;
             this.levelIndex++;
             return nextTableIndex < this.investigationLevels.size()

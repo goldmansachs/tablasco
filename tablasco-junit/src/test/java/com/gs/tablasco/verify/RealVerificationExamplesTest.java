@@ -16,6 +16,9 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.core.HtmlConfig;
@@ -26,15 +29,14 @@ import com.gs.tablasco.results.parser.ExpectedResultsParser;
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import java.io.File;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class RealVerificationExamplesTest {
+class RealVerificationExamplesTest {
     // can be set to true to obfuscate data before checkin (needs to be reverted back to false or tests will fail)
     private static final boolean OBFUSCATE = false;
 
     @Test
-    public void BsGlReconciliationRegressionTest_usGaapTestsGscmInventoryRecTrue() {
+    void BsGlReconciliationRegressionTest_usGaapTestsGscmInventoryRecTrue() {
         verify(
                 "BsGlReconciliationRegressionTest",
                 "usGaapTestsGscmInventoryRecTrue",
@@ -43,22 +45,22 @@ public class RealVerificationExamplesTest {
     }
 
     @Test
-    public void BswCpsAnalysisRegressionTest_regrBalanceBusinessType() {
+    void BswCpsAnalysisRegressionTest_regrBalanceBusinessType() {
         verify("BswCpsAnalysisRegressionTest", "regrBalanceBusinessType", "results", 483); // was 491
     }
 
     @Test
-    public void JournalCreationRegressionTest_usGaapPnl() {
+    void JournalCreationRegressionTest_usGaapPnl() {
         verify("JournalCreationRegressionTest", "usGaapPnl", "journals", 89789); // was 113840 and 90090
     }
 
     @Test
-    public void RepoNetdownAllocationBswLiteTest_groupByDeskheadAndIncomeFunction() {
+    void RepoNetdownAllocationBswLiteTest_groupByDeskheadAndIncomeFunction() {
         verify("RepoNetdownAllocationBswLiteTest", "groupByDeskheadAndIncomeFunction", "Side-by-side", 36); // was 38
     }
 
     @Test
-    public void UserQueryTestGsBankRegressionTest_gsbLoansCr() {
+    void UserQueryTestGsBankRegressionTest_gsbLoansCr() {
         verify("UserQueryTestGsBankRegressionTest", "gsbLoansCr", "Side-by-side", 8);
     }
 
@@ -83,9 +85,9 @@ public class RealVerificationExamplesTest {
             new RebaseFileWriter(expectedResults.getMetadata(), new String[0], columnComparators, expected)
                     .writeRebasedResults(methodName, expectedTables);
         }
-        Assert.assertFalse("Obfuscation is only to help prepare results for checkin", OBFUSCATE);
-        Assert.assertFalse(actualTables.isEmpty());
-        Assert.assertEquals(actualTables.keySet(), expectedTables.keySet());
+        assertFalse(OBFUSCATE, "Obfuscation is only to help prepare results for checkin");
+        assertFalse(actualTables.isEmpty());
+        assertEquals(actualTables.keySet(), expectedTables.keySet());
         ResultTable verify = new IndexMapTableVerifier(
                         columnComparators, false, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false)
                 .verify(actualTables.get(tableName), expectedTables.get(tableName));
@@ -98,7 +100,7 @@ public class RealVerificationExamplesTest {
         htmlFormatter.appendResults(
                 methodName, Collections.singletonMap(tableName, new SummaryResultTable(verify)), Metadata.newEmpty());
         int failedCells = verify.getTotalCellCount() - verify.getPassedCellCount();
-        Assert.assertEquals(expectedBrokenCells, failedCells);
+        assertEquals(expectedBrokenCells, failedCells);
     }
 
     private static void adaptForObfuscation(Map<String, VerifiableTable> tables, final Obfuscator obfuscator) {

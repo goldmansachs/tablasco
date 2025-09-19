@@ -16,10 +16,12 @@
 
 package com.gs.tablasco;
 
-import org.junit.Assert;
-import org.junit.Before;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CreateActualResultsTest {
     private final TableVerifier verifier =
@@ -28,30 +30,30 @@ public class CreateActualResultsTest {
     @Rule
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         this.verifier.starting(this.description.get());
         this.verifier.getActualFile().delete();
     }
 
     @Test
-    public void testDefault() {
+    void testDefault() {
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
-        Assert.assertTrue(this.verifier.getActualFile().exists());
+        assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testTrue() {
+    void testTrue() {
         this.verifier.withCreateActualResults(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
-        Assert.assertTrue(this.verifier.getActualFile().exists());
+        assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testFalse() {
+    void testFalse() {
         this.verifier.withCreateActualResults(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.succeeded(this.description.get());
-        Assert.assertFalse(this.verifier.getActualFile().exists());
+        assertFalse(this.verifier.getActualFile().exists());
     }
 }

@@ -16,6 +16,9 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,32 +27,31 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 // import com.gs.fw.common.base.exception.CollectedException;
 
-public class ExceptionHtmlTest {
+class ExceptionHtmlTest {
     @Test
-    public void testException() throws IOException {
+    void testException() throws IOException {
         String stackTraceToString = ExceptionHtml.stackTraceToString(
                 new RuntimeException(new IllegalArgumentException(new UnsupportedOperationException())));
         List<Map.Entry<String, List<String>>> stackTraces = getStackLineCount(stackTraceToString);
-        Assert.assertEquals(3, stackTraces.size());
-        Assert.assertEquals(
+        assertEquals(3, stackTraces.size());
+        assertEquals(
                 RuntimeException.class.getName() + ": " + IllegalArgumentException.class.getName() + ": "
                         + UnsupportedOperationException.class.getName(),
                 stackTraces.get(0).getKey());
-        Assert.assertTrue(stackTraces.get(0).getValue().size() > 1);
-        Assert.assertEquals(
+        assertTrue(stackTraces.get(0).getValue().size() > 1);
+        assertEquals(
                 "Caused by: " + IllegalArgumentException.class.getName() + ": "
                         + UnsupportedOperationException.class.getName(),
                 stackTraces.get(1).getKey());
-        Assert.assertTrue(stackTraces.get(1).getValue().size() > 1);
-        Assert.assertEquals(
+        assertTrue(stackTraces.get(1).getValue().size() > 1);
+        assertEquals(
                 "Caused by: " + UnsupportedOperationException.class.getName(),
                 stackTraces.get(2).getKey());
-        Assert.assertTrue(stackTraces.get(2).getValue().size() > 1);
+        assertTrue(stackTraces.get(2).getValue().size() > 1);
     }
 
     private static List<Map.Entry<String, List<String>>> getStackLineCount(String string) throws IOException {

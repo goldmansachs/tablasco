@@ -16,10 +16,11 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HtmlFormattingTest {
     @Rule
@@ -27,11 +28,11 @@ public class HtmlFormattingTest {
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void nonNumericBreak() throws IOException {
+    void nonNumericBreak() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -55,12 +56,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void numericBreak() throws IOException {
+    void numericBreak() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 10.123);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 20.456);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -79,12 +80,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void nonNumericActualNumericExpectedBreak() throws IOException {
+    void nonNumericActualNumericExpectedBreak() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 390.0);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", "A2");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withVarianceThreshold(5.0d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -102,12 +103,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void numericActualNonNumericExpectedBreak() throws IOException {
+    void numericActualNonNumericExpectedBreak() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", "A1");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 48.0);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.1d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -125,11 +126,11 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void outOfOrderColumnPassedCellNonNumeric() throws IOException {
+    void outOfOrderColumnPassedCellNonNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", "A2", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -147,11 +148,11 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void outOfOrderColumnFailedCellNonNumeric() throws IOException {
+    void outOfOrderColumnFailedCellNonNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", "A3", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -170,12 +171,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void outOfOrderColumnPassedCellNumeric() throws IOException {
+    void outOfOrderColumnPassedCellNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 30.78, 25);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", 25, 30.78);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -193,12 +194,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void outOfOrderColumnFailedCellNumeric() throws IOException {
+    void outOfOrderColumnFailedCellNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 30.78, 25);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", 25.3, 30.78);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -218,11 +219,11 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void missingSurplusColumnsNonNumeric() throws IOException {
+    void missingSurplusColumnsNonNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 4", "Col 1", "A2", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -244,12 +245,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void missingSurplusColumnsNumeric() throws IOException {
+    void missingSurplusColumnsNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 30.78, 25);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 4", "Col 1", 26, 30.78);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -271,11 +272,11 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void missingSurplusRowsNonNumeric() throws IOException {
+    void missingSurplusRowsNonNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -299,12 +300,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void missingSurplusRowsNumeric() throws IOException {
+    void missingSurplusRowsNumeric() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", 345.66, 13.0, 56.44, 45.01);
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", 345.63, 12.8, 56.65, 45.31);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.1d).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <table border="1" cellspacing="0">
                         <tr>
@@ -335,10 +336,10 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void assertionSummaryWithSuccess() throws IOException {
+    void assertionSummaryWithSuccess() throws IOException {
         VerifiableTable table = TableTestUtils.createTable(1, "Col 1", "A1");
         this.tableVerifier.withAssertionSummary(true).verify("name", table, table);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>
@@ -367,12 +368,12 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void assertionSummaryWithFailure() throws IOException {
+    void assertionSummaryWithFailure() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withAssertionSummary(true).verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>
@@ -411,13 +412,13 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void assertionSummaryWithMultipleVerify() throws IOException {
+    void assertionSummaryWithMultipleVerify() throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(1, "Col 1", "A1");
         final VerifiableTable table2 = TableTestUtils.createTable(1, "Col 1", "A2");
         this.tableVerifier.withAssertionSummary(true).verify("name1", table1, table1);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withAssertionSummary(true).verify("name2", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>
@@ -470,14 +471,14 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void assertionSummaryWithMissingSurplusTables() throws IOException {
+    void assertionSummaryWithMissingSurplusTables() throws IOException {
         final VerifiableTable table = TableTestUtils.createTable(1, "Col 1", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier
                 .withAssertionSummary(true)
                 .verify(
                         TableTestUtils.toNamedTables("name", table, "name2", table),
                         TableTestUtils.toNamedTables("name", table, "name3", table)));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>
@@ -532,7 +533,7 @@ public class HtmlFormattingTest {
     }
 
     @Test
-    public void assertionSummaryWithHideMatchedRows() throws IOException {
+    void assertionSummaryWithHideMatchedRows() throws IOException {
         final VerifiableTable table1 =
                 TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2", "C1", "C2");
         final VerifiableTable table2 =
@@ -541,7 +542,7 @@ public class HtmlFormattingTest {
                 .withAssertionSummary(true)
                 .withHideMatchedRows(true)
                 .verify("name", table1, table2));
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <body>
                         <div class="metadata"/>

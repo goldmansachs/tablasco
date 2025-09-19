@@ -16,24 +16,24 @@
 
 package com.gs.tablasco.verify;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MetadataTest {
+class MetadataTest {
     @Test
-    public void testMetadataCreatedForRecordingResults() throws Exception {
+    void testMetadataCreatedForRecordingResults() throws Exception {
         Metadata metadata = Metadata.newWithRecordedAt();
         metadata.add("App Server URL", "http://test");
         metadata.add("testKey", "testValue");
         String asString = metadata.toString("#");
-        Assert.assertTrue(asString.contains("#Recorded At#"));
-        Assert.assertTrue(asString.contains("#App Server URL# #http://test#, #testKey# #testValue#"));
+        assertTrue(asString.contains("#Recorded At#"));
+        assertTrue(asString.contains("#App Server URL# #http://test#, #testKey# #testValue#"));
     }
 
     @Test
-    public void testMetadataCreatedForParsingResults() throws Exception {
+    void testMetadataCreatedForParsingResults() throws Exception {
         Metadata metadata = Metadata.newEmpty();
         metadata.add("testKey", "testValue");
         metadata.add("App Server URL", "http://test");

@@ -16,22 +16,23 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import java.util.Arrays;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IndexMapGeneratorTest {
+import java.util.Arrays;
+import org.junit.jupiter.api.Test;
+
+class IndexMapGeneratorTest {
     @Test
-    public void indexOrderIsCorrect() {
+    void indexOrderIsCorrect() {
         IndexMapGenerator<String> generator = new IndexMapGenerator<>(
                 Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J").iterator(),
                 Arrays.asList("F", "G", "H", "I", "J", "K", "L", "M", "N", "O").iterator(),
                 0);
         generator.generate();
-        Assert.assertEquals(Arrays.asList(im(5, 0), im(6, 1), im(7, 2), im(8, 3), im(9, 4)), generator.getMatched());
-        Assert.assertEquals(
+        assertEquals(Arrays.asList(im(5, 0), im(6, 1), im(7, 2), im(8, 3), im(9, 4)), generator.getMatched());
+        assertEquals(
                 Arrays.asList(uim(0, -1), uim(1, -1), uim(2, -1), uim(3, -1), uim(4, -1)), generator.getMissing());
-        Assert.assertEquals(
+        assertEquals(
                 Arrays.asList(uim(-1, 5), uim(-1, 6), uim(-1, 7), uim(-1, 8), uim(-1, 9)), generator.getSurplus());
     }
 

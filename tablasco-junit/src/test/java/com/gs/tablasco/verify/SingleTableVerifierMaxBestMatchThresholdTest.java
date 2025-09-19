@@ -16,16 +16,17 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class SingleTableVerifierMaxBestMatchThresholdTest extends AbstractSingleTableVerifierTest {
     @Override
     protected IndexMapTableVerifier createSingleTableVerifier(ColumnComparators columnComparators) {
@@ -304,7 +305,7 @@ public class SingleTableVerifierMaxBestMatchThresholdTest extends AbstractSingle
     }
 
     private static void addVerification(String testName, List<ResultCell>... rows) {
-        Assert.assertFalse(MAX_BEST_MATCH_THRESHOLD.containsKey(testName));
+        assertFalse(MAX_BEST_MATCH_THRESHOLD.containsKey(testName));
         MAX_BEST_MATCH_THRESHOLD.put(testName, Arrays.asList(rows));
     }
 }

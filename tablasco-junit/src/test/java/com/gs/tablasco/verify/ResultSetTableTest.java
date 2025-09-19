@@ -26,7 +26,7 @@ import java.sql.Types;
 import java.util.Collections;
 import org.h2.tools.SimpleResultSet;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResultSetTableTest {
 
@@ -34,7 +34,7 @@ public class ResultSetTableTest {
     public final TableVerifier tableVerifier = new TableVerifier();
 
     @Test
-    public void create() throws SQLException {
+    void create() throws SQLException {
         SimpleResultSet resultSet = new SimpleResultSet();
         resultSet.addColumn("Name", Types.VARCHAR, 0, 0);
         resultSet.addColumn("Age", Types.INTEGER, 0, 0);

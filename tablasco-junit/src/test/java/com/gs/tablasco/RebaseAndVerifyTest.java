@@ -16,6 +16,10 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import com.gs.tablasco.verify.ListVerifiableTable;
 import java.io.BufferedReader;
@@ -26,10 +30,9 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -58,8 +61,8 @@ public class RebaseAndVerifyTest {
     private File expectedFile;
     private String[] baselineHeaders = new String[] {"foo", "bar"};
 
-    @After
-    public void assertMetadata() throws IOException {
+    @AfterEach
+    void assertMetadata() throws IOException {
         int rebaseMetadataCount = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(this.expectedFile))) {
             String line = reader.readLine();
@@ -70,17 +73,17 @@ public class RebaseAndVerifyTest {
                 line = reader.readLine();
             }
         }
-        Assert.assertEquals(1, rebaseMetadataCount);
+        assertEquals(1, rebaseMetadataCount);
 
         if (this.outputHtml != null) {
             NodeList italics = this.outputHtml.getElementsByTagName("i");
-            Assert.assertEquals(1, italics.getLength());
-            Assert.assertTrue(italics.item(0).getFirstChild().getNodeValue().contains("Metadata Key"));
+            assertEquals(1, italics.getLength());
+            assertTrue(italics.item(0).getFirstChild().getNodeValue().contains("Metadata Key"));
         }
     }
 
     @Test
-    public void rebasingOfMultipleDataTypes() throws Exception {
+    void rebasingOfMultipleDataTypes() throws Exception {
         VerifiableTable table = createTypedTable(
                 "Hello World!",
                 "11000",
@@ -94,16 +97,18 @@ public class RebaseAndVerifyTest {
         this.verifyHtmlCells("Hello World!", "11000", "21,000", "31,000", "41,000", "51,000", "1993-02-16 23:59:00");
     }
 
-    @Test(expected = AssertionError.class)
-    public void toleranceNotAppliedToIntegers() throws Exception {
-        VerifiableTable tableForRebase = createTypedTable(21000.0d, 31000.0f, 41000L, 51000);
-        VerifiableTable tableForVerify = createTypedTable(21003.0d, 31003.0f, 41003L, 51003);
-        this.rebase(Collections.singletonMap("tableName", tableForRebase));
-        this.verify(Collections.singletonMap("tableName", tableForVerify), 5.0d);
+    @Test
+    void toleranceNotAppliedToIntegers() throws Exception {
+        assertThrows(AssertionError.class, () -> {
+            VerifiableTable tableForRebase = createTypedTable(21000.0d, 31000.0f, 41000L, 51000);
+            VerifiableTable tableForVerify = createTypedTable(21003.0d, 31003.0f, 41003L, 51003);
+            this.rebase(Collections.singletonMap("tableName", tableForRebase));
+            this.verify(Collections.singletonMap("tableName", tableForVerify), 5.0d);
+        });
     }
 
     @Test
-    public void specialNumberHandling() throws Exception {
+    void specialNumberHandling() throws Exception {
         VerifiableTable tableForRebase = TableTestUtils.createTable(
                 6,
                 "Double Inf",
@@ -126,7 +131,7 @@ public class RebaseAndVerifyTest {
     }
 
     @Test
-    public void withActualAdapter() throws Exception {
+    void withActualAdapter() throws Exception {
         VerifiableTable table = TableTestUtils.createTable(2, "Key", "Val", "1", ADAPT);
         this.rebase(Collections.singletonMap("tableName", table));
         this.verify(Collections.singletonMap("tableName", table), 1.0d);
@@ -134,7 +139,7 @@ public class RebaseAndVerifyTest {
     }
 
     @Test
-    public void formattingAppliedToAllNumbersButToleranceOnlyToFloatingPoint() throws Exception {
+    void formattingAppliedToAllNumbersButToleranceOnlyToFloatingPoint() throws Exception {
         VerifiableTable tableForRebase = createTypedTable(21000.0d, 31000.0f, 41000L, 51000);
         VerifiableTable tableForVerify = createTypedTable(21003.0d, 31003.0f, 41000L, 51000);
         this.rebase(Collections.singletonMap("tableName", tableForRebase));
@@ -143,25 +148,25 @@ public class RebaseAndVerifyTest {
     }
 
     @Test
-    public void backslashHandling() throws Exception {
+    void backslashHandling() throws Exception {
         VerifiableTable table = createTypedTable("Foo\\Bar");
         this.rebase(Collections.singletonMap("Side-by-side - Nettable\\NonNettable", table));
         this.verify(Collections.singletonMap("Side-by-side - Nettable\\NonNettable", table), 1.0d);
     }
 
     @Test
-    public void tableOrderControlledExternally() throws Exception {
+    void tableOrderControlledExternally() throws Exception {
         Map<String, VerifiableTable> tables = new LinkedHashMap<>();
         tables.put("tableC", createTypedTable("C"));
         tables.put("tableA", createTypedTable("A"));
         tables.put("tableB", createTypedTable("B"));
         this.rebase(tables);
         this.verify(tables, 1.0d);
-        Assert.assertEquals(Arrays.asList("tableC", "tableA", "tableB"), getHtmlTagValues("h2"));
+        assertEquals(Arrays.asList("tableC", "tableA", "tableB"), getHtmlTagValues("h2"));
     }
 
     @Test
-    public void multipleVerifyCalls() throws Exception {
+    void multipleVerifyCalls() throws Exception {
         Map<String, VerifiableTable> tables = new LinkedHashMap<>();
         tables.put("tableC", createTypedTable("C"));
         tables.put("tableA", createTypedTable("A"));
@@ -181,24 +186,24 @@ public class RebaseAndVerifyTest {
         runWatcher.succeeded(this.description.get());
         this.outputHtml = TableTestUtils.parseHtml(runWatcher.getOutputFile());
 
-        Assert.assertEquals(Arrays.asList("tableC", "tableA", "tableB"), getHtmlTagValues("h2"));
+        assertEquals(Arrays.asList("tableC", "tableA", "tableB"), getHtmlTagValues("h2"));
     }
 
     @Test
-    public void withExcludeSvnHeadersInExpectedResults() throws Exception {
+    void withExcludeSvnHeadersInExpectedResults() throws Exception {
         this.baselineHeaders = null;
         VerifiableTable table = TableTestUtils.createTable(2, "Key", "Val", "1", "A");
         this.rebase(Collections.singletonMap("tableName", table));
         try (BufferedReader reader = new BufferedReader(new FileReader(this.expectedFile))) {
             String firstLine = reader.readLine();
-            Assert.assertTrue(firstLine.startsWith("Metadata"));
+            assertTrue(firstLine.startsWith("Metadata"));
         }
         this.verify(Collections.singletonMap("tableName", table), 1.0d);
         this.verifyHtmlCells("1", "A");
     }
 
     @Test
-    public void svnHeadersAreIgnoredByReader() throws Exception {
+    void svnHeadersAreIgnoredByReader() throws Exception {
         VerifiableTable table = TableTestUtils.createTable(2, "Key", "Val", "1", "A");
         this.rebase(Collections.singletonMap("tableName", table));
         this.baselineHeaders = null;
@@ -207,7 +212,7 @@ public class RebaseAndVerifyTest {
     }
 
     private void verifyHtmlCells(String... expectedHtml) {
-        Assert.assertEquals(Arrays.asList(expectedHtml), getHtmlTagValues("td"));
+        assertEquals(Arrays.asList(expectedHtml), getHtmlTagValues("td"));
     }
 
     private void rebase(Map<String, VerifiableTable> actualForRebasing) {

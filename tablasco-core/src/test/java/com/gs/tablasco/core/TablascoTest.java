@@ -1,9 +1,12 @@
 package com.gs.tablasco.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.gs.tablasco.NamedTable;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ListVerifiableTable;
 import com.gs.tablasco.verify.ResultTable;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,10 +14,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class TablascoTest {
 
@@ -23,17 +24,17 @@ public class TablascoTest {
     private static final VerifiableTable T2 = new ListVerifiableTable(
             Arrays.asList("key", "value", "surplus"), Collections.singletonList(Arrays.asList("a", 2, "x")));
 
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public File temporaryFolder;
 
     @Test
-    public void loadBaseline() {}
+    void loadBaseline() {}
 
     @Test
-    public void saveBaseline() {}
+    void saveBaseline() {}
 
     @Test
-    public void verifyTables() throws IOException {
+    void verifyTables() throws IOException {
         Tablasco tablasco = new Tablasco(
                 new VerifierConfig().withIgnoreSurplusColumns(),
                 new HtmlConfig().withHideMatchedColumns(true),
@@ -41,9 +42,9 @@ public class TablascoTest {
         Map<String, ResultTable> verifiedTables = tablasco.verifyTables(
                 Collections.singletonList(new NamedTable("table1", T1)),
                 Collections.singletonList(new NamedTable("table1", T2)));
-        Path path = this.temporaryFolder.newFile("results.html").toPath();
+        Path path = File.createTempFile("results.html", null, this.temporaryFolder).toPath();
         tablasco.writeResults(path, verifiedTables);
-        Assert.assertEquals(
+        assertEquals(
                 """
                         <html>
                             <head>
@@ -118,5 +119,5 @@ public class TablascoTest {
     }
 
     @Test
-    public void writeResults() {}
+    void writeResults() {}
 }

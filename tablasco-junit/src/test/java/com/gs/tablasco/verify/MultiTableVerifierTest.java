@@ -16,96 +16,112 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.core.HtmlConfig;
 import com.gs.tablasco.core.VerifierConfig;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.*;
-import org.junit.*;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.Test.None;
+import org.junit.jupiter.api.TestInfo;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class MultiTableVerifierTest {
     private static final CellComparator CELL_COMPARATOR = new ToleranceCellComparator(new CellFormatter(1.0, false));
 
-    @Rule
-    public final TestName testName = new TestName();
+    
+    public final String testName;
 
     private MultiTableVerifier verifier;
     private File resultsFile;
     private int expectedTables;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        if (testMethod.isPresent()) {
+            this.testName = testMethod.get().getName();
+        }
         this.resultsFile = new File(
                 TableTestUtils.getOutputDirectory(),
-                MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName.getMethodName() + ".html");
+                MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName + ".html");
         this.resultsFile.delete();
         this.verifier = new MultiTableVerifier(new VerifierConfig().withVerifyRowOrder(true));
     }
 
-    @After
-    public void tearDown() throws IOException, SAXException, NoSuchMethodException {
+    @AfterEach
+    void tearDown() throws IOException, SAXException, NoSuchMethodException {
         Class<? extends Throwable> expected = this.getClass()
-                .getMethod(this.testName.getMethodName())
+                .getMethod( this.testName)
                 .getAnnotation(Test.class)
                 .expected();
         if (Test.None.class.equals(expected)) {
-            Assert.assertTrue(this.resultsFile.exists());
+            assertTrue(this.resultsFile.exists());
             Document html = TableTestUtils.parseHtml(this.resultsFile);
-            Assert.assertEquals(
+            assertEquals(
                     this.expectedTables, html.getElementsByTagName("table").getLength());
         }
     }
 
     @Test
-    public void missingTable() {
+    void missingTable() {
         Map<String, ResultTable> results = verifyTables(createTables("assets"), createTables("assets", "liabs"));
-        Assert.assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
-        Assert.assertEquals(newMissingTable(), results.get("liabs").getVerifiedRows());
+        assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
+        assertEquals(newMissingTable(), results.get("liabs").getVerifiedRows());
         this.expectedTables = 2;
     }
 
     @Test
-    public void surplusTable() {
+    void surplusTable() {
         Map<String, ResultTable> results = this.verifyTables(createTables("assets", "liabs"), createTables("liabs"));
-        Assert.assertEquals(newSurplusTable(), results.get("assets").getVerifiedRows());
-        Assert.assertEquals(newPassTable(), results.get("liabs").getVerifiedRows());
+        assertEquals(newSurplusTable(), results.get("assets").getVerifiedRows());
+        assertEquals(newPassTable(), results.get("liabs").getVerifiedRows());
         this.expectedTables = 2;
     }
 
     @Test
-    public void misnamedTable() {
+    void misnamedTable() {
         Map<String, ResultTable> results =
                 this.verifyTables(createTables("assets", "liabs"), createTables("assets", "liabz"));
-        Assert.assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
-        Assert.assertEquals(newSurplusTable(), results.get("liabs").getVerifiedRows());
-        Assert.assertEquals(newMissingTable(), results.get("liabz").getVerifiedRows());
+        assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
+        assertEquals(newSurplusTable(), results.get("liabs").getVerifiedRows());
+        assertEquals(newMissingTable(), results.get("liabz").getVerifiedRows());
         this.expectedTables = 3;
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void noExpectedColumns() {
-        this.verifyTables(
-                Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
-                Collections.singletonMap("table", TableTestUtils.createTable(0)));
+    @Test
+    void noExpectedColumns() {
+        assertThrows(IllegalStateException.class, () -> {
+            this.verifyTables(
+                    Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
+                    Collections.singletonMap("table", TableTestUtils.createTable(0)));
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void noActualColumns() {
-        this.verifyTables(
-                Collections.singletonMap("table", TableTestUtils.createTable(0)),
-                Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")));
+    @Test
+    void noActualColumns() {
+        assertThrows(IllegalStateException.class, () -> {
+            this.verifyTables(
+                    Collections.singletonMap("table", TableTestUtils.createTable(0)),
+                    Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")));
+        });
     }
 
     private Map<String, ResultTable> verifyTables(
             Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults) {
         Map<String, ResultTable> results = this.verifier.verifyTables(expectedResults, actualResults);
         HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlConfig());
-        htmlFormatter.appendResults(this.testName.getMethodName(), results, null);
+        htmlFormatter.appendResults( this.testName, results, null);
         return results;
     }
 
