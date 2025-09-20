@@ -1,0 +1,33 @@
+dynamic-directory: false
+snapshot-name: someRowsMatch_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedRowsTest
+test-method: someRowsMatch
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass multi" colspan="2">1 matched row...</td>
+</tr>
+<tr>
+<td class="pass">B1</td>
+<td class="fail">B2<p>Expected</p>
+<hr/>X2<p>Actual</p>
+</td>
+</tr>
+<tr>
+<td class="pass multi" colspan="2">2 matched rows...</td>
+</tr>
+<tr>
+<td class="pass">E1</td>
+<td class="fail">E2<p>Expected</p>
+<hr/>X2<p>Actual</p>
+</td>
+</tr>
+<tr>
+<td class="pass multi" colspan="2">3 matched rows...</td>
+</tr>
+</table>

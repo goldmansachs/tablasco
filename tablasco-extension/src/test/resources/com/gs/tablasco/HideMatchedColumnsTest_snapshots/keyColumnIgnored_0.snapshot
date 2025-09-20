@@ -1,0 +1,16 @@
+dynamic-directory: false
+snapshot-name: keyColumnIgnored_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedColumnsTest
+test-method: keyColumnIgnored
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass multi" title="2 matched columns">...</th>
+</tr>
+<tr>
+<td class="pass">A</td>
+<td class="pass"> </td>
+</tr>
+</table>

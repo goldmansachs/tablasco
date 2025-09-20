@@ -1,0 +1,22 @@
+dynamic-directory: false
+snapshot-name: failsWithMissingSurplusHeader_0
+snapshot-number: 0
+test-class: com.gs.tablasco.IgnoreMissingAndSurplusTest
+test-method: failsWithMissingSurplusHeader
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="surplus">Col 3<p>Surplus</p>
+</th>
+<th class="missing">Col 2<p>Missing</p>
+</th>
+</tr>
+<tr>
+<td class="pass">B1</td>
+<td class="surplus">B2<p>Surplus</p>
+</td>
+<td class="missing">B2<p>Missing</p>
+</td>
+</tr>
+</table>

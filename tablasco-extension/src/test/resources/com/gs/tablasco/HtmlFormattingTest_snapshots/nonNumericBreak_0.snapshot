@@ -1,0 +1,24 @@
+dynamic-directory: false
+snapshot-name: nonNumericBreak_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: nonNumericBreak
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass">A1</td>
+<td class="fail">A2<p>Expected</p>
+<hr/>A9<p>Actual</p>
+</td>
+</tr>
+<tr>
+<td class="pass">B1</td>
+<td class="fail">B2<p>Expected</p>
+<hr/>B9<p>Actual</p>
+</td>
+</tr>
+</table>

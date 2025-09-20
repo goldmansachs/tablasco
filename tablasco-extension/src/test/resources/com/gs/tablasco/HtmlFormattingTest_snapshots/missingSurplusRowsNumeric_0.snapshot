@@ -1,0 +1,31 @@
+dynamic-directory: false
+snapshot-name: missingSurplusRowsNumeric_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: missingSurplusRowsNumeric
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass number">345.6</td>
+<td class="fail number">13<p>Expected</p>
+<hr/>12.8<p>Actual</p>
+<hr/>0.2 / -1.5%<p>Difference / Variance</p>
+</td>
+</tr>
+<tr>
+<td class="surplus number">56.6<p>Surplus</p>
+</td>
+<td class="surplus number">45.3<p>Surplus</p>
+</td>
+</tr>
+<tr>
+<td class="missing number">56.4<p>Missing</p>
+</td>
+<td class="missing number">45<p>Missing</p>
+</td>
+</tr>
+</table>

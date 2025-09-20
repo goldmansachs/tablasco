@@ -1,0 +1,19 @@
+dynamic-directory: false
+snapshot-name: matchedTablesAreHidden_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedTablesTest
+test-method: matchedTablesAreHidden
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col</th>
+</tr>
+<tr>
+<td class="surplus">B<p>Surplus</p>
+</td>
+</tr>
+<tr>
+<td class="missing">A<p>Missing</p>
+</td>
+</tr>
+</table>

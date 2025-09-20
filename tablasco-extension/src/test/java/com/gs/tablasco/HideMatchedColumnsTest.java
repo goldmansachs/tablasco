@@ -16,81 +16,43 @@
 
 package com.gs.tablasco;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.gs.tablasco.verify.KeyedVerifiableTableAdapter;
+import de.skuzzle.test.snapshots.Snapshot;
+import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(TablascoExtension.class)
+@EnableSnapshotTests
 public class HideMatchedColumnsTest {
 
     public final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedColumns(true);
 
     @Test
-    void allColumnsMatch() throws IOException {
+    void allColumnsMatch(Snapshot snapshot) throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
-        assertEquals(
-                """
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        </tr>
-                        <tr>
-                        <td class="pass">\u00A0</td>
-                        </tr>
-                        <tr>
-                        <td class="pass">\u00A0</td>
-                        </tr>
-                        </table>""",
-                TableTestUtils.getHtml(this.tableVerifier, "table"));
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 
     @Test
-    void missingAndSurplusRows() throws IOException {
+    void missingAndSurplusRows(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3");
         final VerifiableTable table2 = TableTestUtils.createTable(
                 3, "Col 1", "Col 2", "Col 3", "B1", "B2", "B9", "C1", "C2", "C9", "D1", "D2", "D3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        assertEquals(
-                """
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        <th class="pass">Col 3</th>
-                        </tr>
-                        <tr>
-                        <td class="missing">\u00A0</td>
-                        <td class="missing">A3<p>Missing</p>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td class="pass">\u00A0</td>
-                        <td class="fail">B3<p>Expected</p>
-                        <hr/>B9<p>Actual</p>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td class="pass">\u00A0</td>
-                        <td class="fail">C3<p>Expected</p>
-                        <hr/>C9<p>Actual</p>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td class="surplus">\u00A0</td>
-                        <td class="surplus">D3<p>Surplus</p>
-                        </td>
-                        </tr>
-                        </table>""",
-                TableTestUtils.getHtml(this.tableVerifier, "table"));
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 
     @Test
-    void multiMatchedColumns() throws IOException {
+    void multiMatchedColumns(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "A",
                 "A", "A", "B", "B", "B", "B", "B", "B", "B", "B");
@@ -98,60 +60,23 @@ public class HideMatchedColumnsTest {
                 8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "X",
                 "A", "A", "B", "B", "X", "B", "B", "B", "B", "B");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        assertEquals(
-                """
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        <th class="pass">Col 3</th>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        <th class="pass">Col 6</th>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        </tr>
-                        <tr>
-                        <td class="pass">\u00A0</td>
-                        <td class="pass">A</td>
-                        <td class="pass">\u00A0</td>
-                        <td class="fail">A<p>Expected</p>
-                        <hr/>X<p>Actual</p>
-                        </td>
-                        <td class="pass">\u00A0</td>
-                        </tr>
-                        <tr>
-                        <td class="pass">\u00A0</td>
-                        <td class="fail">B<p>Expected</p>
-                        <hr/>X<p>Actual</p>
-                        </td>
-                        <td class="pass">\u00A0</td>
-                        <td class="pass">B</td>
-                        <td class="pass">\u00A0</td>
-                        </tr>
-                        </table>""",
-                TableTestUtils.getHtml(this.tableVerifier, "table"));
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 
     @Test
-    void keyColumnIgnored() throws IOException {
+    void keyColumnIgnored(Snapshot snapshot) throws IOException {
         VerifiableTable table = new KeyedVerifiableTableAdapter(
                 TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
         this.tableVerifier.verify("name", table, table);
-        assertEquals(
-                """
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass">Col 1</th>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        </tr>
-                        <tr>
-                        <td class="pass">A</td>
-                        <td class="pass">\u00A0</td>
-                        </tr>
-                        </table>""",
-                TableTestUtils.getHtml(this.tableVerifier, "table"));
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 
     @Test
-    void matchedRowsAndColumns() throws IOException {
+    void matchedRowsAndColumns(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(
                 4, "Col 1", "Col 2", "Col 3", "Col 3", "A", "A", "A", "A", "B", "B", "B", "B", "C", "C", "C", "C", "D",
                 "D", "D", "D");
@@ -160,32 +85,8 @@ public class HideMatchedColumnsTest {
                 "D", "D", "D");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
-        assertEquals(
-                """
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass">Col 1</th>
-                        <th class="pass multi" title="2 matched columns">...</th>
-                        <th class="pass">Col 3</th>
-                        </tr>
-                        <tr>
-                        <td class="pass">A</td>
-                        <td class="pass">\u00A0</td>
-                        <td class="fail">A<p>Expected</p>
-                        <hr/>X<p>Actual</p>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td class="pass multi" colspan="4">2 matched rows...</td>
-                        </tr>
-                        <tr>
-                        <td class="fail">D<p>Expected</p>
-                        <hr/>X<p>Actual</p>
-                        </td>
-                        <td class="pass">\u00A0</td>
-                        <td class="pass">D</td>
-                        </tr>
-                        </table>""",
-                TableTestUtils.getHtml(this.tableVerifier, "table"));
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 }

@@ -1,0 +1,30 @@
+dynamic-directory: false
+snapshot-name: matchedRowsAndColumns_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedColumnsTest
+test-method: matchedRowsAndColumns
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass multi" title="2 matched columns">...</th>
+<th class="pass">Col 3</th>
+</tr>
+<tr>
+<td class="pass">A</td>
+<td class="pass"> </td>
+<td class="fail">A<p>Expected</p>
+<hr/>X<p>Actual</p>
+</td>
+</tr>
+<tr>
+<td class="pass multi" colspan="4">2 matched rows...</td>
+</tr>
+<tr>
+<td class="fail">D<p>Expected</p>
+<hr/>X<p>Actual</p>
+</td>
+<td class="pass"> </td>
+<td class="pass">D</td>
+</tr>
+</table>

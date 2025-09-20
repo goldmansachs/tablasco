@@ -1,0 +1,19 @@
+dynamic-directory: false
+snapshot-name: outOfOrderColumnFailedCellNonNumeric_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: outOfOrderColumnFailedCellNonNumeric
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="outoforder">Col 2<p>Out of order</p>
+</th>
+<th class="pass">Col 1</th>
+</tr>
+<tr>
+<td class="fail">A2<p>Expected</p>
+<hr/>A3<p>Actual</p>
+</td>
+<td class="pass">A1</td>
+</tr>
+</table>

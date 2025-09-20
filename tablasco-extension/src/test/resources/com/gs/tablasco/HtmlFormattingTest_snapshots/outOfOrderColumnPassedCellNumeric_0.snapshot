@@ -1,0 +1,18 @@
+dynamic-directory: false
+snapshot-name: outOfOrderColumnPassedCellNumeric_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: outOfOrderColumnPassedCellNumeric
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="outoforder">Col 2<p>Out of order</p>
+</th>
+<th class="pass">Col 1</th>
+</tr>
+<tr>
+<td class="outoforder number">25<p>Out of order</p>
+</td>
+<td class="pass number">30.78</td>
+</tr>
+</table>

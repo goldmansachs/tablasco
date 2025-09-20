@@ -1,0 +1,24 @@
+dynamic-directory: false
+snapshot-name: missingSurplusRowsNonNumeric_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: missingSurplusRowsNonNumeric
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="surplus">C1<p>Surplus</p>
+</td>
+<td class="surplus">C2<p>Surplus</p>
+</td>
+</tr>
+<tr>
+<td class="missing">A1<p>Missing</p>
+</td>
+<td class="missing">A2<p>Missing</p>
+</td>
+</tr>
+</table>

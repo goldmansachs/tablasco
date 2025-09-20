@@ -41,6 +41,11 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.skuzzle.test</groupId>
+            <artifactId>snapshot-tests-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

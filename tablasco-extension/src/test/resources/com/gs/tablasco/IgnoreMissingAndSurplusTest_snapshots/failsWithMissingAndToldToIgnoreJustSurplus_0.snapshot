@@ -1,0 +1,22 @@
+dynamic-directory: false
+snapshot-name: failsWithMissingAndToldToIgnoreJustSurplus_0
+snapshot-number: 0
+test-class: com.gs.tablasco.IgnoreMissingAndSurplusTest
+test-method: failsWithMissingAndToldToIgnoreJustSurplus
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="missing">A1<p>Missing</p>
+</td>
+<td class="missing">A2<p>Missing</p>
+</td>
+</tr>
+<tr>
+<td class="pass">B1</td>
+<td class="pass">B2</td>
+</tr>
+</table>

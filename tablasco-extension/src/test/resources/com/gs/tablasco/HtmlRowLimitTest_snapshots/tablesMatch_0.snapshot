@@ -1,0 +1,27 @@
+dynamic-directory: false
+snapshot-name: tablesMatch_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlRowLimitTest
+test-method: tablesMatch
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass">A1</td>
+<td class="pass">A2</td>
+</tr>
+<tr>
+<td class="pass">B1</td>
+<td class="pass">B2</td>
+</tr>
+<tr>
+<td class="pass">C1</td>
+<td class="pass">C2</td>
+</tr>
+<tr>
+<td class="pass multi" colspan="2">2 more rows...</td>
+</tr>
+</table>

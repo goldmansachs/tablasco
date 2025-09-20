@@ -1,0 +1,14 @@
+dynamic-directory: false
+snapshot-name: ignoreTables_0
+snapshot-number: 0
+test-class: com.gs.tablasco.IgnoreTablesTest
+test-method: ignoreTables
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+</tr>
+<tr>
+<td class="pass">A</td>
+</tr>
+</table>

@@ -1,0 +1,11 @@
+dynamic-directory: false
+snapshot-name: assertionSummaryWithMissingSurplusTables_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: assertionSummaryWithMissingSurplusTables
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="fail">2 right, 4 wrong, 33.3% correct</th>
+</tr>
+</table>

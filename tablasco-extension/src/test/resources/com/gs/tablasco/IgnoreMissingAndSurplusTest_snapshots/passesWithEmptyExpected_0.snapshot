@@ -1,0 +1,12 @@
+dynamic-directory: false
+snapshot-name: passesWithEmptyExpected_0
+snapshot-number: 0
+test-class: com.gs.tablasco.IgnoreMissingAndSurplusTest
+test-method: passesWithEmptyExpected
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+</table>

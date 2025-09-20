@@ -1,0 +1,20 @@
+dynamic-directory: false
+snapshot-name: allRowsMatch_0
+snapshot-number: 0
+test-class: com.gs.tablasco.IgnoreMissingAndSurplusTest
+test-method: allRowsMatch
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass">A1</td>
+<td class="pass">A2</td>
+</tr>
+<tr>
+<td class="pass">B1</td>
+<td class="pass">B2</td>
+</tr>
+</table>

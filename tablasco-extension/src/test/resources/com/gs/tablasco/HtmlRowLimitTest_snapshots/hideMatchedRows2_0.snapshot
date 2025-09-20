@@ -1,0 +1,18 @@
+dynamic-directory: false
+snapshot-name: hideMatchedRows2_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlRowLimitTest
+test-method: hideMatchedRows2
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass multi" colspan="2">2 matched rows...</td>
+</tr>
+<tr>
+<td class="fail multi" colspan="2">2 more rows...</td>
+</tr>
+</table>

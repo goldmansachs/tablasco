@@ -16,20 +16,21 @@
 
 package com.gs.tablasco;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import de.skuzzle.test.snapshots.Snapshot;
+import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(TablascoExtension.class)
+@EnableSnapshotTests
 public class IgnoreTablesTest {
 
     public final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    void ignoreTables() throws IOException {
+    void ignoreTables(Snapshot snapshot) throws IOException {
         VerifiableTable tableA = TableTestUtils.createTable(1, "Col 1", "A");
         VerifiableTable tableX = TableTestUtils.createTable(1, "Col 1", "X");
         this.tableVerifier
@@ -38,23 +39,9 @@ public class IgnoreTablesTest {
                         TableTestUtils.toNamedTables("table1", tableA, "table2", tableA, "table3", tableX),
                         TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
 
-        assertEquals(
-                """
-                        <body>
-                        <div class="metadata"/>
-                        <h1>ignoreTables</h1>
-                        <div id="ignoreTables.table2">
-                        <h2>table2</h2>
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass">Col 1</th>
-                        </tr>
-                        <tr>
-                        <td class="pass">A</td>
-                        </tr>
-                        </table>
-                        </div>
-                        </body>""",
-                TableTestUtils.getHtml(this.tableVerifier, "body"));
+        TableTestUtils.getHtml(this.tableVerifier, "body");
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 }

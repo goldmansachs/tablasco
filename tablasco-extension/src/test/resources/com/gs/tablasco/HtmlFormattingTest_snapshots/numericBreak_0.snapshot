@@ -1,0 +1,19 @@
+dynamic-directory: false
+snapshot-name: numericBreak_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: numericBreak
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="pass">A</td>
+<td class="fail number">10.12<p>Expected</p>
+<hr/>20.46<p>Actual</p>
+<hr/>-10.33 / 102.07%<p>Difference / Variance</p>
+</td>
+</tr>
+</table>

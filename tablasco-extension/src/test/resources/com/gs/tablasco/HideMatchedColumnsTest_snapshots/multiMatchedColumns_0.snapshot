@@ -1,0 +1,33 @@
+dynamic-directory: false
+snapshot-name: multiMatchedColumns_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedColumnsTest
+test-method: multiMatchedColumns
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass multi" title="2 matched columns">...</th>
+<th class="pass">Col 3</th>
+<th class="pass multi" title="2 matched columns">...</th>
+<th class="pass">Col 6</th>
+<th class="pass multi" title="2 matched columns">...</th>
+</tr>
+<tr>
+<td class="pass"> </td>
+<td class="pass">A</td>
+<td class="pass"> </td>
+<td class="fail">A<p>Expected</p>
+<hr/>X<p>Actual</p>
+</td>
+<td class="pass"> </td>
+</tr>
+<tr>
+<td class="pass"> </td>
+<td class="fail">B<p>Expected</p>
+<hr/>X<p>Actual</p>
+</td>
+<td class="pass"> </td>
+<td class="pass">B</td>
+<td class="pass"> </td>
+</tr>
+</table>

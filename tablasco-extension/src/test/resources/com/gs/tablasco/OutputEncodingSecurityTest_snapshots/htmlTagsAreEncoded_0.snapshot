@@ -1,0 +1,22 @@
+dynamic-directory: false
+snapshot-name: htmlTagsAreEncoded_0
+snapshot-number: 0
+test-class: com.gs.tablasco.OutputEncodingSecurityTest
+test-method: htmlTagsAreEncoded
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col</th>
+</tr>
+<tr>
+<td class="pass">&lt;script language="javascript"&gt;alert("boo")&lt;/script&gt;</td>
+</tr>
+<tr>
+<td class="surplus">&lt;script language="javascript"&gt;alert("foo")&lt;/script&gt;<p>Surplus</p>
+</td>
+</tr>
+<tr>
+<td class="missing">&lt;script language="javascript"&gt;alert("boo")&lt;/script&gt;<p>Missing</p>
+</td>
+</tr>
+</table>

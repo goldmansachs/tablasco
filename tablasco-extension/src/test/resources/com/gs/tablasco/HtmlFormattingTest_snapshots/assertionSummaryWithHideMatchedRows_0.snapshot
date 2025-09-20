@@ -1,0 +1,11 @@
+dynamic-directory: false
+snapshot-name: assertionSummaryWithHideMatchedRows_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: assertionSummaryWithHideMatchedRows
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="fail">7 right, 1 wrong, 87.5% correct</th>
+</tr>
+</table>

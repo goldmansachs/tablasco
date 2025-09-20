@@ -1,0 +1,17 @@
+dynamic-directory: false
+snapshot-name: allColumnsMatch_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedColumnsTest
+test-method: allColumnsMatch
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass multi" title="2 matched columns">...</th>
+</tr>
+<tr>
+<td class="pass"> </td>
+</tr>
+<tr>
+<td class="pass"> </td>
+</tr>
+</table>

@@ -1,0 +1,11 @@
+dynamic-directory: false
+snapshot-name: assertionSummaryWithMultipleVerify_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: assertionSummaryWithMultipleVerify
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">2 right, 0 wrong, 100.0% correct</th>
+</tr>
+</table>

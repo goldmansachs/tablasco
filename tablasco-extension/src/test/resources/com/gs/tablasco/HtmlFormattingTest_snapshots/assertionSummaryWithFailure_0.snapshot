@@ -1,0 +1,11 @@
+dynamic-directory: false
+snapshot-name: assertionSummaryWithFailure_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HtmlFormattingTest
+test-method: assertionSummaryWithFailure
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="fail">4 right, 2 wrong, 66.6% correct</th>
+</tr>
+</table>

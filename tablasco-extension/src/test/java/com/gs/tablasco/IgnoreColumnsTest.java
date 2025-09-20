@@ -16,38 +16,30 @@
 
 package com.gs.tablasco;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import de.skuzzle.test.snapshots.Snapshot;
+import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(TablascoExtension.class)
+@EnableSnapshotTests
 public class IgnoreColumnsTest {
 
     public final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    void ignoreColumns() throws IOException {
+    void ignoreColumns(Snapshot snapshot) throws IOException {
         VerifiableTable table1 =
                 TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "A2", "A3", "A4");
         VerifiableTable table2 =
                 TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "XX", "A3", "XX");
         this.tableVerifier.withIgnoreColumns("Col 2", "Col 4").verify("name", table1, table2);
 
-        assertEquals(
-                """
-                        <table border="1" cellspacing="0">
-                        <tr>
-                        <th class="pass">Col 1</th>
-                        <th class="pass">Col 3</th>
-                        </tr>
-                        <tr>
-                        <td class="pass">A1</td>
-                        <td class="pass">A3</td>
-                        </tr>
-                        </table>""",
-                TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier, "table");
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
+                .asText()
+                .matchesSnapshotText();
     }
 }

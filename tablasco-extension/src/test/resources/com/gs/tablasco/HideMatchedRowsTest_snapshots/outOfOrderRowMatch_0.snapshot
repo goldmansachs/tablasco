@@ -1,0 +1,21 @@
+dynamic-directory: false
+snapshot-name: outOfOrderRowMatch_0
+snapshot-number: 0
+test-class: com.gs.tablasco.HideMatchedRowsTest
+test-method: outOfOrderRowMatch
+
+<table border="1" cellspacing="0">
+<tr>
+<th class="pass">Col 1</th>
+<th class="pass">Col 2</th>
+</tr>
+<tr>
+<td class="outoforder">B1<p>Out of order</p>
+</td>
+<td class="outoforder">B2<p>Out of order</p>
+</td>
+</tr>
+<tr>
+<td class="pass multi" colspan="2">1 matched row...</td>
+</tr>
+</table>
