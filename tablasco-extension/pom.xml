@@ -9,11 +9,11 @@
         <artifactId>tablasco</artifactId>
         <version>2.5.0</version>
     </parent>
-    <artifactId>tablasco-junit</artifactId>
+    <artifactId>tablasco-extension</artifactId>
     <version>2.5.0</version>
 
-    <name>Tablasco JUnit</name>
-    <description>Tablasco is a JUnit rule that adds table verification to your unit tests</description>
+    <name>Tablasco JUnit 5 Extension</name>
+    <description>Tablasco is a JUnit extension that adds table verification to your unit tests</description>
 
     <dependencies>
         <dependency>

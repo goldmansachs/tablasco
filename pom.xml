@@ -11,7 +11,7 @@
 
     <modules>
         <module>tablasco-core</module>
-        <module>tablasco-junit</module>
+        <module>tablasco-extension</module>
     </modules>
 
     <name>Tablasco</name>
