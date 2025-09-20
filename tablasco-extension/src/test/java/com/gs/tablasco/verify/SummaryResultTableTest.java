@@ -52,18 +52,18 @@ class SummaryResultTableTest {
         SummaryResultTable table1 = new SummaryResultTable(new ResultTable(
                 new boolean[2],
                 Arrays.asList(
-                        Arrays.asList(ResultCell.createMatchedCell(cellComparator, "Key", "Val")),
-                        Arrays.asList(ResultCell.createMatchedCell(cellComparator, "A", "A")))));
+                        List.of(ResultCell.createMatchedCell(cellComparator, "Key", "Val")),
+                        List.of(ResultCell.createMatchedCell(cellComparator, "A", "A")))));
         SummaryResultTable table2 = new SummaryResultTable(new ResultTable(
                 new boolean[2],
                 Arrays.asList(
-                        Arrays.asList(ResultCell.createMatchedCell(cellComparator, "Key", "Val")),
-                        Arrays.asList(ResultCell.createMatchedCell(cellComparator, "A", "B")))));
+                        List.of(ResultCell.createMatchedCell(cellComparator, "Key", "Val")),
+                        List.of(ResultCell.createMatchedCell(cellComparator, "A", "B")))));
         SummaryResultTable table3 = new SummaryResultTable(new ResultTable(
                 new boolean[2],
                 Arrays.asList(
-                        Arrays.asList(ResultCell.createMatchedCell(cellComparator, "Key", "Val")),
-                        Arrays.asList(ResultCell.createMatchedCell(cellComparator, "A", "B")))));
+                        List.of(ResultCell.createMatchedCell(cellComparator, "Key", "Val")),
+                        List.of(ResultCell.createMatchedCell(cellComparator, "A", "B")))));
         table1.merge(table2);
         table1.merge(table3);
         assertEquals("{0={firstFew=1, totalRows=1}, 31={firstFew=2, totalRows=2}}", asString(table1));

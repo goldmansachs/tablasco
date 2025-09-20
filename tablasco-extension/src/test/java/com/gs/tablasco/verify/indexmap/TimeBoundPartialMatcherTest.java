@@ -18,7 +18,6 @@ package com.gs.tablasco.verify.indexmap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
@@ -26,27 +25,25 @@ import org.junit.jupiter.api.Test;
 class TimeBoundPartialMatcherTest {
     @Test
     void executionTimesOut() {
-        try {
-            PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
-                try {
-                    Thread.sleep(10_000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    fail("Unexpected interrupt");
-                }
-            };
-            new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null);
-            fail("timeout expected");
-        } catch (RuntimeException e) {
-            assertTrue(e.getCause() instanceof TimeoutException);
-        }
+        PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
+            try {
+                Thread.sleep(10_000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                fail("Unexpected interrupt");
+            }
+        };
+        RuntimeException runtimeException = assertThrows(
+                RuntimeException.class, () -> new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null));
+        assertInstanceOf(TimeoutException.class, runtimeException.getCause());
     }
 
     @Test
     void matchingExceptionPropagates() {
         assertThrows(IndexOutOfBoundsException.class, () -> {
-            PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) ->
-                    Collections.singletonList("foo").get(2);
+            PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
+                throw new IndexOutOfBoundsException("Boom");
+            };
             new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
         });
     }
@@ -56,12 +53,10 @@ class TimeBoundPartialMatcherTest {
         PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
             throw new NoSuchMethodError();
         };
-        try {
-            new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
-            fail();
-        } catch (RuntimeException e) {
-            assertTrue(e.getCause() instanceof NoSuchMethodError);
-        }
+        RuntimeException runtimeException =
+                assertThrows(RuntimeException.class, () -> new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE)
+                        .match(null, null, null));
+        assertInstanceOf(NoSuchMethodError.class, runtimeException.getCause());
     }
 
     @Test
