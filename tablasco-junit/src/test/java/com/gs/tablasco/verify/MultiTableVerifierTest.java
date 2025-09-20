@@ -16,9 +16,7 @@
 
 package com.gs.tablasco.verify;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
@@ -27,11 +25,11 @@ import com.gs.tablasco.core.VerifierConfig;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.Test.None;
 import org.junit.jupiter.api.TestInfo;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -39,37 +37,30 @@ import org.xml.sax.SAXException;
 public class MultiTableVerifierTest {
     private static final CellComparator CELL_COMPARATOR = new ToleranceCellComparator(new CellFormatter(1.0, false));
 
-    
-    public final String testName;
+    public String testName;
 
     private MultiTableVerifier verifier;
     private File resultsFile;
     private int expectedTables;
+    private boolean expectingException = false;
 
     @BeforeEach
-    void setUp(TestInfo testInfo) {
+    void setUp(TestInfo testInfo) throws IOException {
         Optional<Method> testMethod = testInfo.getTestMethod();
-        if (testMethod.isPresent()) {
-            this.testName = testMethod.get().getName();
-        }
+        testMethod.ifPresent(method -> this.testName = method.getName());
         this.resultsFile = new File(
                 TableTestUtils.getOutputDirectory(),
                 MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName + ".html");
-        this.resultsFile.delete();
+        Files.deleteIfExists(this.resultsFile.toPath());
         this.verifier = new MultiTableVerifier(new VerifierConfig().withVerifyRowOrder(true));
     }
 
     @AfterEach
-    void tearDown() throws IOException, SAXException, NoSuchMethodException {
-        Class<? extends Throwable> expected = this.getClass()
-                .getMethod( this.testName)
-                .getAnnotation(Test.class)
-                .expected();
-        if (Test.None.class.equals(expected)) {
+    void tearDown() throws IOException, SAXException {
+        if (!expectingException) {
             assertTrue(this.resultsFile.exists());
             Document html = TableTestUtils.parseHtml(this.resultsFile);
-            assertEquals(
-                    this.expectedTables, html.getElementsByTagName("table").getLength());
+            assertEquals(this.expectedTables, html.getElementsByTagName("table").getLength());
         }
     }
 
@@ -101,6 +92,7 @@ public class MultiTableVerifierTest {
 
     @Test
     void noExpectedColumns() {
+        this.expectingException = true;
         assertThrows(IllegalStateException.class, () -> {
             this.verifyTables(
                     Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
@@ -110,6 +102,7 @@ public class MultiTableVerifierTest {
 
     @Test
     void noActualColumns() {
+        this.expectingException = true;
         assertThrows(IllegalStateException.class, () -> {
             this.verifyTables(
                     Collections.singletonMap("table", TableTestUtils.createTable(0)),
@@ -121,7 +114,7 @@ public class MultiTableVerifierTest {
             Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults) {
         Map<String, ResultTable> results = this.verifier.verifyTables(expectedResults, actualResults);
         HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlConfig());
-        htmlFormatter.appendResults( this.testName, results, null);
+        htmlFormatter.appendResults(this.testName, results, null);
         return results;
     }
 

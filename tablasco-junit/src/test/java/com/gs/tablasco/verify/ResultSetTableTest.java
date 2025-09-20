@@ -16,21 +16,18 @@
 
 package com.gs.tablasco.verify;
 
-import com.gs.tablasco.NamedTable;
-import com.gs.tablasco.TableVerifier;
-import com.gs.tablasco.TestTable;
-import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.*;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import org.h2.tools.SimpleResultSet;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class ResultSetTableTest {
 
-    @Rule
     public final TableVerifier tableVerifier = new TableVerifier();
 
     @Test

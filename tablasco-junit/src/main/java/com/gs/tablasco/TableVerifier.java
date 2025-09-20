@@ -23,12 +23,6 @@ import com.gs.tablasco.adapters.TableAdapters;
 import com.gs.tablasco.core.HtmlConfig;
 import com.gs.tablasco.core.VerifierConfig;
 import com.gs.tablasco.files.*;
-import com.gs.tablasco.investigation.Investigation;
-import com.gs.tablasco.investigation.Sherlock;
-import com.gs.tablasco.lifecycle.DefaultExceptionHandler;
-import com.gs.tablasco.lifecycle.DefaultLifecycleEventHandler;
-import com.gs.tablasco.lifecycle.ExceptionHandler;
-import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import com.gs.tablasco.rebase.Rebaser;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.ExpectedResultsLoader;
@@ -45,12 +39,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.junit.AssumptionViolatedException;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
 
 /**
- * A JUnit {@link org.junit.Rule} that can be included in JUnit 4 tests and used for verifying tabular data represented as
+ * A JUnit plugin that can be included in JUnit 4 tests and used for verifying tabular data represented as
  * instances of {@link VerifiableTable}. {@link TableVerifier} can compare actual and expected tables provided by the
  * test or, more commonly, compares actual tables with expected results stored in the filesystem (the baseline). When
  * expected results are stored in the filesystem there are two modes of operation: rebase mode and the default verify
@@ -74,7 +65,7 @@ import org.junit.runner.Description;
  * <p>
  */
 @SuppressWarnings("WeakerAccess")
-public final class TableVerifier extends TestWatcher {
+public final class TableVerifier {
     private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR =
             Executors.newSingleThreadExecutor(runnable -> {
                 Thread thread = new Thread(runnable);
@@ -105,8 +96,6 @@ public final class TableVerifier extends TestWatcher {
     private Future<ExpectedResults> expectedResultsFuture;
     private int verifyCount = 0;
     private boolean summarisedResults = false;
-    private LifecycleEventHandler lifecycleEventHandler = new DefaultLifecycleEventHandler();
-    private ExceptionHandler exceptionHandler = new DefaultExceptionHandler();
 
     /**
      * Returns the same instance of {@link TableVerifier} configured with a fixed expected results directory.
@@ -612,68 +601,21 @@ public final class TableVerifier extends TestWatcher {
         return this;
     }
 
-    /**
-     * Returns the same instance of {@link TableVerifier} configured with a custom LifecycleEventHandler instance.
-     *
-     * @return this
-     */
-    public TableVerifier withLifecycleEventHandler(LifecycleEventHandler lifecycleEventHandler) {
-        this.lifecycleEventHandler = lifecycleEventHandler;
-        return this;
-    }
-
-    /**
-     * Returns the same instance of {@link TableVerifier} configured with a custom ExceptionHandler instance.
-     *
-     * @return this
-     */
-    public TableVerifier withExceptionHandler(ExceptionHandler exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
-        return this;
-    }
-
-    @Override
-    public void starting(Description description) {
+    void starting(Description description) {
         this.description = description;
         if (!this.isRebasing) {
             this.expectedResultsFuture = EXPECTED_RESULTS_LOADER_EXECUTOR.submit(
                     () -> ExpectedResultsCache.getExpectedResults(expectedResultsLoader, getExpectedFile()));
         }
-        this.lifecycleEventHandler.onStarted(description);
     }
 
-    @Override
-    public void succeeded(Description description) {
-        try {
-            if (this.expectedTables != null && !this.expectedTables.isEmpty()) {
-                this.verifyTables(this.expectedTables, new HashMap<>(), this.expectedMetadata);
-            }
-        } catch (AssertionError assertionError) {
-            this.failed(assertionError, description);
-            throw assertionError;
+    void succeeded(Description description) {
+        if (this.expectedTables != null && !this.expectedTables.isEmpty()) {
+            this.verifyTables(this.expectedTables, new HashMap<>(), this.expectedMetadata);
         }
-        this.lifecycleEventHandler.onSucceeded(description);
         if (this.isRebasing) {
             fail("REBASE SUCCESSFUL - failing test in case rebase flag is set by mistake");
         }
-    }
-
-    @Override
-    public void failed(Throwable e, Description description) {
-        if (!(e instanceof AssertionError)) {
-            this.exceptionHandler.onException(this.getOutputFile(), e);
-        }
-        this.lifecycleEventHandler.onFailed(e, description);
-    }
-
-    @Override
-    public void skipped(AssumptionViolatedException e, Description description) {
-        this.lifecycleEventHandler.onSkipped(description);
-    }
-
-    @Override
-    public void finished(Description description) {
-        this.lifecycleEventHandler.onFinished(description);
     }
 
     public File getExpectedFile() {
@@ -884,13 +826,5 @@ public final class TableVerifier extends TestWatcher {
             throw new IllegalArgumentException(
                     "Expected results directory and verification output directory must NOT be the same.");
         }
-    }
-
-    public void investigate(Investigation investigation) {
-        investigate(investigation, this.getOutputFile());
-    }
-
-    public void investigate(Investigation investigation, File outputFile) {
-        new Sherlock().handle(investigation, outputFile);
     }
 }

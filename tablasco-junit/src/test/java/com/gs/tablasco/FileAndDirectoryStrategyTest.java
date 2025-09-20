@@ -21,10 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gs.tablasco.files.DirectoryStrategy;
 import com.gs.tablasco.files.FilePerClassStrategy;
 import java.io.File;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
+@ExtendWith(TablascoExtension.class)
 public class FileAndDirectoryStrategyTest {
     private final TableVerifier verifier = new TableVerifier()
             .withDirectoryStrategy(new DirectoryStrategy() {
@@ -60,7 +62,7 @@ public class FileAndDirectoryStrategyTest {
                 }
             });
 
-    @Rule
+    @RegisterExtension
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     @BeforeEach
@@ -77,8 +79,7 @@ public class FileAndDirectoryStrategyTest {
                         new File(TableTestUtils.getOutputDirectory().getPath(), "actual"),
                         "CustomFileAndDirectoryStrategyTest.txt")
                 .exists());
-        assertTrue(
-                new File(TableTestUtils.getOutputDirectory().getPath(), "CustomFileAndDirectoryStrategyTest.html")
-                        .exists());
+        assertTrue(new File(TableTestUtils.getOutputDirectory().getPath(), "CustomFileAndDirectoryStrategyTest.html")
+                .exists());
     }
 }

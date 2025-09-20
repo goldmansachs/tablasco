@@ -30,10 +30,8 @@ class IndexMapGeneratorTest {
                 0);
         generator.generate();
         assertEquals(Arrays.asList(im(5, 0), im(6, 1), im(7, 2), im(8, 3), im(9, 4)), generator.getMatched());
-        assertEquals(
-                Arrays.asList(uim(0, -1), uim(1, -1), uim(2, -1), uim(3, -1), uim(4, -1)), generator.getMissing());
-        assertEquals(
-                Arrays.asList(uim(-1, 5), uim(-1, 6), uim(-1, 7), uim(-1, 8), uim(-1, 9)), generator.getSurplus());
+        assertEquals(Arrays.asList(uim(0, -1), uim(1, -1), uim(2, -1), uim(3, -1), uim(4, -1)), generator.getMissing());
+        assertEquals(Arrays.asList(uim(-1, 5), uim(-1, 6), uim(-1, 7), uim(-1, 8), uim(-1, 9)), generator.getSurplus());
     }
 
     private static IndexMap im(int expectedIndex, int actualIndex) {

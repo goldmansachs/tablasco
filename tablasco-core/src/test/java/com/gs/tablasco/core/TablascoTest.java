@@ -42,7 +42,8 @@ public class TablascoTest {
         Map<String, ResultTable> verifiedTables = tablasco.verifyTables(
                 Collections.singletonList(new NamedTable("table1", T1)),
                 Collections.singletonList(new NamedTable("table1", T2)));
-        Path path = File.createTempFile("results.html", null, this.temporaryFolder).toPath();
+        Path path =
+                File.createTempFile("results.html", null, this.temporaryFolder).toPath();
         tablasco.writeResults(path, verifiedTables);
         assertEquals(
                 """

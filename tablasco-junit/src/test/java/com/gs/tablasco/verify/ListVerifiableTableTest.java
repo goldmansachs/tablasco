@@ -94,7 +94,8 @@ class ListVerifiableTableTest {
     @Test
     void createHeadersAndList_wrongRowSize() {
         assertThrows(IllegalArgumentException.class, () -> {
-            ListVerifiableTable.create(Arrays.asList("A", "B"), Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4, 5)));
+            ListVerifiableTable.create(
+                    Arrays.asList("A", "B"), Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4, 5)));
         });
     }
 

@@ -20,11 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gs.tablasco.verify.KeyedVerifiableTableAdapter;
 import java.io.IOException;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class HideMatchedColumnsTest {
-    @Rule
+
     public final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedColumns(true);
 

@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class ExpectedResultsLoaderTest implements ExpectedResultsLoader {
-    @Rule
-    public final TableVerifier verifier = new TableVerifier()
+    private final TableVerifier verifier = new TableVerifier()
             .withMavenDirectoryStrategy()
             .withFileStrategy(new FilePerClassStrategy() {
                 @Override

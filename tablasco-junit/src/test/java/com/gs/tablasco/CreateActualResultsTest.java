@@ -19,15 +19,17 @@ package com.gs.tablasco;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
+@ExtendWith(TablascoExtension.class)
 public class CreateActualResultsTest {
     private final TableVerifier verifier =
             new TableVerifier().withMavenDirectoryStrategy().withFilePerMethod();
 
-    @Rule
+    @RegisterExtension
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     @BeforeEach

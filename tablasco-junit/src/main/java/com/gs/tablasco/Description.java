@@ -14,10 +14,24 @@
  * under the License.
  */
 
-package com.gs.tablasco.lifecycle;
+package com.gs.tablasco;
 
-import java.io.File;
+import java.lang.reflect.Method;
 
-public interface ExceptionHandler {
-    void onException(File outputFile, Throwable throwable);
+public class Description {
+    private final Class<?> testClass;
+    private final Method testMethod;
+
+    public Description(Class<?> testClass, Method testMethod) {
+        this.testClass = testClass;
+        this.testMethod = testMethod;
+    }
+
+    public Class<?> getTestClass() {
+        return this.testClass;
+    }
+
+    public String getMethodName() {
+        return this.testMethod.getName();
+    }
 }

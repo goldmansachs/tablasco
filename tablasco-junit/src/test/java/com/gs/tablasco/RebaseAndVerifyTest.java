@@ -16,9 +16,7 @@
 
 package com.gs.tablasco;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import com.gs.tablasco.verify.ListVerifiableTable;
@@ -30,9 +28,9 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -52,7 +50,7 @@ public class RebaseAndVerifyTest {
         }
     };
 
-    @Rule
+    @RegisterExtension
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     private final File expectedDir = new File(TableTestUtils.getOutputDirectory(), "expected");
@@ -125,7 +123,7 @@ public class RebaseAndVerifyTest {
                 Float.NaN);
         this.rebase(Collections.singletonMap("tableName", tableForRebase));
         this.verify(Collections.singletonMap("tableName", tableForRebase), 1.0d);
-        char infinity = '\u221E';
+        char infinity = '∞';
         this.verifyHtmlCells(
                 String.valueOf(infinity), "-" + infinity, "NaN", String.valueOf(infinity), "-" + infinity, "NaN");
     }

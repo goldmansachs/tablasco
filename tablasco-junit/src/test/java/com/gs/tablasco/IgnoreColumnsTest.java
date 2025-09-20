@@ -19,11 +19,12 @@ package com.gs.tablasco;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class IgnoreColumnsTest {
-    @Rule
+
     public final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 

@@ -18,11 +18,12 @@ package com.gs.tablasco;
 
 import java.util.Collections;
 import java.util.Map;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class NoExpectedResultsTest {
-    @Rule
+
     public final TableVerifier verifier = new TableVerifier().withMavenDirectoryStrategy();
 
     @Test

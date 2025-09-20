@@ -16,20 +16,12 @@
 
 package com.gs.tablasco;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.gs.tablasco.lifecycle.ExceptionHandler;
-import com.gs.tablasco.lifecycle.LifecycleEventHandler;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class TableVerifierTest {
     private final TableVerifier verifier = new TableVerifier()
@@ -37,7 +29,7 @@ public class TableVerifierTest {
             .withOutputDir(TableTestUtils.getOutputDirectory())
             .withFilePerClass();
 
-    @Rule
+    @RegisterExtension
     public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
 
     @Test
@@ -311,30 +303,6 @@ public class TableVerifierTest {
     }
 
     @Test
-    void onFailedCalledWhenMissingTable() {
-        TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
-        this.verifier.withLifecycleEventHandler(handler);
-        this.verifier.starting(this.description.get());
-        this.verifier.verify("table1", TableTestUtils.ACTUAL);
-        TableTestUtils.assertAssertionError(() -> verifier.succeeded(description.get()));
-        assertEquals("started failed ", handler.lifecycle);
-    }
-
-    @Test
-    void exceptionHandlerTest() {
-        final RuntimeException exception = new RuntimeException();
-        final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        ExceptionHandler exceptionHandler = (outputFile, throwable) -> {
-            assertTrue(outputFile.exists());
-            assertSame(exception, throwable);
-            atomicBoolean.set(true);
-        };
-        this.verifier.withExceptionHandler(exceptionHandler).starting(this.description.get());
-        this.verifier.failed(exception, this.description.get());
-        assertTrue(atomicBoolean.get());
-    }
-
-    @Test
     void withoutPartialMatchTimeout() {
         this.verifier.starting(this.description.get());
         this.verifier.withoutPartialMatchTimeout().verify("table1", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL);
@@ -426,52 +394,9 @@ public class TableVerifierTest {
     }
 
     @Test
-    void rebaseLifecycle() {
-        assertThrows(AssertionError.class, () -> {
-            TestLifecycleEventHandler handler = new TestLifecycleEventHandler();
-            TableVerifier watcher =
-                    new TableVerifier().withLifecycleEventHandler(handler).withRebase();
-            try {
-                watcher.succeeded(this.description.get());
-            } finally {
-                assertEquals("succeeded ", handler.lifecycle);
-            }
-        });
-    }
-
-    @Test
     void rebaseAccessor() {
         TableVerifier tableVerifier = new TableVerifier();
         assertFalse(tableVerifier.isRebasing());
         assertTrue(tableVerifier.withRebase().isRebasing());
-    }
-
-    private static class TestLifecycleEventHandler implements LifecycleEventHandler {
-        private String lifecycle = "";
-
-        @Override
-        public void onStarted(Description description) {
-            this.lifecycle += "started ";
-        }
-
-        @Override
-        public void onSucceeded(Description description) {
-            this.lifecycle += "succeeded ";
-        }
-
-        @Override
-        public void onFailed(Throwable e, Description description) {
-            this.lifecycle += "failed ";
-        }
-
-        @Override
-        public void onSkipped(Description description) {
-            this.lifecycle += "skipped ";
-        }
-
-        @Override
-        public void onFinished(Description description) {
-            this.lifecycle += "finished";
-        }
     }
 }

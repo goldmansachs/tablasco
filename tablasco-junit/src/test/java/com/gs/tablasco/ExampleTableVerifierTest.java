@@ -18,12 +18,13 @@ package com.gs.tablasco;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class ExampleTableVerifierTest {
-    @Rule
-    public final TableVerifier tableVerifier = new TableVerifier().withMavenDirectoryStrategy();
+
+    private final TableVerifier tableVerifier = new TableVerifier().withMavenDirectoryStrategy();
 
     @Test
     void example() {
@@ -56,31 +57,23 @@ public class ExampleTableVerifierTest {
 
         @Override
         public String getColumnName(int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return "Title";
-                case 1:
-                    return "Year";
-                case 2:
-                    return "User Rank";
-                default:
-                    return "IMDb Rating";
-            }
+            return switch (columnIndex) {
+                case 0 -> "Title";
+                case 1 -> "Year";
+                case 2 -> "User Rank";
+                default -> "IMDb Rating";
+            };
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             Movie row = this.rows.get(rowIndex);
-            switch (columnIndex) {
-                case 0:
-                    return row.title;
-                case 1:
-                    return row.year;
-                case 2:
-                    return row.rank;
-                default:
-                    return row.rating;
-            }
+            return switch (columnIndex) {
+                case 0 -> row.title;
+                case 1 -> row.year;
+                case 2 -> row.rank;
+                default -> row.rating;
+            };
         }
     }
 

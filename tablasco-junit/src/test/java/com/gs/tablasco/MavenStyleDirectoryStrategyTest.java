@@ -17,11 +17,12 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(TablascoExtension.class)
 public class MavenStyleDirectoryStrategyTest {
-    @Rule
+
     public final TableVerifier tableVerifier = new TableVerifier()
             .withFilePerClass()
             .withDirectoryStrategy(new MavenStyleDirectoryStrategy()

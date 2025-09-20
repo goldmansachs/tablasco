@@ -44,8 +44,7 @@ import org.junit.jupiter.api.io.TempDir;
 public abstract class AbstractSingleTableVerifierTest {
     private static final CellComparator CELL_COMPARATOR = new ToleranceCellComparator(new CellFormatter(1.0, true));
 
-    
-    public final String testName;
+    public String testName;
 
     @TempDir
     public File temporaryFolder;
@@ -92,13 +91,12 @@ public abstract class AbstractSingleTableVerifierTest {
         VerifiableTable rebasedExpected = getRebasedExpected();
         List<List<ResultCell>> rebasedActualVerification =
                 verifier.verify(this.actual, rebasedExpected).getVerifiedRows();
-        List<List<ResultCell>> expectedVerification = this.getExpectedVerification( this.testName);
+        List<List<ResultCell>> expectedVerification = this.getExpectedVerification(this.testName);
         this.writeResults("ACTUAL", actualVerification);
         this.writeResults("ACTUAL (REBASE)", rebasedActualVerification);
         this.writeResults("EXPECTED", expectedVerification);
         assertEquals(expectedVerification, actualVerification, "Verification with actual results");
-        assertEquals(
-                expectedVerification, rebasedActualVerification, "Verification with REBASED actual results");
+        assertEquals(expectedVerification, rebasedActualVerification, "Verification with REBASED actual results");
     }
 
     private VerifiableTable getRebasedExpected() {
@@ -123,7 +121,8 @@ public abstract class AbstractSingleTableVerifierTest {
         File outputFile =
                 new File(TableTestUtils.getOutputDirectory(), this.getClass().getSimpleName() + ".html");
         HtmlFormatter htmlFormatter = new HtmlFormatter(outputFile, new HtmlConfig());
-        htmlFormatter.appendResults( this.testName,
+        htmlFormatter.appendResults(
+                this.testName,
                 Collections.singletonMap(
                         tableName, new ResultTable(new boolean[verify.getFirst().size()], verify)),
                 Metadata.newEmpty());
