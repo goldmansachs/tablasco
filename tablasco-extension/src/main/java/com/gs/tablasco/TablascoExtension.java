@@ -18,7 +18,9 @@ package com.gs.tablasco;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -48,7 +50,8 @@ public class TablascoExtension implements BeforeEachCallback, AfterEachCallback 
     }
 
     private static TableVerifier getTableVerifier(ExtensionContext context, Description description) {
-        return Arrays.stream(description.getTestClass().getDeclaredFields())
+        List<TableVerifier> tableVerifiers = Arrays.stream(
+                        description.getTestClass().getDeclaredFields())
                 .filter(field -> field.getType().equals(TableVerifier.class))
                 .map(field -> {
                     try {
@@ -58,7 +61,11 @@ public class TablascoExtension implements BeforeEachCallback, AfterEachCallback 
                         throw new RuntimeException("Failed to set description on Tablasco instance", e);
                     }
                 })
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No TableVerifier field found"));
+                .collect(Collectors.toList());
+        if (tableVerifiers.size() != 1) {
+            throw new IllegalStateException(
+                    "Expected exactly one TableVerifier field, but found: " + tableVerifiers.size());
+        }
+        return tableVerifiers.get(0);
     }
 }

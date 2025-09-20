@@ -18,20 +18,20 @@ package com.gs.tablasco;
 
 import java.lang.reflect.Method;
 
-public class Description {
+class Description {
     private final Class<?> testClass;
     private final Method testMethod;
 
-    public Description(Class<?> testClass, Method testMethod) {
+    Description(Class<?> testClass, Method testMethod) {
         this.testClass = testClass;
         this.testMethod = testMethod;
     }
 
-    public Class<?> getTestClass() {
+    Class<?> getTestClass() {
         return this.testClass;
     }
 
-    public String getMethodName() {
+    String getMethodName() {
         return this.testMethod.getName();
     }
 }

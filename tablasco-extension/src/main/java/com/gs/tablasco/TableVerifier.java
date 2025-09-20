@@ -815,7 +815,8 @@ public final class TableVerifier {
 
     private void runPreVerifyChecks() {
         if (this.description == null) {
-            throw new IllegalStateException("The starting() has not been called. Ensure watcher has @Rule annotation.");
+            throw new IllegalStateException(
+                    "TableVerifier not initialized. Ensure test class is annotated with @ExtendWith(TablascoExtension.class)");
         }
     }
 
