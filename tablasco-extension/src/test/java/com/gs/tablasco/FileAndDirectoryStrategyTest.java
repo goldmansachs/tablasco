@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gs.tablasco.files.DirectoryStrategy;
 import com.gs.tablasco.files.FilePerClassStrategy;
 import java.io.File;
+import java.nio.file.Files;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class FileAndDirectoryStrategyTest {
+    @RegisterExtension
     private final TableVerifier verifier = new TableVerifier()
             .withDirectoryStrategy(new DirectoryStrategy() {
                 @Override
@@ -63,18 +63,18 @@ public class FileAndDirectoryStrategyTest {
             });
 
     @RegisterExtension
-    public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
+    public final TableTestUtils.TestExtensionContext extensionContext = new TableTestUtils.TestExtensionContext();
 
     @BeforeEach
-    void setUp() {
-        this.verifier.starting(this.description.get());
-        this.verifier.getActualFile().delete();
+    void setUp() throws Exception {
+        this.verifier.beforeEach(this.extensionContext.get());
+        Files.deleteIfExists(this.verifier.getActualFile().toPath());
     }
 
     @Test
     void testFiles() {
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
         assertTrue(new File(
                         new File(TableTestUtils.getOutputDirectory().getPath(), "actual"),
                         "CustomFileAndDirectoryStrategyTest.txt")

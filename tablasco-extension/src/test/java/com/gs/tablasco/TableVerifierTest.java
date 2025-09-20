@@ -22,6 +22,7 @@ import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.opentest4j.AssertionFailedError;
 
 public class TableVerifierTest {
     private final TableVerifier verifier = new TableVerifier()
@@ -30,71 +31,71 @@ public class TableVerifierTest {
             .withFilePerClass();
 
     @RegisterExtension
-    public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
+    public final TableTestUtils.TestExtensionContext extensionContext = new TableTestUtils.TestExtensionContext();
 
     @Test
     void validationSuccess() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void validationFailure() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         });
     }
 
     @Test
     void toleranceSuccess() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withTolerance(0.2d)
                 .withVerifyRowOrder(true)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void toleranceSuccessForFirstColumn() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.withTolerance("Age", 0.2d).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void toleranceSuccessForSecondColumn() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.withTolerance("Weight", 0.06d).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void toleranceSuccessForTwoColumns() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withTolerance("Weight", 0.06d)
                 .withTolerance("Age", 0.2d)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void toleranceSuccessWithGeneralCase() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withTolerance("Weight", 0.06d)
                 .withTolerance(1.0d)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void toleranceFailure() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier
                     .withTolerance(0.1d)
                     .withVerifyRowOrder(true)
@@ -105,7 +106,7 @@ public class TableVerifierTest {
     @Test
     void toleranceFailureForTwoColumns() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier
                     .withTolerance("Age", 0.2d)
                     .withTolerance("Weight", 0.06d)
@@ -117,7 +118,7 @@ public class TableVerifierTest {
     @Test
     void toleranceFailureWithGeneralCase() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier
                     .withTolerance("Weight", 0.06d)
                     .withTolerance(1.0d)
@@ -127,28 +128,28 @@ public class TableVerifierTest {
 
     @Test
     void varianceSuccess() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withVarianceThreshold(5.0d)
                 .withVerifyRowOrder(true)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void varianceSuccessForTwoColumns() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withVarianceThreshold("Weight", 1.0d)
                 .withVarianceThreshold("Age", 5.0d)
                 .withVerifyRowOrder(true)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void varianceSuccessWithTolerance() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withVarianceThreshold("Weight", 1.0d)
                 .withVarianceThreshold("Age", 5.0d)
@@ -156,13 +157,13 @@ public class TableVerifierTest {
                 .withTolerance("Weight", 0.06d)
                 .withVerifyRowOrder(true)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_3);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void varianceFailure() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier
                     .withVarianceThreshold(5.0d)
                     .withVerifyRowOrder(true)
@@ -173,7 +174,7 @@ public class TableVerifierTest {
     @Test
     void varianceFailureForTwoColumns() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier
                     .withVarianceThreshold("Age", 5.0d)
                     .withVarianceThreshold("Weight", 1.0d)
@@ -185,7 +186,7 @@ public class TableVerifierTest {
     @Test
     void mismatchedTypesFormatting() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier
                     .withVarianceThreshold(5.0d)
                     .withVerifyRowOrder(true)
@@ -195,18 +196,18 @@ public class TableVerifierTest {
 
     @Test
     void rowOrderSuccess() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withTolerance(1.0)
                 .withVerifyRowOrder(false)
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void rowOrderFailure() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         });
     }
@@ -214,13 +215,13 @@ public class TableVerifierTest {
     @Test
     void expectedAndOutputDirsMustBeDifferent() {
         assertThrows(IllegalArgumentException.class, () -> {
-            this.verifier.withOutputDir(TableTestUtils.getExpectedDirectory()).starting(this.description.get());
+            this.verifier.withOutputDir(TableTestUtils.getExpectedDirectory()).beforeEach(this.extensionContext.get());
             this.verifier.verify("", null);
         });
     }
 
     @Test
-    void ensureStartingIsCalled() {
+    void ensurebeforeEachIsCalled() {
         assertThrows(IllegalStateException.class, () -> {
             TableVerifier localVerifier = new TableVerifier().withExpectedDir(TableTestUtils.getExpectedDirectory());
             localVerifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
@@ -229,17 +230,17 @@ public class TableVerifierTest {
 
     @Test
     void multiTableSuccess() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.verify(
                 TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
                 TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void multiTableFailure1() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify(
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL));
@@ -249,7 +250,7 @@ public class TableVerifierTest {
     @Test
     void multiTableFailure2() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify(
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL_2, "table2", TableTestUtils.ACTUAL_2));
@@ -259,7 +260,7 @@ public class TableVerifierTest {
     @Test
     void multiTableMissingTable() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify(
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2),
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL));
@@ -269,7 +270,7 @@ public class TableVerifierTest {
     @Test
     void multiTableSurplusTable() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify(
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL),
                     TableTestUtils.toNamedTables("table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
@@ -278,16 +279,16 @@ public class TableVerifierTest {
 
     @Test
     void multiVerifySuccess() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.verify("table1", TableTestUtils.ACTUAL);
         this.verifier.verify("table2", TableTestUtils.ACTUAL_2);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void multiVerifySurplus() {
         assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify("table1", TableTestUtils.ACTUAL);
             this.verifier.verify("table2", TableTestUtils.ACTUAL_2);
         });
@@ -295,18 +296,18 @@ public class TableVerifierTest {
 
     @Test
     void multiVerifyMissing() {
-        assertThrows(AssertionError.class, () -> {
-            this.verifier.starting(this.description.get());
+        assertThrows(AssertionFailedError.class, () -> {
+            this.verifier.beforeEach(this.extensionContext.get());
             this.verifier.verify("table1", TableTestUtils.ACTUAL);
-            this.verifier.succeeded(this.description.get());
+            this.verifier.afterEach(this.extensionContext.get());
         });
     }
 
     @Test
     void withoutPartialMatchTimeout() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.withoutPartialMatchTimeout().verify("table1", TableTestUtils.ACTUAL, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     private static final Function<VerifiableTable, VerifiableTable> ACTUAL_ADAPTER = new Function<>() {
@@ -323,32 +324,32 @@ public class TableVerifierTest {
 
     @Test
     void actualAdapter() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.withActualAdapter(ACTUAL_ADAPTER).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void actualAdapterWithTableNotToAdapt() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withActualAdapter(ACTUAL_ADAPTER)
                 .withTablesNotToAdapt("table1")
                 .verify(TableTestUtils.toNamedTables(
                         "table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void actualAdapterNoExpectedFile() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withActualAdapter(actual -> {
                     assertSame(TableTestUtils.ACTUAL_2, actual);
                     return TableTestUtils.ACTUAL;
                 })
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL, TableTestUtils.ACTUAL_2);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     private static final Function<VerifiableTable, VerifiableTable> EXPECTED_ADAPTER = new Function<>() {
@@ -365,32 +366,32 @@ public class TableVerifierTest {
 
     @Test
     void expectedAdapter() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier.withExpectedAdapter(EXPECTED_ADAPTER).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void expectedAdapterWithTableNotToAdapt() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withExpectedAdapter(EXPECTED_ADAPTER)
                 .withTablesNotToAdapt("table1")
                 .verify(TableTestUtils.toNamedTables(
                         "table1", TableTestUtils.ACTUAL, "table2", TableTestUtils.ACTUAL_2));
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test
     void expectedAdapterNoExpectedFile() {
-        this.verifier.starting(this.description.get());
+        this.verifier.beforeEach(this.extensionContext.get());
         this.verifier
                 .withExpectedAdapter(actual -> {
                     assertSame(TableTestUtils.ACTUAL_2, actual);
                     return TableTestUtils.ACTUAL;
                 })
                 .verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL_2, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
+        this.verifier.afterEach(this.extensionContext.get());
     }
 
     @Test

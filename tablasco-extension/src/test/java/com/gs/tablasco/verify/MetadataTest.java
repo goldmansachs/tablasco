@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 class MetadataTest {
     @Test
-    void testMetadataCreatedForRecordingResults() throws Exception {
+    void testMetadataCreatedForRecordingResults() {
         Metadata metadata = Metadata.newWithRecordedAt();
         metadata.add("App Server URL", "http://test");
         metadata.add("testKey", "testValue");
@@ -33,7 +33,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataCreatedForParsingResults() throws Exception {
+    void testMetadataCreatedForParsingResults() {
         Metadata metadata = Metadata.newEmpty();
         metadata.add("testKey", "testValue");
         metadata.add("App Server URL", "http://test");

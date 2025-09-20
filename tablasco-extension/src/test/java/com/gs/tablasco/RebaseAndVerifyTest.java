@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class RebaseAndVerifyTest {
     private static final String ADAPT = "adapt";
@@ -51,7 +50,7 @@ public class RebaseAndVerifyTest {
     };
 
     @RegisterExtension
-    public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
+    public final TableTestUtils.TestExtensionContext extensionContext = new TableTestUtils.TestExtensionContext();
 
     private final File expectedDir = new File(TableTestUtils.getOutputDirectory(), "expected");
     private final File outputDir = TableTestUtils.getOutputDirectory();
@@ -96,7 +95,7 @@ public class RebaseAndVerifyTest {
     }
 
     @Test
-    void toleranceNotAppliedToIntegers() throws Exception {
+    void toleranceNotAppliedToIntegers() {
         assertThrows(AssertionError.class, () -> {
             VerifiableTable tableForRebase = createTypedTable(21000.0d, 31000.0f, 41000L, 51000);
             VerifiableTable tableForVerify = createTypedTable(21003.0d, 31003.0f, 41003L, 51003);
@@ -170,18 +169,18 @@ public class RebaseAndVerifyTest {
         tables.put("tableA", createTypedTable("A"));
         tables.put("tableB", createTypedTable("B"));
         TableVerifier rebaseWatcher = this.newTableVerifier(1.0d).withRebase();
-        rebaseWatcher.starting(this.description.get());
+        rebaseWatcher.beforeEach(this.extensionContext.get());
         for (String name : tables.keySet()) {
             rebaseWatcher.verify(name, tables.get(name));
         }
         this.finishRebase(rebaseWatcher);
 
         TableVerifier runWatcher = this.newTableVerifier(1.0d);
-        runWatcher.starting(this.description.get());
+        runWatcher.beforeEach(this.extensionContext.get());
         for (String name : tables.keySet()) {
             runWatcher.verify(name, tables.get(name));
         }
-        runWatcher.succeeded(this.description.get());
+        runWatcher.afterEach(this.extensionContext.get());
         this.outputHtml = TableTestUtils.parseHtml(runWatcher.getOutputFile());
 
         assertEquals(Arrays.asList("tableC", "tableA", "tableB"), getHtmlTagValues("h2"));
@@ -215,22 +214,21 @@ public class RebaseAndVerifyTest {
 
     private void rebase(Map<String, VerifiableTable> actualForRebasing) {
         TableVerifier rebaseWatcher = this.newTableVerifier(1.0d).withRebase();
-        rebaseWatcher.starting(this.description.get());
+        rebaseWatcher.beforeEach(this.extensionContext.get());
         rebaseWatcher.verify(actualForRebasing);
         this.finishRebase(rebaseWatcher);
     }
 
     private void finishRebase(final TableVerifier rebaseWatcher) {
-        TableTestUtils.assertAssertionError(() -> rebaseWatcher.succeeded(description.get()));
+        TableTestUtils.assertAssertionError(() -> rebaseWatcher.afterEach(extensionContext.get()));
         this.expectedFile = rebaseWatcher.getExpectedFile();
     }
 
-    private void verify(Map<String, VerifiableTable> actualForVerification, double tolerance)
-            throws IOException, SAXException {
+    private void verify(Map<String, VerifiableTable> actualForVerification, double tolerance) throws Exception {
         TableVerifier runWatcher = this.newTableVerifier(tolerance);
-        runWatcher.starting(this.description.get());
+        runWatcher.beforeEach(this.extensionContext.get());
         runWatcher.verify(actualForVerification);
-        runWatcher.succeeded(this.description.get());
+        runWatcher.afterEach(this.extensionContext.get());
         File outputFile = runWatcher.getOutputFile();
         this.outputHtml = TableTestUtils.parseHtml(outputFile);
     }

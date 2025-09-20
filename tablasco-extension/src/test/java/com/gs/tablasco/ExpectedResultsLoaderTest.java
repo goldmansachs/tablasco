@@ -26,10 +26,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class ExpectedResultsLoaderTest implements ExpectedResultsLoader {
+    @RegisterExtension
     private final TableVerifier verifier = new TableVerifier()
             .withMavenDirectoryStrategy()
             .withFileStrategy(new FilePerClassStrategy() {

@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -91,7 +90,7 @@ public class ExceptionHtml {
         return element;
     }
 
-    static String stackTraceToString(Throwable e) throws UnsupportedEncodingException {
+    static String stackTraceToString(Throwable e) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(bytes, false, StandardCharsets.UTF_8);
         stackTraceToString(e, out);

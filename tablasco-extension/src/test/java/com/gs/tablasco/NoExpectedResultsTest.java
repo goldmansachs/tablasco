@@ -19,12 +19,12 @@ package com.gs.tablasco;
 import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class NoExpectedResultsTest {
 
-    public final TableVerifier verifier = new TableVerifier().withMavenDirectoryStrategy();
+    @RegisterExtension
+    private final TableVerifier verifier = new TableVerifier().withMavenDirectoryStrategy();
 
     @Test
     void asynchronousResultsLoadingOnlyFailsIfResultsAreRequired() {

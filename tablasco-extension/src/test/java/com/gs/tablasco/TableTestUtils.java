@@ -146,15 +146,15 @@ public class TableTestUtils {
         return list;
     }
 
-    public static class TestDescription implements BeforeEachCallback {
-        private Description description;
+    public static class TestExtensionContext implements BeforeEachCallback {
+        private ExtensionContext description;
 
         @Override
         public void beforeEach(ExtensionContext context) {
-            this.description = new Description(context.getRequiredTestClass(), context.getRequiredTestMethod());
+            this.description = context;
         }
 
-        public Description get() {
+        public ExtensionContext get() {
             return this.description;
         }
     }

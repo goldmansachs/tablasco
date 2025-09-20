@@ -36,7 +36,7 @@ public class ListVerifiableTable implements VerifiableTable {
     }
 
     /**
-     * Creates a {@link com.gs.tablasco.VerifiableTable} from an iterable containing headers and rows as lists. The
+     * Creates a {@link VerifiableTable} from an iterable containing headers and rows as lists. The
      * first must be the list of headers as strings, the remaining items are rows as lists of objects. The size of each
      * row must match the number of headers.
      *
@@ -59,7 +59,7 @@ public class ListVerifiableTable implements VerifiableTable {
     }
 
     /**
-     * Creates a {@link com.gs.tablasco.VerifiableTable} from a list of headers and an iterable containing rows as
+     * Creates a {@link VerifiableTable} from a list of headers and an iterable containing rows as
      * lists. The size of each row must match the number of headers.
      *
      * @param headers list of headers

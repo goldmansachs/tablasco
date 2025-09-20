@@ -18,12 +18,12 @@ package com.gs.tablasco;
 
 import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class MavenStyleDirectoryStrategyTest {
 
-    public final TableVerifier tableVerifier = new TableVerifier()
+    @RegisterExtension
+    private final TableVerifier tableVerifier = new TableVerifier()
             .withFilePerClass()
             .withDirectoryStrategy(new MavenStyleDirectoryStrategy()
                     .withAnchorFile("pom.xml")

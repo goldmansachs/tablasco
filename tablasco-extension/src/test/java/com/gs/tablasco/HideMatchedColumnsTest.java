@@ -21,13 +21,13 @@ import de.skuzzle.test.snapshots.Snapshot;
 import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 @EnableSnapshotTests
 public class HideMatchedColumnsTest {
 
-    public final TableVerifier tableVerifier =
+    @RegisterExtension
+    private final TableVerifier tableVerifier =
             new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy().withHideMatchedColumns(true);
 
     @Test

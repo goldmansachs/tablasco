@@ -23,12 +23,12 @@ import java.sql.Types;
 import java.util.Collections;
 import org.h2.tools.SimpleResultSet;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class ResultSetTableTest {
 
-    public final TableVerifier tableVerifier = new TableVerifier();
+    @RegisterExtension
+    private final TableVerifier tableVerifier = new TableVerifier();
 
     @Test
     void create() throws SQLException {

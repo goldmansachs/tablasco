@@ -39,6 +39,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * A JUnit plugin that can be included in JUnit 4 tests and used for verifying tabular data represented as
@@ -65,7 +68,7 @@ import java.util.function.Predicate;
  * <p>
  */
 @SuppressWarnings("WeakerAccess")
-public final class TableVerifier {
+public final class TableVerifier implements BeforeEachCallback, AfterEachCallback {
     private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR =
             Executors.newSingleThreadExecutor(runnable -> {
                 Thread thread = new Thread(runnable);
@@ -80,7 +83,7 @@ public final class TableVerifier {
     private File fixedExpectedDir;
     private File fixedOutputDir;
     private boolean isRebasing = Rebaser.inRebaseMode();
-    private Description description;
+    private ExtensionContext extensionContext;
     private FilenameStrategy fileStrategy = new FilePerMethodStrategy();
     private DirectoryStrategy directoryStrategy = new FixedDirectoryStrategy();
     private boolean createActualResults = true;
@@ -601,41 +604,48 @@ public final class TableVerifier {
         return this;
     }
 
-    void starting(Description description) {
-        this.description = description;
+    @Override
+    public void beforeEach(ExtensionContext context) {
+        this.extensionContext = context;
         if (!this.isRebasing) {
             this.expectedResultsFuture = EXPECTED_RESULTS_LOADER_EXECUTOR.submit(
                     () -> ExpectedResultsCache.getExpectedResults(expectedResultsLoader, getExpectedFile()));
         }
     }
 
-    void succeeded(Description description) {
-        if (this.expectedTables != null && !this.expectedTables.isEmpty()) {
-            this.verifyTables(this.expectedTables, new HashMap<>(), this.expectedMetadata);
-        }
-        if (this.isRebasing) {
-            fail("REBASE SUCCESSFUL - failing test in case rebase flag is set by mistake");
+    @Override
+    public void afterEach(ExtensionContext context) {
+        if (context.getExecutionException().isEmpty()) {
+            if (this.expectedTables != null && !this.expectedTables.isEmpty()) {
+                this.verifyTables(this.expectedTables, new HashMap<>(), this.expectedMetadata);
+            }
+            if (this.isRebasing) {
+                fail("REBASE SUCCESSFUL - failing test in case rebase flag is set by mistake");
+            }
         }
     }
 
     public File getExpectedFile() {
-        File dir = this.directoryStrategy.getExpectedDirectory(this.description.getTestClass());
+        File dir = this.directoryStrategy.getExpectedDirectory(this.extensionContext.getRequiredTestClass());
         String filename = this.fileStrategy.getExpectedFilename(
-                this.description.getTestClass(), this.description.getMethodName());
+                this.extensionContext.getRequiredTestClass(),
+                this.extensionContext.getRequiredTestMethod().getName());
         return new File(dir, filename);
     }
 
     public File getOutputFile() {
-        File dir = this.directoryStrategy.getOutputDirectory(this.description.getTestClass());
-        String filename =
-                this.fileStrategy.getOutputFilename(this.description.getTestClass(), this.description.getMethodName());
+        File dir = this.directoryStrategy.getOutputDirectory(this.extensionContext.getRequiredTestClass());
+        String filename = this.fileStrategy.getOutputFilename(
+                this.extensionContext.getRequiredTestClass(),
+                this.extensionContext.getRequiredTestMethod().getName());
         return new File(dir, filename);
     }
 
     public File getActualFile() {
-        File dir = this.directoryStrategy.getActualDirectory(this.description.getTestClass());
-        String filename =
-                this.fileStrategy.getActualFilename(this.description.getTestClass(), this.description.getMethodName());
+        File dir = this.directoryStrategy.getActualDirectory(this.extensionContext.getRequiredTestClass());
+        String filename = this.fileStrategy.getActualFilename(
+                this.extensionContext.getRequiredTestClass(),
+                this.extensionContext.getRequiredTestMethod().getName());
         return new File(dir, filename);
     }
 
@@ -681,14 +691,14 @@ public final class TableVerifier {
         if (this.isRebasing) {
             this.newRebaser()
                     .rebase(
-                            this.description.getMethodName(),
+                            this.extensionContext.getRequiredTestMethod().getName(),
                             adaptAndFilterTables(actualTables, this.getActualAdapter()),
                             this.getExpectedFile());
         } else {
             if (this.expectedTables == null) {
                 ExpectedResults expectedResults = getExpectedResults();
-                this.expectedTables = new HashMap<>(
-                        Objects.requireNonNull(expectedResults).getTables(this.description.getMethodName()));
+                this.expectedTables = new HashMap<>(Objects.requireNonNull(expectedResults)
+                        .getTables(this.extensionContext.getRequiredTestMethod().getName()));
                 this.expectedMetadata = expectedResults.getMetadata();
             }
             Map<String, VerifiableTable> expectedTablesToVerify = new LinkedHashMap<>(actualTables.size());
@@ -764,10 +774,15 @@ public final class TableVerifier {
             createActual = !verificationSuccess;
         }
         if (createActual) {
-            this.newRebaser().rebase(this.description.getMethodName(), adaptedActualTables, this.getActualFile());
+            this.newRebaser()
+                    .rebase(
+                            this.extensionContext.getRequiredTestMethod().getName(),
+                            adaptedActualTables,
+                            this.getActualFile());
         }
         HtmlFormatter htmlFormatter = newHtmlFormatter();
-        htmlFormatter.appendResults(this.description.getMethodName(), allResults, metadata, ++this.verifyCount);
+        htmlFormatter.appendResults(
+                this.extensionContext.getRequiredTestMethod().getName(), allResults, metadata, ++this.verifyCount);
         assertTrue(verificationSuccess, "Some tests failed. See " + getOutputFileUrl() + " for more details.");
     }
 
@@ -814,15 +829,16 @@ public final class TableVerifier {
     }
 
     private void runPreVerifyChecks() {
-        if (this.description == null) {
+        if (this.extensionContext == null) {
             throw new IllegalStateException(
-                    "TableVerifier not initialized. Ensure test class is annotated with @ExtendWith(TablascoExtension.class)");
+                    "TableVerifier not initialized. Ensure test class is annotated with @TablascoTest");
         }
     }
 
     private void makeSureDirectoriesAreNotSame() {
-        File expectedDirectory = this.directoryStrategy.getExpectedDirectory(this.description.getTestClass());
-        File outputDirectory = this.directoryStrategy.getOutputDirectory(this.description.getTestClass());
+        File expectedDirectory =
+                this.directoryStrategy.getExpectedDirectory(this.extensionContext.getRequiredTestClass());
+        File outputDirectory = this.directoryStrategy.getOutputDirectory(this.extensionContext.getRequiredTestClass());
         if (expectedDirectory != null && expectedDirectory.equals(outputDirectory)) {
             throw new IllegalArgumentException(
                     "Expected results directory and verification output directory must NOT be the same.");

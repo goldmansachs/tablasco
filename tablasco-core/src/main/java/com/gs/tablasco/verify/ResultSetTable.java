@@ -28,7 +28,7 @@ public class ResultSetTable {
     private ResultSetTable() {}
 
     /**
-     * Creates a {@link com.gs.tablasco.VerifiableTable} from a {@link java.sql.ResultSet}
+     * Creates a {@link VerifiableTable} from a {@link ResultSet}
      *
      * @param resultSet the result set
      * @return a verifiable table

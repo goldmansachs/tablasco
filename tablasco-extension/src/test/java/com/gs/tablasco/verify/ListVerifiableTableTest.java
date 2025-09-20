@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 class ListVerifiableTableTest {
     @Test
-    void testHeaderTypes() throws Exception {
+    void testHeaderTypes() {
         // old usages prior to allowing String headers
         List<Object> headersAsObjects = Collections.singletonList("Col");
         List<List<Object>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.singletonList("Val"));

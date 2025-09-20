@@ -19,11 +19,11 @@ package com.gs.tablasco;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class ExampleTableVerifierTest {
 
+    @RegisterExtension
     private final TableVerifier tableVerifier = new TableVerifier().withMavenDirectoryStrategy();
 
     @Test

@@ -16,17 +16,16 @@
 
 package com.gs.tablasco.adapters;
 
-import com.gs.tablasco.TablascoExtension;
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.TableVerifier;
 import com.gs.tablasco.VerifiableTable;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@ExtendWith(TablascoExtension.class)
 public class TableAdaptersTest {
 
-    public final TableVerifier verifier = new TableVerifier()
+    @RegisterExtension
+    private final TableVerifier verifier = new TableVerifier()
             .withExpectedDir(TableTestUtils.getExpectedDirectory())
             .withOutputDir(TableTestUtils.getOutputDirectory())
             .withFilePerClass()
