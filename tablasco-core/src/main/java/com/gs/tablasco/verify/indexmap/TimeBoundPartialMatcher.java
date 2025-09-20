@@ -38,32 +38,31 @@ public class TimeBoundPartialMatcher implements PartialMatcher {
             final List<UnmatchedIndexMap> allSurplusRows,
             final List<IndexMap> matchedColumns) {
         LOGGER.debug("Starting partial match");
-        try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        try {
             Future<?> result = executorService.submit(
                     () -> TimeBoundPartialMatcher.this.delegate.match(allMissingRows, allSurplusRows, matchedColumns));
+            result.get(this.timeoutMillis, TimeUnit.MILLISECONDS);
+            LOGGER.debug("Partial match complete");
+        } catch (InterruptedException e) {
+            LOGGER.error("Partial match interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            LOGGER.error("Partial match exception", e);
+            Throwable cause = e.getCause();
+            throw cause instanceof RuntimeException ? (RuntimeException) cause : new RuntimeException(cause);
+        } catch (TimeoutException e) {
+            LOGGER.error("Partial match timed out");
+            throw new RuntimeException(e);
+        } finally {
+            executorService.shutdown();
             try {
-                result.get(this.timeoutMillis, TimeUnit.MILLISECONDS);
-                LOGGER.debug("Partial match complete");
-            } catch (InterruptedException e) {
-                LOGGER.error("Partial match interrupted", e);
-                Thread.currentThread().interrupt();
-            } catch (ExecutionException e) {
-                LOGGER.error("Partial match exception", e);
-                Throwable cause = e.getCause();
-                throw cause instanceof RuntimeException ? (RuntimeException) cause : new RuntimeException(cause);
-            } catch (TimeoutException e) {
-                LOGGER.error("Partial match timed out");
-                throw new RuntimeException(e);
-            } finally {
-                executorService.shutdown();
-                try {
-                    if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                        executorService.shutdownNow();
-                    }
-                } catch (InterruptedException e) {
+                if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
                     executorService.shutdownNow();
-                    Thread.currentThread().interrupt();
                 }
+            } catch (InterruptedException e) {
+                executorService.shutdownNow();
+                Thread.currentThread().interrupt();
             }
         }
     }

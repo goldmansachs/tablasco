@@ -45,15 +45,7 @@ public class Rebaser {
     }
 
     public void rebase(String methodName, Map<String, VerifiableTable> actualResults, File outputFile) {
-        LOGGER.warn("Stand back from the platform edge - here comes the");
-        LOGGER.warn("        ___    ___    ___    ___    ___    ___   _  _    ___    ");
-        LOGGER.warn("       | _ \\  | __|  | _ )  /   \\  / __|  |_ _| | \\| |  / __|");
-        LOGGER.warn("       |   /  | _|   | _ \\  | - |  \\__ \\   | |  | .` | | (_ |");
-        LOGGER.warn("       |_|_\\  |___|  |___/  |_|_|  |___/  |___| |_|\\_|  \\___|");
-        LOGGER.warn(
-                "     _|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|");
-        LOGGER.warn("      `-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'");
-        LOGGER.warn("train.... ");
+        LOGGER.info("Actual results for {} to {}", methodName, outputFile.getAbsolutePath());
         new RebaseFileWriter(
                         this.metadata, this.baselineHeaders, this.verifierConfig.getColumnComparators(), outputFile)
                 .writeRebasedResults(methodName, actualResults);

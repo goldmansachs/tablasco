@@ -42,6 +42,8 @@ import java.util.function.Predicate;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A JUnit plugin that can be included in JUnit 4 tests and used for verifying tabular data represented as
@@ -69,6 +71,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  */
 @SuppressWarnings("WeakerAccess")
 public final class TableVerifier implements BeforeEachCallback, AfterEachCallback {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableVerifier.class);
     private static final ExecutorService EXPECTED_RESULTS_LOADER_EXECUTOR =
             Executors.newSingleThreadExecutor(runnable -> {
                 Thread thread = new Thread(runnable);
@@ -83,6 +87,7 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
     private File fixedExpectedDir;
     private File fixedOutputDir;
     private boolean isRebasing = Rebaser.inRebaseMode();
+    private boolean hasRebasingTrainDeparted = false;
     private ExtensionContext extensionContext;
     private FilenameStrategy fileStrategy = new FilePerMethodStrategy();
     private DirectoryStrategy directoryStrategy = new FixedDirectoryStrategy();
@@ -689,6 +694,18 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
         this.makeSureDirectoriesAreNotSame();
 
         if (this.isRebasing) {
+            if (!this.hasRebasingTrainDeparted) {
+                LOGGER.warn("Stand back from the platform edge - here comes the");
+                LOGGER.warn("        ___    ___    ___    ___    ___    ___   _  _    ___    ");
+                LOGGER.warn("       | _ \\  | __|  | _ )  /   \\  / __|  |_ _| | \\| |  / __|");
+                LOGGER.warn("       |   /  | _|   | _ \\  | - |  \\__ \\   | |  | .` | | (_ |");
+                LOGGER.warn("       |_|_\\  |___|  |___/  |_|_|  |___/  |___| |_|\\_|  \\___|");
+                LOGGER.warn(
+                        "     _|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|");
+                LOGGER.warn("      `-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'`-0-0-'");
+                LOGGER.warn("train.... ");
+                this.hasRebasingTrainDeparted = true;
+            }
             this.newRebaser()
                     .rebase(
                             this.extensionContext.getRequiredTestMethod().getName(),
