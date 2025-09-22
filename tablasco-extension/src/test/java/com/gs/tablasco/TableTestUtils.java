@@ -104,7 +104,7 @@ public class TableTestUtils {
      * Use TestTable instead
      */
     public static VerifiableTable createTable(int cols, Object... values) {
-        List<List<Object>> headersAndRows = new ArrayList<>();
+        List<List<?>> headersAndRows = new ArrayList<>();
         headersAndRows.add(Arrays.asList(values).subList(0, cols));
         int start = cols;
         while (start < values.length) {

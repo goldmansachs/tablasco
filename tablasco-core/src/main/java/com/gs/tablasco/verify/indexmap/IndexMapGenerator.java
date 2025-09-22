@@ -54,6 +54,7 @@ public class IndexMapGenerator<T> {
         return new ArrayList<>(all);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     void generate() {
         this.matched = new ArrayList<>();
         this.missing = new ArrayList<>();

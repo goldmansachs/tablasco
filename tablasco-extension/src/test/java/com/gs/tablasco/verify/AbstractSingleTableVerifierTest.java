@@ -72,12 +72,12 @@ public abstract class AbstractSingleTableVerifierTest {
         return ResultCell.createOutOfOrderCell(CELL_COMPARATOR.getFormatter(), actual);
     }
 
-    private void actualTable(List... headerAndRows) {
+    private void actualTable(List<?>... headerAndRows) {
         assertNull(this.actual);
         this.actual = ListVerifiableTable.create(Arrays.asList(headerAndRows));
     }
 
-    private void expectedTable(List... headerAndRows) {
+    private void expectedTable(List<?>... headerAndRows) {
         assertNull(this.expected);
         this.expected = ListVerifiableTable.create(Arrays.asList(headerAndRows));
     }
@@ -128,8 +128,8 @@ public abstract class AbstractSingleTableVerifierTest {
                 Metadata.newEmpty());
     }
 
-    protected static List row(Object... values) {
-        return Arrays.asList(values);
+    protected static List<?> row(Object... values) {
+        return List.of(values);
     }
 
     @Test
@@ -504,6 +504,9 @@ public abstract class AbstractSingleTableVerifierTest {
                 row("E", "C", 0),
                 row("X", "C", 0),
                 row("X", "X", 0));
+        List<?> result;
+        Object[] values = new Object[] {"Y", "C", 1};
+        result = List.of(values);
         this.expectedTable(
                 row("Col 1", "Col 2", "Col 3"),
                 row("A", "A", 1),
@@ -512,122 +515,143 @@ public abstract class AbstractSingleTableVerifierTest {
                 row("C", "B", 1),
                 row("D", "B", 1),
                 row("E", "C", 1),
-                row("Y", "C", 1),
-                row("Y", "Y", 1));
+                result,
+                List.of(new Object[] {"Y", "Y", 1}));
         this.assertVerification();
     }
 
     @Test
     void duplicateActualRow() {
-        this.actualTable(row("Col 1", "Col 2"), row("A", "B"), row("C", "D"), row("C", "D"), row("E", "F"));
-        this.expectedTable(row("Col 1", "Col 2"), row("A", "A"), row("C", "D"), row("E", "E"));
+        this.actualTable(
+                List.of(new Object[] {"Col 1", "Col 2"}),
+                List.of(new Object[] {"A", "B"}),
+                List.of(new Object[] {"C", "D"}),
+                List.of(new Object[] {"C", "D"}),
+                List.of(new Object[] {"E", "F"}));
+        this.expectedTable(
+                List.of(new Object[] {"Col 1", "Col 2"}),
+                List.of(new Object[] {"A", "A"}),
+                List.of(new Object[] {"C", "D"}),
+                List.of(new Object[] {"E", "E"}));
         this.assertVerification();
     }
 
     @Test
     void duplicateExpectedRow() {
-        this.actualTable(row("Col 1", "Col 2"), row("A", "B"), row("C", "D"), row("E", "F"));
-        this.expectedTable(row("Col 1", "Col 2"), row("A", "A"), row("C", "D"), row("C", "D"), row("E", "E"));
+        this.actualTable(
+                List.of(new Object[] {"Col 1", "Col 2"}),
+                List.of(new Object[] {"A", "B"}),
+                List.of(new Object[] {"C", "D"}),
+                List.of(new Object[] {"E", "F"}));
+        this.expectedTable(
+                List.of(new Object[] {"Col 1", "Col 2"}),
+                List.of(new Object[] {"A", "A"}),
+                List.of(new Object[] {"C", "D"}),
+                List.of(new Object[] {"C", "D"}),
+                List.of(new Object[] {"E", "E"}));
         this.assertVerification();
     }
 
     @Test
     void duplicateActualColumn() {
-        this.actualTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "B"));
-        this.expectedTable(row("Col 1", "Col 2"), row("A", "B"));
+        this.actualTable(List.of(new Object[] {"Col 1", "Col 2", "Col 2"}), List.of(new Object[] {"A", "B", "B"}));
+        this.expectedTable(List.of(new Object[] {"Col 1", "Col 2"}), List.of(new Object[] {"A", "B"}));
         this.assertVerification();
     }
 
     @Test
     void duplicateExpectedColumn() {
-        this.actualTable(row("Col 1", "Col 2"), row("A", "B"));
-        this.expectedTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "B"));
+        this.actualTable(List.of(new Object[] {"Col 1", "Col 2"}), List.of(new Object[] {"A", "B"}));
+        this.expectedTable(List.of(new Object[] {"Col 1", "Col 2", "Col 2"}), List.of(new Object[] {"A", "B", "B"}));
         this.assertVerification();
     }
 
     @Test
     void duplicateColumnName() {
-        this.actualTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "C"));
-        this.expectedTable(row("Col 1", "Col 2", "Col 2"), row("A", "B", "C"));
+        this.actualTable(List.of(new Object[] {"Col 1", "Col 2", "Col 2"}), List.of(new Object[] {"A", "B", "C"}));
+        this.expectedTable(List.of(new Object[] {"Col 1", "Col 2", "Col 2"}), List.of(new Object[] {"A", "B", "C"}));
         this.assertVerification();
     }
 
     @Test
     void keyColumn() {
         this.actualTable(
-                row("Col 1", "Col 2", "Col 3", "Col 4", "Col 5"),
-                row("A", "B", "C", "D", "E"),
-                row("F", "G", "H", "I", "J"),
-                row("K", "L", "M", "N", "O"));
+                List.of(new Object[] {"Col 1", "Col 2", "Col 3", "Col 4", "Col 5"}),
+                List.of(new Object[] {"A", "B", "C", "D", "E"}),
+                List.of(new Object[] {"F", "G", "H", "I", "J"}),
+                List.of(new Object[] {"K", "L", "M", "N", "O"}));
         this.actual = new KeyedVerifiableTableAdapter(this.actual, 0, 2);
         this.expectedTable(
-                row("Col 1", "Col 2", "Col 3", "Col 4", "Col 5"),
-                row("Z", "B", "C", "D", "E"),
-                row("F", "G", "Z", "I", "J"),
-                row("K", "Z", "M", "N", "O"));
+                List.of(new Object[] {"Col 1", "Col 2", "Col 3", "Col 4", "Col 5"}),
+                List.of(new Object[] {"Z", "B", "C", "D", "E"}),
+                List.of(new Object[] {"F", "G", "Z", "I", "J"}),
+                List.of(new Object[] {"K", "Z", "M", "N", "O"}));
         this.assertVerification();
     }
 
     @Test
     void keyColumnWithDupes() {
         this.actualTable(
-                row("Col 1", "Col 2", "Col 3"),
-                row("A", "A", "K1"),
-                row("B", "B", "K1"),
-                row("C", "C", "K1"),
-                row("A", "Z", "K2"),
-                row("B", "Z", "K2"),
-                row("A", "A", "K3"));
+                List.of(new Object[] {"Col 1", "Col 2", "Col 3"}),
+                List.of(new Object[] {"A", "A", "K1"}),
+                List.of(new Object[] {"B", "B", "K1"}),
+                List.of(new Object[] {"C", "C", "K1"}),
+                List.of(new Object[] {"A", "Z", "K2"}),
+                List.of(new Object[] {"B", "Z", "K2"}),
+                List.of(new Object[] {"A", "A", "K3"}));
         this.actual = new KeyedVerifiableTableAdapter(this.actual, 2);
         this.expectedTable(
-                row("Col 1", "Col 2", "Col 3"),
-                row("A", "Z", "K1"),
-                row("B", "Z", "K1"),
-                row("A", "A", "K2"),
-                row("B", "B", "K2"),
-                row("C", "C", "K2"),
-                row("A", "A", "K4"));
+                List.of(new Object[] {"Col 1", "Col 2", "Col 3"}),
+                List.of(new Object[] {"A", "Z", "K1"}),
+                List.of(new Object[] {"B", "Z", "K1"}),
+                List.of(new Object[] {"A", "A", "K2"}),
+                List.of(new Object[] {"B", "B", "K2"}),
+                List.of(new Object[] {"C", "C", "K2"}),
+                List.of(new Object[] {"A", "A", "K4"}));
         this.assertVerification();
     }
 
     @Test
     void keyColumnWithOutOfOrderMissingAndSurplusColumns() {
         this.actualTable(
-                row("Col 1", "Col 2", "Col 3"),
-                row("A", "A", "K1"),
-                row("B", "B", "K1"),
-                row("C", "C", "K1"),
-                row("A", "Z", "K2"),
-                row("B", "Z", "K2"));
+                List.of(new Object[] {"Col 1", "Col 2", "Col 3"}),
+                List.of(new Object[] {"A", "A", "K1"}),
+                List.of(new Object[] {"B", "B", "K1"}),
+                List.of(new Object[] {"C", "C", "K1"}),
+                List.of(new Object[] {"A", "Z", "K2"}),
+                List.of(new Object[] {"B", "Z", "K2"}));
         this.actual = new KeyedVerifiableTableAdapter(this.actual, 2);
         this.expectedTable(
-                row("Col 4", "Col 3", "Col 1"),
-                row("Z", "K1", "A"),
-                row("Z", "K1", "B"),
-                row("A", "K2", "A"),
-                row("B", "K2", "B"),
-                row("C", "K2", "C"));
+                List.of(new Object[] {"Col 4", "Col 3", "Col 1"}),
+                List.of(new Object[] {"Z", "K1", "A"}),
+                List.of(new Object[] {"Z", "K1", "B"}),
+                List.of(new Object[] {"A", "K2", "A"}),
+                List.of(new Object[] {"B", "K2", "B"}),
+                List.of(new Object[] {"C", "K2", "C"}));
         this.assertVerification();
     }
 
     @Test
     void keyColumnWithMissingKey() {
         this.actualTable(
-                row("Col 1", "Col 2", "Col 3"),
-                row("A", "A", "K1"),
-                row("B", "B", "K1"),
-                row("A", "Z", "K2"),
-                row("B", "Z", "K2"));
+                List.of(new Object[] {"Col 1", "Col 2", "Col 3"}),
+                List.of(new Object[] {"A", "A", "K1"}),
+                List.of(new Object[] {"B", "B", "K1"}),
+                List.of(new Object[] {"A", "Z", "K2"}),
+                List.of(new Object[] {"B", "Z", "K2"}));
         this.actual = new KeyedVerifiableTableAdapter(this.actual, 0, 2);
-        this.expectedTable(row("Col 2", "Col 3"), row("Z", "K1"), row("Z", "K1"), row("A", "K2"), row("B", "K2"));
+        this.expectedTable(
+                List.of(new Object[] {"Col 2", "Col 3"}),
+                List.of(new Object[] {"Z", "K1"}),
+                List.of(new Object[] {"Z", "K1"}),
+                List.of(new Object[] {"A", "K2"}),
+                List.of(new Object[] {"B", "K2"}));
         this.assertVerification();
     }
 
     @BeforeEach
     public void setup(TestInfo testInfo) {
         Optional<Method> testMethod = testInfo.getTestMethod();
-        if (testMethod.isPresent()) {
-            this.testName = testMethod.get().getName();
-        }
+        testMethod.ifPresent(method -> this.testName = method.getName());
     }
 }

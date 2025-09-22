@@ -41,7 +41,7 @@ public class ResultSetTable {
         for (int n = 1; n <= columnCount; n++) {
             headers.add(metaData.getColumnName(n));
         }
-        List<List> rows = new ArrayList<>();
+        List<List<?>> rows = new ArrayList<>();
         while (resultSet.next()) {
             List<Object> row = new ArrayList<>(columnCount);
             for (int n = 1; n <= columnCount; n++) {

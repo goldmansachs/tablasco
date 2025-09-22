@@ -21,16 +21,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ListVerifiableTable implements VerifiableTable {
     private final List<?> headers;
-    private final List<List<Object>> data;
+    private final List<List<?>> data;
 
-    public ListVerifiableTable(List<List<Object>> headersAndData) {
-        this(headersAndData.get(0), headersAndData.subList(1, headersAndData.size()));
+    public ListVerifiableTable(List<List<?>> headersAndData) {
+        this(
+                headersAndData.get(0).stream().map(Object::toString).collect(Collectors.toList()),
+                headersAndData.subList(1, headersAndData.size()));
     }
 
-    public ListVerifiableTable(List<?> headers, List<List<Object>> data) {
+    public ListVerifiableTable(List<String> headers, List<List<?>> data) {
         this.headers = headers;
         this.data = data;
     }
@@ -43,19 +46,12 @@ public class ListVerifiableTable implements VerifiableTable {
      * @param headersAndRows iterable of headers and rows
      * @return verifiable table
      */
-    public static VerifiableTable create(Iterable<List> headersAndRows) {
-        Iterator<List> iterator = headersAndRows.iterator();
-        List headers = iterator.next();
-        headers.forEach(ListVerifiableTable::verifyHeader);
-        List rowList = new ArrayList();
+    public static VerifiableTable create(List<List<?>> headersAndRows) {
+        Iterator<List<?>> iterator = headersAndRows.iterator();
+        List<String> headers = iterator.next().stream().map(Object::toString).collect(Collectors.toList());
+        List<List<?>> rowList = new ArrayList<>();
         iterator.forEachRemaining(verifyRowSize(headers).andThen(rowList::add));
         return new ListVerifiableTable(headers, rowList);
-    }
-
-    private static void verifyHeader(Object obj) {
-        if ((!(obj instanceof String))) {
-            throw new IllegalArgumentException("Invalid header " + obj);
-        }
     }
 
     /**
@@ -66,17 +62,12 @@ public class ListVerifiableTable implements VerifiableTable {
      * @param rows iterable rows
      * @return the verifiable table
      */
-    public static VerifiableTable create(List<String> headers, Iterable<List> rows) {
-        if (rows instanceof List) {
-            rows.forEach(verifyRowSize(headers));
-            return new ListVerifiableTable(headers, (List) rows);
-        }
-        List rowList = new ArrayList();
-        rows.forEach(verifyRowSize(headers).andThen(rowList::add));
-        return new ListVerifiableTable(headers, rowList);
+    public static VerifiableTable create(List<String> headers, List<List<?>> rows) {
+        rows.forEach(verifyRowSize(headers));
+        return new ListVerifiableTable(headers, rows);
     }
 
-    private static Consumer<List> verifyRowSize(final List headers) {
+    private static Consumer<List<?>> verifyRowSize(final List<String> headers) {
         return row -> {
             if (row.size() != headers.size()) {
                 throw new IllegalArgumentException(

@@ -23,10 +23,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 
 // import com.gs.fw.common.base.exception.CollectedException;
@@ -61,7 +58,7 @@ class ExceptionHtmlTest {
         String line = reader.readLine();
         while (line != null) {
             if (line.startsWith("    ")) {
-                stackTrace.add(line);
+                Objects.requireNonNull(stackTrace).add(line);
             } else {
                 stackTrace = new ArrayList<>();
                 stackTraces.put(line, stackTrace);

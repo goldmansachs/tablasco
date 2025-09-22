@@ -132,7 +132,6 @@ class RealVerificationExamplesTest {
 
         private static final Random rand = new Random(12345987345909L);
 
-        private final HashSet<String> immutables = new HashSet<>();
         private final HashMap<String, String> replacements = new HashMap<>();
 
         private String makeWord(int length) {
@@ -147,9 +146,6 @@ class RealVerificationExamplesTest {
         }
 
         String obfuscate(String toReplace) {
-            if (immutables.contains(toReplace)) {
-                return toReplace;
-            }
             String lower = toReplace.toLowerCase();
             String existing = replacements.get(lower);
             if (existing == null) {

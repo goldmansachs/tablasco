@@ -38,12 +38,7 @@ public class ExampleTableVerifierTest {
         this.tableVerifier.verify("Most Popular Movies", new MovieTable(movieRanks));
     }
 
-    private static class MovieTable implements VerifiableTable {
-        private final List<Movie> rows;
-
-        private MovieTable(List<Movie> rows) {
-            this.rows = rows;
-        }
+    private record MovieTable(List<Movie> rows) implements VerifiableTable {
 
         @Override
         public int getRowCount() {
@@ -77,17 +72,5 @@ public class ExampleTableVerifierTest {
         }
     }
 
-    private static class Movie {
-        private final String title;
-        private final String year;
-        private final int rank;
-        private final double rating;
-
-        public Movie(String title, String year, int rank, double rating) {
-            this.title = title;
-            this.year = year;
-            this.rank = rank;
-            this.rating = rating;
-        }
-    }
+    private record Movie(String title, String year, int rank, double rating) {}
 }

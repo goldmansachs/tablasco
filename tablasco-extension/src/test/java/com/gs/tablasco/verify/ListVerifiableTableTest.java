@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.gs.tablasco.VerifiableTable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +29,8 @@ class ListVerifiableTableTest {
     @Test
     void testHeaderTypes() {
         // old usages prior to allowing String headers
-        List<Object> headersAsObjects = Collections.singletonList("Col");
-        List<List<Object>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.singletonList("Val"));
+        List<String> headersAsObjects = Collections.singletonList("Col");
+        List<List<?>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.singletonList("Val"));
         assertEquals(
                 1,
                 new ListVerifiableTable(headersAndDataAsObjects).getRowCount(),
@@ -66,17 +65,19 @@ class ListVerifiableTableTest {
 
     @Test
     void createList_headersNotStrings() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ListVerifiableTable.create(Arrays.asList(Arrays.asList('A', 'B'), Arrays.asList(1, 2)));
-        });
+        VerifiableTable table = ListVerifiableTable.create(Arrays.asList(Arrays.asList('A', 'B'), Arrays.asList(1, 2)));
+        assertEquals(2, table.getColumnCount());
+        assertEquals(1, table.getRowCount());
+        assertEquals("A", table.getColumnName(0));
+        assertEquals("B", table.getColumnName(1));
     }
 
     @Test
     void createList_wrongRowSize() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ListVerifiableTable.create(
-                    Arrays.asList(Arrays.asList("A", "B"), Arrays.asList(1, 2), Collections.singletonList(3)));
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ListVerifiableTable.create(
+                        Arrays.asList(Arrays.asList("A", "B"), Arrays.asList(1, 2), Collections.singletonList(3))));
     }
 
     @Test
@@ -93,16 +94,15 @@ class ListVerifiableTableTest {
 
     @Test
     void createHeadersAndList_wrongRowSize() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ListVerifiableTable.create(
-                    Arrays.asList("A", "B"), Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4, 5)));
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ListVerifiableTable.create(
+                        Arrays.asList("A", "B"), Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4, 5))));
     }
 
     @Test
     void createHeadersAndIterable() {
-        VerifiableTable table =
-                ListVerifiableTable.create(Arrays.asList("A", "B"), Collections.singleton(Arrays.asList(1, 2)));
+        VerifiableTable table = ListVerifiableTable.create(Arrays.asList("A", "B"), List.of(Arrays.asList(1, 2)));
         assertEquals(2, table.getColumnCount());
         assertEquals(1, table.getRowCount());
         assertEquals("A", table.getColumnName(0));
@@ -113,10 +113,9 @@ class ListVerifiableTableTest {
 
     @Test
     void createHeadersAndIterable_wrongRowSize() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ListVerifiableTable.create(
-                    Arrays.asList("A", "B"),
-                    new LinkedHashSet<>(Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4, 5))));
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ListVerifiableTable.create(
+                        Arrays.asList("A", "B"), Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4, 5))));
     }
 }

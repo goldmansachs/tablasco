@@ -93,21 +93,21 @@ public class MultiTableVerifierTest {
     @Test
     void noExpectedColumns() {
         this.expectingException = true;
-        assertThrows(IllegalStateException.class, () -> {
-            this.verifyTables(
-                    Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
-                    Collections.singletonMap("table", TableTestUtils.createTable(0)));
-        });
+        assertThrows(
+                IllegalStateException.class,
+                () -> this.verifyTables(
+                        Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
+                        Collections.singletonMap("table", TableTestUtils.createTable(0))));
     }
 
     @Test
     void noActualColumns() {
         this.expectingException = true;
-        assertThrows(IllegalStateException.class, () -> {
-            this.verifyTables(
-                    Collections.singletonMap("table", TableTestUtils.createTable(0)),
-                    Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")));
-        });
+        assertThrows(
+                IllegalStateException.class,
+                () -> this.verifyTables(
+                        Collections.singletonMap("table", TableTestUtils.createTable(0)),
+                        Collections.singletonMap("table", TableTestUtils.createTable(1, "Col"))));
     }
 
     private Map<String, ResultTable> verifyTables(

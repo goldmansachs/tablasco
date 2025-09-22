@@ -27,9 +27,7 @@ class UnmatchedIndexMapTest {
 
     @Test
     void testAddPartialMatchFailsIfSelf() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.unmatched.addMatch(2, this.unmatched);
-        });
+        assertThrows(IllegalArgumentException.class, () -> this.unmatched.addMatch(2, this.unmatched));
     }
 
     @Test

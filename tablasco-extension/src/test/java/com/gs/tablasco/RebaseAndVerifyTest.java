@@ -261,8 +261,8 @@ public class RebaseAndVerifyTest {
     // big longs)
 
     private static VerifiableTable createTypedTable(Object... values) {
-        List<Object> headers = Arrays.stream(values)
-                .map((Function<Object, Object>) object -> object.getClass().getSimpleName())
+        List<String> headers = Arrays.stream(values)
+                .map(object -> object.getClass().getSimpleName())
                 .collect(Collectors.toList());
         return new ListVerifiableTable(headers, Collections.singletonList(Arrays.asList(values)));
     }

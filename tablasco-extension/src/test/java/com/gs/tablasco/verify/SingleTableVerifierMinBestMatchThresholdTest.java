@@ -41,7 +41,6 @@ public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingle
     static {
         ROW_KEY_VERIFICATIONS = new HashMap<>(SingleTableVerifierMaxBestMatchThresholdTest.MAX_BEST_MATCH_THRESHOLD);
         addVerification(
-                "adaptiveMatcherLeavesLeastUnmatchedRows",
                 row(pass("Col 1"), pass("Col 2"), pass("Col 3")),
                 row(pass("A"), pass("A"), fail("0", "1")),
                 row(pass("A"), pass("A"), fail("2", "3")),
@@ -55,7 +54,10 @@ public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingle
                 row(missing("Y"), missing("Y"), missing("1")));
     }
 
-    private static void addVerification(String testName, List<ResultCell>... rows) {
-        ROW_KEY_VERIFICATIONS.put(testName, Arrays.asList(rows));
+    private static void addVerification(List<?>... rows) {
+        List<List<ResultCell>> castRows = Arrays.stream(rows)
+                .map(r -> r.stream().map(ResultCell.class::cast).toList())
+                .toList();
+        ROW_KEY_VERIFICATIONS.put("adaptiveMatcherLeavesLeastUnmatchedRows", castRows);
     }
 }

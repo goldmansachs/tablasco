@@ -127,6 +127,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
             return new ResultTable(keyColumns, results);
         }
         LOGGER.debug("Matched {} rows", happyPathSize);
+        @SuppressWarnings("UnnecessaryLocalVariable")
         int firstUnMatchedIndex = happyPathSize;
 
         LOGGER.debug("Starting Reverse Happy Path (tm)");
@@ -152,15 +153,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
         List<IndexMap> matchedColumns =
                 columnIndices.stream().filter(IndexMap::isMatched).collect(Collectors.toList());
         LOGGER.debug("Partial-matching {} missing and {} surplus rows", allMissingRows.size(), allSurplusRows.size());
-        PartialMatcher partialMatcher =
-                new AdaptivePartialMatcher(actualData, expectedData, columnComparators, this.bestMatchThreshold);
-        if (actualData instanceof KeyedVerifiableTable) {
-            partialMatcher = new KeyColumnPartialMatcher(
-                    (KeyedVerifiableTable) actualData, expectedData, columnComparators, partialMatcher);
-        }
-        if (this.partialMatchTimeoutMillis > 0) {
-            partialMatcher = new TimeBoundPartialMatcher(partialMatcher, this.partialMatchTimeoutMillis);
-        }
+        PartialMatcher partialMatcher = getPartialMatcher(actualData, expectedData);
         partialMatcher.match(allMissingRows, allSurplusRows, matchedColumns);
 
         LOGGER.debug("Merging partial-matches and remaining missing/surplus");
@@ -186,6 +179,19 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
         LOGGER.debug("Done");
 
         return new ResultTable(keyColumns, results);
+    }
+
+    private PartialMatcher getPartialMatcher(VerifiableTable actualData, VerifiableTable expectedData) {
+        PartialMatcher partialMatcher =
+                new AdaptivePartialMatcher(actualData, expectedData, columnComparators, this.bestMatchThreshold);
+        if (actualData instanceof KeyedVerifiableTable) {
+            partialMatcher = new KeyColumnPartialMatcher(
+                    (KeyedVerifiableTable) actualData, expectedData, columnComparators, partialMatcher);
+        }
+        if (this.partialMatchTimeoutMillis > 0) {
+            partialMatcher = new TimeBoundPartialMatcher(partialMatcher, this.partialMatchTimeoutMillis);
+        }
+        return partialMatcher;
     }
 
     private List<List<ResultCell>> toListOfRows(
@@ -244,7 +250,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
         int minRowCount = Math.min(actualData.getRowCount(), expectedData.getRowCount());
         for (int rowIndex = 0; rowIndex < minRowCount; rowIndex++) {
             List<ResultCell> row = new ArrayList<>(columnIndices.size());
-            if (!checkRowMatches(
+            if (rowDoesNotMatch(
                     columnIndices, results, actualData, expectedData, columnComparators, rowIndex, rowIndex, row)) {
                 return;
             }
@@ -265,7 +271,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
         while (expectedIndex >= minExpectedIndex && actualIndex >= minActualIndex) {
             List<ResultCell> row = new ArrayList<>(columnIndices.size());
 
-            if (!checkRowMatches(
+            if (rowDoesNotMatch(
                     columnIndices,
                     reverseHappyPathResults,
                     actualData,
@@ -281,7 +287,7 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
         }
     }
 
-    private static boolean checkRowMatches(
+    private static boolean rowDoesNotMatch(
             List<IndexMap> columnIndices,
             List<List<ResultCell>> results,
             VerifiableTable actualData,
@@ -313,12 +319,12 @@ public class IndexMapTableVerifier implements SingleTableVerifier {
                     }
                     row.add(cell);
                 } else {
-                    return false;
+                    return true;
                 }
             }
         }
         results.add(row);
-        return true;
+        return false;
     }
 
     private static void identifyOutOfOrderIndices(List<IndexMap> indexMaps, int nextExpectedIndex) {

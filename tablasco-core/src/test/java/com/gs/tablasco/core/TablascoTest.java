@@ -8,7 +8,6 @@ import com.gs.tablasco.verify.ListVerifiableTable;
 import com.gs.tablasco.verify.ResultTable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -26,12 +25,6 @@ public class TablascoTest {
 
     @TempDir
     public File temporaryFolder;
-
-    @Test
-    void loadBaseline() {}
-
-    @Test
-    void saveBaseline() {}
 
     @Test
     void verifyTables() throws IOException {
@@ -116,9 +109,6 @@ public class TablascoTest {
                             </body>
                         </html>
                         """,
-                new String(Files.readAllBytes(path), StandardCharsets.UTF_8).replaceAll("[\n\r]+", "\n"));
+                Files.readString(path).replaceAll("[\n\r]+", "\n"));
     }
-
-    @Test
-    void writeResults() {}
 }
