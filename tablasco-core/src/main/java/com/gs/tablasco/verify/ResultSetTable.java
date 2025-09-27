@@ -17,6 +17,7 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.VerifiableTable;
+import com.gs.tablasco.core.Tables;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -49,6 +50,6 @@ public class ResultSetTable {
             }
             rows.add(row);
         }
-        return ListVerifiableTable.create(headers, rows);
+        return Tables.fromList(headers, rows);
     }
 }

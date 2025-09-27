@@ -17,6 +17,7 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.*;
+import com.gs.tablasco.core.Tables;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -42,7 +43,7 @@ public class ResultSetTableTest {
         VerifiableTable expected = new TestTable("Name", "Age", "Height", "DoB")
                 .withRow("Joe", 70, 6.0, Date.valueOf("1940-02-16"))
                 .withRow("Sue", 45, 5.8, Date.valueOf("1975-02-16"));
-        VerifiableTable actual = ResultSetTable.create(resultSet);
+        VerifiableTable actual = Tables.fromResultSet(resultSet);
         this.tableVerifier.verify(
                 Collections.singletonList(new NamedTable("table", expected)),
                 Collections.singletonList(new NamedTable("table", actual)));

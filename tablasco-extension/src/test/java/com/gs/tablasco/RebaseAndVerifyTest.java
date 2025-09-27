@@ -18,8 +18,8 @@ package com.gs.tablasco;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.gs.tablasco.core.Tables;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-import com.gs.tablasco.verify.ListVerifiableTable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -264,6 +264,6 @@ public class RebaseAndVerifyTest {
         List<String> headers = Arrays.stream(values)
                 .map(object -> object.getClass().getSimpleName())
                 .collect(Collectors.toList());
-        return new ListVerifiableTable(headers, Collections.singletonList(Arrays.asList(values)));
+        return Tables.fromList(headers, Collections.singletonList(Arrays.asList(values)));
     }
 }

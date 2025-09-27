@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.core.HtmlConfig;
+import com.gs.tablasco.core.Tables;
 import com.gs.tablasco.rebase.RebaseFileWriter;
 import com.gs.tablasco.results.ExpectedResults;
 import com.gs.tablasco.results.FileSystemExpectedResultsLoader;
@@ -74,12 +75,12 @@ public abstract class AbstractSingleTableVerifierTest {
 
     private void actualTable(List<?>... headerAndRows) {
         assertNull(this.actual);
-        this.actual = ListVerifiableTable.create(Arrays.asList(headerAndRows));
+        this.actual = Tables.fromList(Arrays.asList(headerAndRows));
     }
 
     private void expectedTable(List<?>... headerAndRows) {
         assertNull(this.expected);
-        this.expected = ListVerifiableTable.create(Arrays.asList(headerAndRows));
+        this.expected = Tables.fromList(Arrays.asList(headerAndRows));
     }
 
     private void assertVerification() {

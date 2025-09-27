@@ -29,8 +29,8 @@ class ListVerifiableTableTest {
     @Test
     void testHeaderTypes() {
         // old usages prior to allowing String headers
-        List<String> headersAsObjects = Collections.singletonList("Col");
-        List<List<?>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.singletonList("Val"));
+        List<Object> headersAsObjects = Collections.singletonList("Col");
+        List<List<Object>> headersAndDataAsObjects = Arrays.asList(headersAsObjects, Collections.singletonList("Val"));
         assertEquals(
                 1,
                 new ListVerifiableTable(headersAndDataAsObjects).getRowCount(),

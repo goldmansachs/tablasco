@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gs.tablasco.NamedTable;
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.ListVerifiableTable;
 import com.gs.tablasco.verify.ResultTable;
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +18,8 @@ import org.junit.jupiter.api.io.TempDir;
 public class TablascoTest {
 
     private static final VerifiableTable T1 =
-            new ListVerifiableTable(Arrays.asList("key", "value"), Collections.singletonList(Arrays.asList("a", 1)));
-    private static final VerifiableTable T2 = new ListVerifiableTable(
+            Tables.fromList(Arrays.asList("key", "value"), Collections.singletonList(Arrays.asList("a", 1)));
+    private static final VerifiableTable T2 = Tables.fromList(
             Arrays.asList("key", "value", "surplus"), Collections.singletonList(Arrays.asList("a", 2, "x")));
 
     @TempDir
