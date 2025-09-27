@@ -26,6 +26,7 @@ public final class HtmlConfig {
     private boolean hideMatchedTables = false;
     private boolean hideMatchedColumns = false;
     private boolean showAssertionSummary = false;
+    private boolean summarizedResults = false;
     private final Set<String> tablesToAlwaysShowMatchedRowsFor = new HashSet<>();
     private int htmlRowLimit = HtmlFormatter.DEFAULT_ROW_LIMIT;
 
@@ -99,6 +100,16 @@ public final class HtmlConfig {
         return this;
     }
 
+    /**
+     * Formats results grouped by break type with a sample of each group - useful for very large results.
+     *
+     * @return this
+     */
+    public HtmlConfig withSummarizedResults(boolean summarizedResults) {
+        this.summarizedResults = summarizedResults;
+        return this;
+    }
+
     public boolean isHideMatchedRows() {
         return hideMatchedRows;
     }
@@ -121,5 +132,9 @@ public final class HtmlConfig {
 
     public int getHtmlRowLimit() {
         return htmlRowLimit;
+    }
+
+    public boolean isSummarizedResults() {
+        return summarizedResults;
     }
 }

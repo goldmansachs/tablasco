@@ -96,9 +96,8 @@ class RealVerificationExamplesTest {
                         TableTestUtils.getOutputDirectory(),
                         RealVerificationExamplesTest.class.getSimpleName() + '_' + className + '_' + methodName
                                 + ".html"),
-                new HtmlConfig());
-        htmlFormatter.appendResults(
-                methodName, Collections.singletonMap(tableName, new SummaryResultTable(verify)), Metadata.newEmpty());
+                new HtmlConfig().withSummarizedResults(true));
+        htmlFormatter.appendResults(methodName, Collections.singletonMap(tableName, verify), Metadata.newEmpty());
         int failedCells = verify.getTotalCellCount() - verify.getPassedCellCount();
         assertEquals(expectedBrokenCells, failedCells);
     }

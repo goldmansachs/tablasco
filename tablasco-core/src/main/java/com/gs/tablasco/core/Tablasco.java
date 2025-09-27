@@ -2,9 +2,7 @@ package com.gs.tablasco.core;
 
 import com.gs.tablasco.NamedTable;
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.HtmlFormatter;
-import com.gs.tablasco.verify.MultiTableVerifier;
-import com.gs.tablasco.verify.ResultTable;
+import com.gs.tablasco.verify.*;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -24,12 +22,17 @@ public class Tablasco {
     }
 
     public Map<String, ResultTable> verifyTables(List<NamedTable> expectedTables, List<NamedTable> actualTables) {
-        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(verifierConfig);
-        Map<String, ? extends VerifiableTable> expectedTableMap =
+        Map<String, VerifiableTable> expectedTableMap =
                 expectedTables.stream().collect(Collectors.toMap(NamedTable::getName, NamedTable::getTable));
-        Map<String, ? extends VerifiableTable> actualTableMap =
+        Map<String, VerifiableTable> actualTableMap =
                 actualTables.stream().collect(Collectors.toMap(NamedTable::getName, NamedTable::getTable));
-        return multiTableVerifier.verifyTables(expectedTableMap, actualTableMap);
+        return this.verifyTables(expectedTableMap, actualTableMap);
+    }
+
+    public Map<String, ResultTable> verifyTables(
+            Map<String, VerifiableTable> expectedTables, Map<String, VerifiableTable> actualTables) {
+        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(verifierConfig);
+        return multiTableVerifier.verifyTables(expectedTables, actualTables);
     }
 
     public void writeResults(Path outputFile, Map<String, ResultTable> results) {

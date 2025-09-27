@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import com.gs.tablasco.adapters.TableAdapters;
 import com.gs.tablasco.core.HtmlConfig;
+import com.gs.tablasco.core.Tablasco;
 import com.gs.tablasco.core.VerifierConfig;
 import com.gs.tablasco.files.*;
 import com.gs.tablasco.rebase.Rebaser;
@@ -103,7 +104,6 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
     private ExpectedResultsLoader expectedResultsLoader = new FileSystemExpectedResultsLoader();
     private Future<ExpectedResults> expectedResultsFuture;
     private int verifyCount = 0;
-    private boolean summarisedResults = false;
 
     /**
      * Returns the same instance of {@link TableVerifier} configured with a fixed expected results directory.
@@ -583,7 +583,7 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
      * @return this
      */
     public TableVerifier withSummarisedResults(boolean summarisedResults) {
-        this.summarisedResults = summarisedResults;
+        this.htmlConfig.withSummarizedResults(summarisedResults);
         return this;
     }
 
@@ -784,7 +784,7 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
         Map<String, VerifiableTable> adaptedExpectedTables =
                 adaptAndFilterTables(expectedTables, this.getExpectedAdapter());
         Map<String, VerifiableTable> adaptedActualTables = adaptAndFilterTables(actualTables, this.getActualAdapter());
-        Map<String, FormattableTable> allResults = getVerifiedResults(adaptedExpectedTables, adaptedActualTables);
+        Map<String, ResultTable> allResults = getVerifiedResults(adaptedExpectedTables, adaptedActualTables);
         boolean verificationSuccess = allResults.values().stream().allMatch(FormattableTable::isSuccess);
         boolean createActual = this.createActualResults;
         if (this.createActualResultsOnFailure) {
@@ -815,19 +815,11 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
         return new HtmlFormatter(this.getOutputFile(), this.htmlConfig);
     }
 
-    private Map<String, FormattableTable> getVerifiedResults(
+    private Map<String, ResultTable> getVerifiedResults(
             Map<String, VerifiableTable> adaptedExpectedTables, Map<String, VerifiableTable> adaptedActualTables) {
-        MultiTableVerifier multiTableVerifier = new MultiTableVerifier(this.verifierConfig);
-        Map<String, ResultTable> resultTables =
-                multiTableVerifier.verifyTables(adaptedExpectedTables, adaptedActualTables);
-        Map<String, FormattableTable> resultTableInterfaces = new LinkedHashMap<>(resultTables.size());
-        for (Map.Entry<String, ResultTable> resultTableEntry : resultTables.entrySet()) {
-            ResultTable resultTable = resultTableEntry.getValue();
-            resultTableInterfaces.put(
-                    resultTableEntry.getKey(),
-                    this.summarisedResults ? new SummaryResultTable(resultTable) : resultTable);
-        }
-        return resultTableInterfaces;
+        String testName = this.extensionContext.getRequiredTestMethod().getName();
+        Tablasco tablasco = new Tablasco(this.verifierConfig, this.htmlConfig, testName);
+        return tablasco.verifyTables(adaptedExpectedTables, adaptedActualTables);
     }
 
     private Map<String, VerifiableTable> adaptAndFilterTables(

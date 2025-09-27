@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ListVerifiableTable implements VerifiableTable {
     private final List<?> headers;
     private final List<List<Object>> data;
@@ -46,16 +47,9 @@ public class ListVerifiableTable implements VerifiableTable {
     public static VerifiableTable create(Iterable<List> headersAndRows) {
         Iterator<List> iterator = headersAndRows.iterator();
         List headers = iterator.next();
-        headers.forEach(ListVerifiableTable::verifyHeader);
         List rowList = new ArrayList();
         iterator.forEachRemaining(verifyRowSize(headers).andThen(rowList::add));
         return new ListVerifiableTable(headers, rowList);
-    }
-
-    private static void verifyHeader(Object obj) {
-        if ((!(obj instanceof String))) {
-            throw new IllegalArgumentException("Invalid header " + obj);
-        }
     }
 
     /**

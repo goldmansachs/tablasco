@@ -75,6 +75,7 @@ public class HtmlFormatter {
                 htmlConfig.isHideMatchedTables(),
                 htmlConfig.isHideMatchedRows(),
                 htmlConfig.isHideMatchedColumns(),
+                htmlConfig.isSummarizedResults(),
                 htmlConfig.getTablesToAlwaysShowMatchedRowsFor());
         this.initializedFiles = initializedFiles;
     }
@@ -137,18 +138,19 @@ public class HtmlFormatter {
         return document;
     }
 
-    public void appendResults(String testName, Map<String, ? extends FormattableTable> results, Metadata metadata) {
+    public void appendResults(String testName, Map<String, ResultTable> results, Metadata metadata) {
         this.appendResults(testName, results, metadata, 1);
     }
 
-    public void appendResults(
-            String testName, Map<String, ? extends FormattableTable> results, Metadata metadata, int verifyCount) {
+    public void appendResults(String testName, Map<String, ResultTable> results, Metadata metadata, int verifyCount) {
         Map<String, FormattableTable> resultsToFormat = new LinkedHashMap<>();
         for (String name : results.keySet()) {
-            FormattableTable formattableTable = results.get(name);
-            boolean dontFormat = this.htmlOptions.isHideMatchedTables() && formattableTable.isSuccess();
+            ResultTable resultTable = results.get(name);
+            boolean dontFormat = this.htmlOptions.isHideMatchedTables() && resultTable.isSuccess();
             if (!dontFormat) {
-                resultsToFormat.put(name, formattableTable);
+                resultsToFormat.put(
+                        name,
+                        this.htmlOptions.isSummarizedResults() ? new SummaryResultTable(resultTable) : resultTable);
             }
         }
         if (!resultsToFormat.isEmpty()) {

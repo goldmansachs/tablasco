@@ -24,6 +24,7 @@ public class HtmlOptions {
     private final boolean hideMatchedTables;
     private final boolean hideMatchedRows;
     private final boolean hideMatchedColumns;
+    private final boolean summarizedResults;
     private final Set<String> tablesToAlwaysShowMatchedRowsFor;
 
     public HtmlOptions(
@@ -32,12 +33,14 @@ public class HtmlOptions {
             boolean hideMatchedTables,
             boolean hideMatchedRows,
             boolean hideMatchedColumns,
+            boolean summarizedResults,
             Set<String> tablesToAlwaysShowMatchedRowsFor) {
         this.displayAssertionSummary = displayAssertionSummary;
         this.hideMatchedColumns = hideMatchedColumns;
         this.hideMatchedTables = hideMatchedTables;
         this.htmlRowLimit = htmlRowLimit;
         this.hideMatchedRows = hideMatchedRows;
+        this.summarizedResults = summarizedResults;
         this.tablesToAlwaysShowMatchedRowsFor = tablesToAlwaysShowMatchedRowsFor;
     }
 
@@ -59,5 +62,9 @@ public class HtmlOptions {
 
     boolean isHideMatchedTables() {
         return this.hideMatchedTables;
+    }
+
+    public boolean isSummarizedResults() {
+        return summarizedResults;
     }
 }
