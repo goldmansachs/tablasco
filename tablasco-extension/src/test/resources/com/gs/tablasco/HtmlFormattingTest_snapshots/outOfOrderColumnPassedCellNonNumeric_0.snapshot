@@ -6,13 +6,11 @@ test-method: outOfOrderColumnPassedCellNonNumeric
 
 <table border="1" cellspacing="0">
 <tr>
-<th class="outoforder">Col 2<p>Out of order</p>
-</th>
+<th class="outoforder">Col 2</th>
 <th class="pass">Col 1</th>
 </tr>
 <tr>
-<td class="outoforder">A2<p>Out of order</p>
-</td>
+<td class="outoforder">A2</td>
 <td class="pass">A1</td>
 </tr>
 </table>

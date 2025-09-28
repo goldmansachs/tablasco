@@ -11,21 +11,21 @@ test-method: missingSurplusRowsNumeric
 </tr>
 <tr>
 <td class="pass number">345.6</td>
-<td class="fail number">13<p>Expected</p>
-<hr/>12.8<p>Actual</p>
-<hr/>0.2 / -1.5%<p>Difference / Variance</p>
+<td class="fail number"><span class="expected">13</span>
+<span class="actual">12.8</span>
+(0.2 / -1.5%)
 </td>
 </tr>
 <tr>
-<td class="surplus number">56.6<p>Surplus</p>
+<td class="surplus number"><span class="actual">56.6</span>
 </td>
-<td class="surplus number">45.3<p>Surplus</p>
+<td class="surplus number"><span class="actual">45.3</span>
 </td>
 </tr>
 <tr>
-<td class="missing number">56.4<p>Missing</p>
+<td class="missing number"><span class="expected">56.4</span>
 </td>
-<td class="missing number">45<p>Missing</p>
+<td class="missing number"><span class="expected">45</span>
 </td>
 </tr>
 </table>

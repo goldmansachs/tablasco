@@ -186,25 +186,18 @@ public abstract class ResultCell implements Serializable {
                         this.getCssClass(),
                         isHeaderRow,
                         true,
-                        document.createTextNode(this.formatter.format(this.expected)),
-                        ResultCell.createNodeWithText(document, "p", "Expected"),
-                        document.createElement("hr"),
-                        document.createTextNode(this.formatter.format(this.actual)),
-                        ResultCell.createNodeWithText(document, "p", "Actual"),
-                        document.createElement("hr"),
-                        document.createTextNode(difference + " / " + variance + '%'),
-                        ResultCell.createNodeWithText(document, "p", "Difference / Variance"));
+                        ResultCell.createNodeWithText(
+                                document, "span", this.formatter.format(this.expected), "expected"),
+                        ResultCell.createNodeWithText(document, "span", this.formatter.format(this.actual), "actual"),
+                        document.createTextNode("(" + difference + " / " + variance + "%)"));
             }
             return ResultCell.createCell(
                     document,
                     this.getCssClass(),
                     isHeaderRow,
                     false,
-                    document.createTextNode(this.formatter.format(this.expected)),
-                    ResultCell.createNodeWithText(document, "p", "Expected"),
-                    document.createElement("hr"),
-                    document.createTextNode(this.formatter.format(this.actual)),
-                    ResultCell.createNodeWithText(document, "p", "Actual"));
+                    ResultCell.createNodeWithText(document, "span", this.formatter.format(this.expected), "expected"),
+                    ResultCell.createNodeWithText(document, "span", this.formatter.format(this.actual), "actual"));
         }
 
         @Override
@@ -251,8 +244,7 @@ public abstract class ResultCell implements Serializable {
                     this.getCssClass(),
                     isHeaderRow,
                     CellFormatter.isNumber(this.expected),
-                    document.createTextNode(this.formatter.format(this.expected)),
-                    ResultCell.createNodeWithText(document, "p", "Missing"));
+                    ResultCell.createNodeWithText(document, "span", this.formatter.format(this.expected), "expected"));
         }
 
         @Override
@@ -296,8 +288,7 @@ public abstract class ResultCell implements Serializable {
                     this.getCssClass(),
                     isHeaderRow,
                     CellFormatter.isNumber(this.actual),
-                    document.createTextNode(this.formatter.format(this.actual)),
-                    ResultCell.createNodeWithText(document, "p", "Surplus"));
+                    ResultCell.createNodeWithText(document, "span", this.formatter.format(this.actual), "actual"));
         }
 
         @Override
@@ -342,8 +333,7 @@ public abstract class ResultCell implements Serializable {
                     this.getCssClass(),
                     isHeaderRow,
                     CellFormatter.isNumber(this.actualAndExpected),
-                    document.createTextNode(this.formatter.format(this.actualAndExpected)),
-                    ResultCell.createNodeWithText(document, "p", "Out of order"));
+                    document.createTextNode(this.formatter.format(this.actualAndExpected)));
         }
 
         @Override
@@ -402,15 +392,15 @@ public abstract class ResultCell implements Serializable {
             } else {
                 this.columnCardinality.forEachWithOccurrences((value, occurrences) -> {
                     if (value instanceof Map) {
-                        Map valueMap = (Map) value;
+                        Map<?, ?> valueMap = (Map<?, ?>) value;
                         valueMap.forEach((k, v) -> {
-                            node.appendChild(ResultCell.createNodeWithText(document, "span", k + " ", "grey"));
+                            node.appendChild(ResultCell.createNodeWithText(document, "span", k + " ", null));
                             node.appendChild(getValueNode(document, v));
                         });
                     } else {
                         node.appendChild(getValueNode(document, value));
                     }
-                    node.appendChild(ResultCell.createNodeWithText(document, "span", "- ", "grey"));
+                    node.appendChild(ResultCell.createNodeWithText(document, "span", "- ", null));
                     node.appendChild(ResultCell.createNodeWithText(
                             document,
                             "span",

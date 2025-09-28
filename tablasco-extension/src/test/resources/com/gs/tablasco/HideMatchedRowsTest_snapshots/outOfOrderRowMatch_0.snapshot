@@ -10,10 +10,8 @@ test-method: outOfOrderRowMatch
 <th class="pass">Col 2</th>
 </tr>
 <tr>
-<td class="outoforder">B1<p>Out of order</p>
-</td>
-<td class="outoforder">B2<p>Out of order</p>
-</td>
+<td class="outoforder">B1</td>
+<td class="outoforder">B2</td>
 </tr>
 <tr>
 <td class="pass multi" colspan="2">1 matched row...</td>

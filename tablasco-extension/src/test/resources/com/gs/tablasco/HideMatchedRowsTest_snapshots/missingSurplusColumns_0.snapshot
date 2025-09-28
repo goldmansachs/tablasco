@@ -6,26 +6,24 @@ test-method: missingSurplusColumns
 
 <table border="1" cellspacing="0">
 <tr>
-<th class="outoforder">Col 3<p>Out of order</p>
-</th>
-<th class="surplus">Col 4<p>Surplus</p>
+<th class="outoforder">Col 3</th>
+<th class="surplus"><span class="actual">Col 4</span>
 </th>
 <th class="pass">Col 1</th>
-<th class="missing">Col 2<p>Missing</p>
+<th class="missing"><span class="expected">Col 2</span>
 </th>
 </tr>
 <tr>
 <td class="pass multi" colspan="4">1 matched row...</td>
 </tr>
 <tr>
-<td class="outoforder">B3<p>Out of order</p>
+<td class="outoforder">B3</td>
+<td class="surplus"><span class="actual">B2</span>
 </td>
-<td class="surplus">B2<p>Surplus</p>
+<td class="fail"><span class="expected">B1</span>
+<span class="actual">B9</span>
 </td>
-<td class="fail">B1<p>Expected</p>
-<hr/>B9<p>Actual</p>
-</td>
-<td class="missing">B2<p>Missing</p>
+<td class="missing"><span class="expected">B2</span>
 </td>
 </tr>
 <tr>

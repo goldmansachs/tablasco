@@ -7,12 +7,12 @@ test-method: ignoreSurplusColumnsFailsWithMissing
 <table border="1" cellspacing="0">
 <tr>
 <th class="pass">Col 1</th>
-<th class="missing">Col 3<p>Missing</p>
+<th class="missing"><span class="expected">Col 3</span>
 </th>
 </tr>
 <tr>
 <td class="pass">A1</td>
-<td class="missing">A3<p>Missing</p>
+<td class="missing"><span class="expected">A3</span>
 </td>
 </tr>
 </table>

@@ -110,12 +110,11 @@ public class HtmlFormatter {
         html.appendChild(head);
 
         Element script = document.createElement("script");
-        script.appendChild(document.createTextNode(getVisibilityFunction()));
+        script.appendChild(document.createTextNode("\n" + getVisibilityFunction() + "\n"));
         head.appendChild(script);
 
         Element style = document.createElement("style");
-        style.setAttribute("type", "text/css");
-        style.appendChild(document.createTextNode(getCSSDefinitions()));
+        style.appendChild(document.createTextNode("\n" + getCSSDefinitions() + "\n"));
         head.appendChild(style);
 
         Element meta = document.createElement("meta");
@@ -322,41 +321,21 @@ public class HtmlFormatter {
     }
 
     private static String getVisibilityFunction() {
-        return "\n" + "function toggleVisibility(id){\n"
-                + "var summary = document.getElementById(id);\n"
-                + "if (summary.style.display === 'none') {\n"
-                + "summary.style.display = 'table-row';\n"
-                + "} else {\n"
-                + "summary.style.display = 'none';\n"
-                + "}\n"
-                + "}\n";
+        try (InputStream is = HtmlFormatter.class.getResourceAsStream("/tablasco.js")) {
+            return new String(Objects.requireNonNull(is).readAllBytes(), StandardCharsets.UTF_8)
+                    .replaceAll("\\r\\n", "\n");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private static String getCSSDefinitions() {
-        return "\n" + "* { padding: 0;margin: 0; }\n"
-                + "body { color: black; padding: 4px; font-family: Verdana, Geneva, sans-serif; }\n"
-                + "table { border-collapse: collapse; border: 0px; margin-bottom: 12px; }\n"
-                + "th { font-weight: bold; }\n"
-                + "td, th { white-space: nowrap; border: 1px solid black; vertical-align: top; font-size: small; padding: 2px; }\n"
-                + ".pass { background-color: #c0ffc0; }\n"
-                + ".fail { background-color: #ff8080; }\n"
-                + ".outoforder { background-color: #d0b0ff; }\n"
-                + ".missing { background-color: #cccccc; }\n"
-                + ".surplus { background-color: #ffffcc; }\n"
-                + ".summary { background-color: #f3f6f8; }\n"
-                + ".number { text-align: right; }\n"
-                + ".metadata { margin-bottom: 12px; }\n"
-                + ".multi { font-style: italic; }\n"
-                + ".blank_row { height: 10px; border: 0px; background-color: #ffffff; }\n"
-                + ".grey { color: #999999; }\n"
-                + ".blue { color: blue; }\n"
-                + ".italic { font-style: italic; }\n"
-                + ".link { color: blue; text-decoration: underline; cursor:pointer; font-style: italic }\n"
-                + ".small { font-size: x-small; }\n"
-                + "hr { border: 0px; color: black; background-color: black; height: 1px; margin: 2px 0px 2px 0px; }\n"
-                + "p { font-style: italic; font-size: x-small; color: blue; padding: 3px 0 0 0; }\n"
-                + "h1 { font-size: medium; margin-bottom: 4px; }\n"
-                + "h2 { font-size: small; margin-bottom: 4px; }\n";
+        try (InputStream is = HtmlFormatter.class.getResourceAsStream("/tablasco.css")) {
+            return new String(Objects.requireNonNull(is).readAllBytes(), StandardCharsets.UTF_8)
+                    .replaceAll("\\r\\n", "\n");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     abstract static class LazyValue<T> {

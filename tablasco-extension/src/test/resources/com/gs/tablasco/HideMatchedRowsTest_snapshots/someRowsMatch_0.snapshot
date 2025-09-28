@@ -14,8 +14,8 @@ test-method: someRowsMatch
 </tr>
 <tr>
 <td class="pass">B1</td>
-<td class="fail">B2<p>Expected</p>
-<hr/>X2<p>Actual</p>
+<td class="fail"><span class="expected">B2</span>
+<span class="actual">X2</span>
 </td>
 </tr>
 <tr>
@@ -23,8 +23,8 @@ test-method: someRowsMatch
 </tr>
 <tr>
 <td class="pass">E1</td>
-<td class="fail">E2<p>Expected</p>
-<hr/>X2<p>Actual</p>
+<td class="fail"><span class="expected">E2</span>
+<span class="actual">X2</span>
 </td>
 </tr>
 <tr>

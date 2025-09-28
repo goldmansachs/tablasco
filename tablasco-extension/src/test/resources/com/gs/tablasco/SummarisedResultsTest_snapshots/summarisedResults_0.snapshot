@@ -31,12 +31,12 @@ test-method: summarisedResults
 </tr>
 <tr id="summarisedResults.name1.summaryRow0" style="display:none">
 <td class="summary small">d
-<span class="grey">- </span>
+<span>- </span>
 <span class="italic blue">1 row</span>
 <br/>
 </td>
 <td class="summary small">4
-<span class="grey">- </span>
+<span>- </span>
 <span class="italic blue">1 row</span>
 <br/>
 </td>
@@ -46,20 +46,20 @@ test-method: summarisedResults
 </tr>
 <tr>
 <td class="pass">e</td>
-<td class="fail">5<p>Expected</p>
-<hr/>x<p>Actual</p>
+<td class="fail"><span class="expected">5</span>
+<span class="actual">x</span>
 </td>
 </tr>
 <tr>
 <td class="pass">e</td>
-<td class="fail">5<p>Expected</p>
-<hr/>x<p>Actual</p>
+<td class="fail"><span class="expected">5</span>
+<span class="actual">x</span>
 </td>
 </tr>
 <tr>
 <td class="pass">e</td>
-<td class="fail">5<p>Expected</p>
-<hr/>x<p>Actual</p>
+<td class="fail"><span class="expected">5</span>
+<span class="actual">x</span>
 </td>
 </tr>
 <tr onclick="toggleVisibility('summarisedResults.name1.summaryRow1')">
@@ -69,15 +69,15 @@ test-method: summarisedResults
 </tr>
 <tr id="summarisedResults.name1.summaryRow1" style="display:none">
 <td class="summary small">e
-<span class="grey">- </span>
+<span>- </span>
 <span class="italic blue">1 row</span>
 <br/>
 </td>
-<td class="summary small"><span class="grey">Expected </span>
+<td class="summary small"><span>Expected </span>
 5
-<span class="grey">Actual </span>
+<span>Actual </span>
 x
-<span class="grey">- </span>
+<span>- </span>
 <span class="italic blue">1 row</span>
 <br/>
 </td>

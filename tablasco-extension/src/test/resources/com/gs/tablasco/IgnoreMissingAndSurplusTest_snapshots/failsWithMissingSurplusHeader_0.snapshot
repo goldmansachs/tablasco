@@ -7,16 +7,16 @@ test-method: failsWithMissingSurplusHeader
 <table border="1" cellspacing="0">
 <tr>
 <th class="pass">Col 1</th>
-<th class="surplus">Col 3<p>Surplus</p>
+<th class="surplus"><span class="actual">Col 3</span>
 </th>
-<th class="missing">Col 2<p>Missing</p>
+<th class="missing"><span class="expected">Col 2</span>
 </th>
 </tr>
 <tr>
 <td class="pass">B1</td>
-<td class="surplus">B2<p>Surplus</p>
+<td class="surplus"><span class="actual">B2</span>
 </td>
-<td class="missing">B2<p>Missing</p>
+<td class="missing"><span class="expected">B2</span>
 </td>
 </tr>
 </table>

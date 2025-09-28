@@ -16,15 +16,15 @@ test-method: multiMatchedColumns
 <td class="pass"> </td>
 <td class="pass">A</td>
 <td class="pass"> </td>
-<td class="fail">A<p>Expected</p>
-<hr/>X<p>Actual</p>
+<td class="fail"><span class="expected">A</span>
+<span class="actual">X</span>
 </td>
 <td class="pass"> </td>
 </tr>
 <tr>
 <td class="pass"> </td>
-<td class="fail">B<p>Expected</p>
-<hr/>X<p>Actual</p>
+<td class="fail"><span class="expected">B</span>
+<span class="actual">X</span>
 </td>
 <td class="pass"> </td>
 <td class="pass">B</td>

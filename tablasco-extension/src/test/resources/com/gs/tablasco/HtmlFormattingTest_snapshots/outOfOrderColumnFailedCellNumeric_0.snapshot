@@ -6,14 +6,13 @@ test-method: outOfOrderColumnFailedCellNumeric
 
 <table border="1" cellspacing="0">
 <tr>
-<th class="outoforder">Col 2<p>Out of order</p>
-</th>
+<th class="outoforder">Col 2</th>
 <th class="pass">Col 1</th>
 </tr>
 <tr>
-<td class="fail number">25<p>Expected</p>
-<hr/>25.3<p>Actual</p>
-<hr/>-0.3 / 1.2%<p>Difference / Variance</p>
+<td class="fail number"><span class="expected">25</span>
+<span class="actual">25.3</span>
+(-0.3 / 1.2%)
 </td>
 <td class="pass number">30.78</td>
 </tr>

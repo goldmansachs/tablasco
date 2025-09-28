@@ -11,9 +11,9 @@ test-method: numericBreak
 </tr>
 <tr>
 <td class="pass">A</td>
-<td class="fail number">10.12<p>Expected</p>
-<hr/>20.46<p>Actual</p>
-<hr/>-10.33 / 102.07%<p>Difference / Variance</p>
+<td class="fail number"><span class="expected">10.12</span>
+<span class="actual">20.46</span>
+(-10.33 / 102.07%)
 </td>
 </tr>
 </table>

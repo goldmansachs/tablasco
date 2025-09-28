@@ -11,8 +11,8 @@ test-method: failsWithDifferenceInCommonRow
 </tr>
 <tr>
 <td class="pass">B1</td>
-<td class="fail">B2<p>Expected</p>
-<hr/>B3<p>Actual</p>
+<td class="fail"><span class="expected">B2</span>
+<span class="actual">B3</span>
 </td>
 </tr>
 </table>

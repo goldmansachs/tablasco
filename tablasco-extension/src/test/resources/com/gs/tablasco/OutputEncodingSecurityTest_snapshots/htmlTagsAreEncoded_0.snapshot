@@ -12,11 +12,11 @@ test-method: htmlTagsAreEncoded
 <td class="pass">&lt;script language="javascript"&gt;alert("boo")&lt;/script&gt;</td>
 </tr>
 <tr>
-<td class="surplus">&lt;script language="javascript"&gt;alert("foo")&lt;/script&gt;<p>Surplus</p>
+<td class="surplus"><span class="actual">&lt;script language="javascript"&gt;alert("foo")&lt;/script&gt;</span>
 </td>
 </tr>
 <tr>
-<td class="missing">&lt;script language="javascript"&gt;alert("boo")&lt;/script&gt;<p>Missing</p>
+<td class="missing"><span class="expected">&lt;script language="javascript"&gt;alert("boo")&lt;/script&gt;</span>
 </td>
 </tr>
 </table>

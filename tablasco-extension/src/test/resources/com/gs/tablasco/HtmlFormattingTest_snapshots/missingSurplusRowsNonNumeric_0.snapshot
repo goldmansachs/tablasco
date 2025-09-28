@@ -10,15 +10,15 @@ test-method: missingSurplusRowsNonNumeric
 <th class="pass">Col 2</th>
 </tr>
 <tr>
-<td class="surplus">C1<p>Surplus</p>
+<td class="surplus"><span class="actual">C1</span>
 </td>
-<td class="surplus">C2<p>Surplus</p>
+<td class="surplus"><span class="actual">C2</span>
 </td>
 </tr>
 <tr>
-<td class="missing">A1<p>Missing</p>
+<td class="missing"><span class="expected">A1</span>
 </td>
-<td class="missing">A2<p>Missing</p>
+<td class="missing"><span class="expected">A2</span>
 </td>
 </tr>
 </table>

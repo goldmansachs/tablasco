@@ -11,8 +11,8 @@ test-method: hideMatchedRows
 </tr>
 <tr>
 <td class="pass">A1</td>
-<td class="fail">A2<p>Expected</p>
-<hr/>AX<p>Actual</p>
+<td class="fail"><span class="expected">A2</span>
+<span class="actual">AX</span>
 </td>
 </tr>
 <tr>
@@ -20,8 +20,8 @@ test-method: hideMatchedRows
 </tr>
 <tr>
 <td class="pass">D1</td>
-<td class="fail">D2<p>Expected</p>
-<hr/>DX<p>Actual</p>
+<td class="fail"><span class="expected">D2</span>
+<span class="actual">DX</span>
 </td>
 </tr>
 <tr>

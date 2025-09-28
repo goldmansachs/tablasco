@@ -11,8 +11,8 @@ test-method: nonNumericActualNumericExpectedBreak
 </tr>
 <tr>
 <td class="pass">A</td>
-<td class="fail">390<p>Expected</p>
-<hr/>A2<p>Actual</p>
+<td class="fail"><span class="expected">390</span>
+<span class="actual">A2</span>
 </td>
 </tr>
 </table>

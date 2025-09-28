@@ -6,17 +6,17 @@ test-method: missingSurplusColumnsNonNumeric
 
 <table border="1" cellspacing="0">
 <tr>
-<th class="surplus">Col 4<p>Surplus</p>
+<th class="surplus"><span class="actual">Col 4</span>
 </th>
 <th class="pass">Col 1</th>
-<th class="missing">Col 2<p>Missing</p>
+<th class="missing"><span class="expected">Col 2</span>
 </th>
 </tr>
 <tr>
-<td class="surplus">A2<p>Surplus</p>
+<td class="surplus"><span class="actual">A2</span>
 </td>
 <td class="pass">A1</td>
-<td class="missing">A2<p>Missing</p>
+<td class="missing"><span class="expected">A2</span>
 </td>
 </tr>
 </table>

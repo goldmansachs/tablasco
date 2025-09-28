@@ -13,16 +13,16 @@ test-method: matchedRowsAndColumns
 <tr>
 <td class="pass">A</td>
 <td class="pass"> </td>
-<td class="fail">A<p>Expected</p>
-<hr/>X<p>Actual</p>
+<td class="fail"><span class="expected">A</span>
+<span class="actual">X</span>
 </td>
 </tr>
 <tr>
 <td class="pass multi" colspan="4">2 matched rows...</td>
 </tr>
 <tr>
-<td class="fail">D<p>Expected</p>
-<hr/>X<p>Actual</p>
+<td class="fail"><span class="expected">D</span>
+<span class="actual">X</span>
 </td>
 <td class="pass"> </td>
 <td class="pass">D</td>

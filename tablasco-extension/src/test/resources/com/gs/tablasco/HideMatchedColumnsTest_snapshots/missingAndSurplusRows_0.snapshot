@@ -11,24 +11,24 @@ test-method: missingAndSurplusRows
 </tr>
 <tr>
 <td class="missing"> </td>
-<td class="missing">A3<p>Missing</p>
+<td class="missing"><span class="expected">A3</span>
 </td>
 </tr>
 <tr>
 <td class="pass"> </td>
-<td class="fail">B3<p>Expected</p>
-<hr/>B9<p>Actual</p>
+<td class="fail"><span class="expected">B3</span>
+<span class="actual">B9</span>
 </td>
 </tr>
 <tr>
 <td class="pass"> </td>
-<td class="fail">C3<p>Expected</p>
-<hr/>C9<p>Actual</p>
+<td class="fail"><span class="expected">C3</span>
+<span class="actual">C9</span>
 </td>
 </tr>
 <tr>
 <td class="surplus"> </td>
-<td class="surplus">D3<p>Surplus</p>
+<td class="surplus"><span class="actual">D3</span>
 </td>
 </tr>
 </table>

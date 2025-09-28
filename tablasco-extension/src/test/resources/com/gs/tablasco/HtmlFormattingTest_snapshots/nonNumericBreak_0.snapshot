@@ -11,14 +11,14 @@ test-method: nonNumericBreak
 </tr>
 <tr>
 <td class="pass">A1</td>
-<td class="fail">A2<p>Expected</p>
-<hr/>A9<p>Actual</p>
+<td class="fail"><span class="expected">A2</span>
+<span class="actual">A9</span>
 </td>
 </tr>
 <tr>
 <td class="pass">B1</td>
-<td class="fail">B2<p>Expected</p>
-<hr/>B9<p>Actual</p>
+<td class="fail"><span class="expected">B2</span>
+<span class="actual">B9</span>
 </td>
 </tr>
 </table>

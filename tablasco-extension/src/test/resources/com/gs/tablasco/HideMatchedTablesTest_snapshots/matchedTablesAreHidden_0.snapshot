@@ -9,11 +9,11 @@ test-method: matchedTablesAreHidden
 <th class="pass">Col</th>
 </tr>
 <tr>
-<td class="surplus">B<p>Surplus</p>
+<td class="surplus"><span class="actual">B</span>
 </td>
 </tr>
 <tr>
-<td class="missing">A<p>Missing</p>
+<td class="missing"><span class="expected">A</span>
 </td>
 </tr>
 </table>
