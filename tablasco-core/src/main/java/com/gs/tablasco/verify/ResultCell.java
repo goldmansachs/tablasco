@@ -113,7 +113,7 @@ public abstract class ResultCell implements Serializable {
 
     @Override
     public final boolean equals(Object o) {
-        return this.toString().equals(String.valueOf(o));
+        return this.getClass().equals(o.getClass()) && this.toString().equals(String.valueOf(o));
     }
 
     @Override
