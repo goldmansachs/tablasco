@@ -85,16 +85,16 @@ public class CellFormatter implements Function<Object, String>, Serializable {
     }
 
     static boolean isNegativeZero(String formatted) {
-        if (!isCharAt(formatted, 0, '-')) {
+        if (isNotCharAt(formatted, 0, '-')) {
             return false;
         }
-        if (!isCharAt(formatted, 1, '0')) {
+        if (isNotCharAt(formatted, 1, '0')) {
             return false;
         }
         if (formatted.length() == 2) {
             return true;
         }
-        if (!isCharAt(formatted, 2, '.')) {
+        if (isNotCharAt(formatted, 2, '.')) {
             return false;
         }
         for (int i = 3; i < formatted.length(); i++) {
@@ -105,8 +105,8 @@ public class CellFormatter implements Function<Object, String>, Serializable {
         return true;
     }
 
-    private static boolean isCharAt(String str, int index, char ch) {
-        return str.length() > index && str.charAt(index) == ch;
+    private static boolean isNotCharAt(String str, int index, char ch) {
+        return str.length() <= index || str.charAt(index) != ch;
     }
 
     double getTolerance() {

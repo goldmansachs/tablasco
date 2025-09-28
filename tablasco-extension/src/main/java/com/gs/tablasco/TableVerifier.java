@@ -206,6 +206,7 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
      * @deprecated Rebase does not work correctly with this strategy which will be removed eventually. Please use the
      * default FilePerMethod instead.
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public TableVerifier withFilePerClass() {
         return this.withFileStrategy(new FilePerClassStrategy());

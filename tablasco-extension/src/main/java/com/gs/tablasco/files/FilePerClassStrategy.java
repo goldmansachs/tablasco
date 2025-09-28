@@ -23,6 +23,7 @@ package com.gs.tablasco.files;
  * @deprecated Rebase does not work correctly with this strategy which will be removed eventually. Please use the
  * default FilePerMethod instead.
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
 public class FilePerClassStrategy implements FilenameStrategy {
     @Override

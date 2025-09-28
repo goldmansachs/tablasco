@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Tables {
     /**
      * Creates a {@link VerifiableTable} from a list containing headers and rows as lists. The first must be the list
