@@ -1,113 +1,111 @@
 package com.gs.tablasco.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.gs.tablasco.NamedTable;
 import com.gs.tablasco.VerifiableTable;
 import com.gs.tablasco.verify.ResultTable;
-import java.io.File;
+import de.skuzzle.test.snapshots.Snapshot;
+import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+@EnableSnapshotTests
 public class TablascoTest {
 
-    private static final VerifiableTable T1 =
-            Tables.fromList(Arrays.asList("key", "value"), Collections.singletonList(Arrays.asList("a", 1)));
-    private static final VerifiableTable T2 = Tables.fromList(
-            Arrays.asList("key", "value", "surplus"), Collections.singletonList(Arrays.asList("a", 2, "x")));
-
     @TempDir
-    public File temporaryFolder;
+    Path tempDir;
+
+    private VerifiableTable expectedTable;
+    private VerifiableTable actualTable;
+
+    @BeforeEach
+    void setup() throws IOException {
+        this.expectedTable = loadTable("/html-test-expected.csv");
+        this.actualTable = loadTable("/html-test-actual.csv");
+    }
 
     @Test
-    void verifyTables() throws IOException {
-        Tablasco tablasco = new Tablasco(
-                new VerifierConfig().withIgnoreSurplusColumns(),
-                new HtmlConfig().withHideMatchedColumns(true),
-                "myTest");
+    void normalResult(Snapshot snapshot) throws IOException {
+
+        HtmlConfig htmlConfig = new HtmlConfig().withAssertionSummary(true);
+        runTest(htmlConfig, expectedTable, actualTable, snapshot);
+    }
+
+    @Test
+    void summaryResult(Snapshot snapshot) throws IOException {
+
+        HtmlConfig htmlConfig = new HtmlConfig().withAssertionSummary(true).withSummarizedResults(true);
+        runTest(htmlConfig, expectedTable, actualTable, snapshot);
+    }
+
+    @Test
+    void hideRowsColumns(Snapshot snapshot) throws IOException {
+
+        HtmlConfig htmlConfig = new HtmlConfig()
+                .withAssertionSummary(true)
+                .withHideMatchedRows(true)
+                .withHideMatchedColumns(true);
+        runTest(htmlConfig, expectedTable, expectedTable, snapshot);
+    }
+
+    private void runTest(
+            HtmlConfig htmlConfig, VerifiableTable expectedTable, VerifiableTable actualTable, Snapshot snapshot)
+            throws IOException {
+        Tablasco tablasco = new Tablasco(new VerifierConfig().withTolerance(0.01), htmlConfig, "HtmlTest");
         Map<String, ResultTable> verifiedTables = tablasco.verifyTables(
-                Collections.singletonList(new NamedTable("table1", T1)),
-                Collections.singletonList(new NamedTable("table1", T2)));
-        Path path =
-                File.createTempFile("results.html", null, this.temporaryFolder).toPath();
-        tablasco.writeResults(path, verifiedTables);
-        assertEquals(
-                """
-                        <html>
-                            <head>
-                                <script>
-                        function toggleVisibility(id){
-                        var summary = document.getElementById(id);
-                        if (summary.style.display === 'none') {
-                        summary.style.display = 'table-row';
-                        } else {
-                        summary.style.display = 'none';
-                        }
-                        }
-                        </script>
-                                <style type="text/css">
-                        * { padding: 0;margin: 0; }
-                        body { color: black; padding: 4px; font-family: Verdana, Geneva, sans-serif; }
-                        table { border-collapse: collapse; border: 0px; margin-bottom: 12px; }
-                        th { font-weight: bold; }
-                        td, th { white-space: nowrap; border: 1px solid black; vertical-align: top; font-size: small; padding: 2px; }
-                        .pass { background-color: #c0ffc0; }
-                        .fail { background-color: #ff8080; }
-                        .outoforder { background-color: #d0b0ff; }
-                        .missing { background-color: #cccccc; }
-                        .surplus { background-color: #ffffcc; }
-                        .summary { background-color: #f3f6f8; }
-                        .number { text-align: right; }
-                        .metadata { margin-bottom: 12px; }
-                        .multi { font-style: italic; }
-                        .blank_row { height: 10px; border: 0px; background-color: #ffffff; }
-                        .grey { color: #999999; }
-                        .blue { color: blue; }
-                        .italic { font-style: italic; }
-                        .link { color: blue; text-decoration: underline; cursor:pointer; font-style: italic }
-                        .small { font-size: x-small; }
-                        hr { border: 0px; color: black; background-color: black; height: 1px; margin: 2px 0px 2px 0px; }
-                        p { font-style: italic; font-size: x-small; color: blue; padding: 3px 0 0 0; }
-                        h1 { font-size: medium; margin-bottom: 4px; }
-                        h2 { font-size: small; margin-bottom: 4px; }
-                        </style>
-                                <meta content="text/html;charset=UTF-8" http-equiv="Content-type"/>
-                                <title>Test Results</title>
-                            </head>
-                            <body>
-                                <div class="metadata"/>
-                                <h1>myTest</h1>
-                                <div id="myTest.table1">
-                                    <h2>table1</h2>
-                                    <table border="1" cellspacing="0">
-                                        <tr>
-                                            <th class="pass">key</th>
-                                            <th class="pass">value</th>
-                                        </tr>
-                                        <tr>
-                                            <td class="pass">a</td>
-                                            <td class="fail number">
-                                                1
-                                                <p>Expected</p>
-                                                <hr/>
-                                                2
-                                                <p>Actual</p>
-                                                <hr/>
-                                                -1 / 100%
-                                                <p>Difference / Variance</p>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </body>
-                        </html>
-                        """,
-                Files.readString(path).replaceAll("[\n\r]+", "\n"));
+                Collections.singletonList(new NamedTable("Table", expectedTable)),
+                Collections.singletonList(new NamedTable("Table", actualTable)));
+        Path results = this.tempDir.resolve("results.html");
+        tablasco.writeResults(results, verifiedTables);
+        snapshot.assertThat(Files.readString(results)).asText().matchesSnapshotText();
+    }
+
+    private static CsvTable loadTable(String resource) throws IOException {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(Objects.requireNonNull(TablascoTest.class.getResourceAsStream(resource))))) {
+            CSVParser parser = CSVParser.parse(reader, CSVFormat.RFC4180.withFirstRecordAsHeader());
+
+            return new CsvTable(parser.getHeaderNames(), parser.getRecords());
+        }
+    }
+
+    private record CsvTable(List<String> headerNames, List<CSVRecord> records) implements VerifiableTable {
+
+        @Override
+        public int getRowCount() {
+            return this.records.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return this.headerNames.size();
+        }
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            return this.headerNames.get(columnIndex);
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            String string = this.records.get(rowIndex).get(columnIndex);
+            try {
+                return Double.parseDouble(string);
+            } catch (NumberFormatException e) {
+                return string;
+            }
+        }
     }
 }

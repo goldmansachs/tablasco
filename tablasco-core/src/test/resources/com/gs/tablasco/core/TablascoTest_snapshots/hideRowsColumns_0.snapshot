@@ -1,7 +1,7 @@
 dynamic-directory: false
 snapshot-name: hideRowsColumns_0
 snapshot-number: 0
-test-class: com.gs.tablasco.core.HtmlTest
+test-class: com.gs.tablasco.core.TablascoTest
 test-method: hideRowsColumns
 
 <html>
