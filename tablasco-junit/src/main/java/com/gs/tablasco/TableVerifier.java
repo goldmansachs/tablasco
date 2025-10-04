@@ -103,7 +103,6 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
     private Predicate<String> tableFilter = s -> true;
     private ExpectedResultsLoader expectedResultsLoader = new FileSystemExpectedResultsLoader();
     private Future<ExpectedResults> expectedResultsFuture;
-    private int verifyCount = 0;
 
     /**
      * Returns the same instance of {@link TableVerifier} configured with a fixed expected results directory.
@@ -800,7 +799,7 @@ public final class TableVerifier implements BeforeEachCallback, AfterEachCallbac
         }
         HtmlFormatter htmlFormatter = newHtmlFormatter();
         htmlFormatter.appendResults(
-                this.extensionContext.getRequiredTestMethod().getName(), allResults, metadata, ++this.verifyCount);
+                this.extensionContext.getRequiredTestMethod().getName(), allResults, metadata);
         assertTrue(verificationSuccess, "Some tests failed. See " + getOutputFileUrl() + " for more details.");
     }
 

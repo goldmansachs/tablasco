@@ -30,6 +30,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class HtmlFormatter {
     public static final int DEFAULT_ROW_LIMIT = 10000;
@@ -102,46 +104,35 @@ public class HtmlFormatter {
     }
 
     private static Document createNewDocument(Metadata metadata) {
-        Document document = DOCUMENT_BUILDER.value().newDocument();
-        Element html = document.createElement("html");
-        document.appendChild(html);
-
-        Element head = document.createElement("head");
-        html.appendChild(head);
-
-        Element script = document.createElement("script");
-        script.appendChild(document.createTextNode("\n" + getVisibilityFunction() + "\n"));
-        head.appendChild(script);
-
-        Element style = document.createElement("style");
-        style.appendChild(document.createTextNode("\n" + getCSSDefinitions() + "\n"));
-        head.appendChild(style);
-
-        Element meta = document.createElement("meta");
-        meta.setAttribute("http-equiv", "Content-type");
-        meta.setAttribute("content", "text/html;charset=UTF-8");
-        head.appendChild(meta);
-
-        head.appendChild(ResultCell.createNodeWithText(document, "title", "Test Results"));
-
-        Element body = document.createElement("body");
-        html.appendChild(body);
-
-        Element div = document.createElement("div");
-        div.setAttribute("class", "metadata");
-        if (metadata != null) {
-            div.appendChild(ResultCell.createNodeWithText(document, "i", metadata.toString()));
+        try (InputStream in = HtmlFormatter.class.getResourceAsStream("/tablasco.html")) {
+            Document document = DOCUMENT_BUILDER.value().parse(in);
+            if (metadata != null) {
+                Element div = getTagById(document, "div", "tablasco-metadata");
+                div.appendChild(ResultCell.createNodeWithText(document, "i", metadata.toString()));
+            }
+            return document;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (SAXException e) {
+            throw new IllegalStateException(e);
         }
-        body.appendChild(div);
+    }
 
-        return document;
+    private static Element getTagById(Document document, String tagName, String elementId) {
+        NodeList list = document.getElementsByTagName(tagName);
+        for (int i = 0; i < list.getLength(); i++) {
+            Node div1 = list.item(i);
+            if (div1 instanceof Element) {
+                Element div = (Element) div1;
+                if (elementId.equals(div.getAttribute("id"))) {
+                    return div;
+                }
+            }
+        }
+        throw new IllegalStateException("No div with id " + elementId + " found");
     }
 
     public void appendResults(String testName, Map<String, ResultTable> results, Metadata metadata) {
-        this.appendResults(testName, results, metadata, 1);
-    }
-
-    public void appendResults(String testName, Map<String, ResultTable> results, Metadata metadata, int verifyCount) {
         Map<String, FormattableTable> resultsToFormat = new LinkedHashMap<>();
         for (String name : results.keySet()) {
             ResultTable resultTable = results.get(name);
@@ -156,7 +147,7 @@ public class HtmlFormatter {
             Document dom = this.initialize(metadata);
             ensurePathExists(this.outputFile);
             try (OutputStream outputStream = Files.newOutputStream(this.outputFile.toPath())) {
-                appendResults(testName, resultsToFormat, metadata, verifyCount, dom, outputStream);
+                appendResults(testName, resultsToFormat, metadata, dom, outputStream);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -167,23 +158,24 @@ public class HtmlFormatter {
             String testName,
             Map<String, ? extends FormattableTable> results,
             Metadata metadata,
-            int verifyCount,
             Document dom,
             OutputStream outputStream)
             throws TransformerException {
         if (dom == null) {
             dom = createNewDocument(metadata);
         }
-        Node body = dom.getElementsByTagName("body").item(0);
-        if (verifyCount == 1) {
-            body.appendChild(ResultCell.createNodeWithText(dom, "h1", testName));
-        }
+
+        Node titleNode = getTagById(dom, "h1", "tablasco-title");
+        titleNode.setTextContent(testName);
 
         if (this.htmlOptions.isDisplayAssertionSummary()) {
-            appendAssertionSummary(testName, results, body);
+            Node summaryNode = getTagById(dom, "div", "tablasco-summary");
+            appendAssertionSummary(testName, results, summaryNode);
         }
+
+        Node resultsNode = getTagById(dom, "div", "tablasco-results");
         for (Map.Entry<String, ? extends FormattableTable> namedTable : results.entrySet()) {
-            appendResults(testName, namedTable.getKey(), namedTable.getValue(), body, true);
+            appendResults(testName, namedTable.getKey(), namedTable.getValue(), resultsNode, true);
         }
         TRANSFORMER
                 .value()
@@ -194,7 +186,7 @@ public class HtmlFormatter {
     }
 
     private void appendAssertionSummary(
-            String testName, Map<String, ? extends FormattableTable> results, Node htmlBody) {
+            String testName, Map<String, ? extends FormattableTable> results, Node summaryNode) {
         int right = 0;
         int total = 0;
         for (FormattableTable table : results.values()) {
@@ -208,23 +200,23 @@ public class HtmlFormatter {
                 testName,
                 "Assertions",
                 new ResultTable(new boolean[] {true}, Collections.singletonList(Collections.singletonList(cell))),
-                htmlBody,
+                summaryNode,
                 false);
     }
 
     private void appendResults(
-            String testName, String tableName, FormattableTable resultTable, Node htmlBody, boolean withDivId) {
-        Element table = getTableElement(testName, tableName, htmlBody, withDivId);
+            String testName, String tableName, FormattableTable resultTable, Node resultsNode, boolean withDivId) {
+        Element table = getTableElement(testName, tableName, resultsNode, withDivId);
         resultTable.appendTo(testName, tableName, table, this.htmlOptions);
     }
 
-    private Element getTableElement(String testName, String tableName, Node htmlBody, boolean withDivId) {
-        Document document = htmlBody.getOwnerDocument();
+    private Element getTableElement(String testName, String tableName, Node resultsNode, boolean withDivId) {
+        Document document = resultsNode.getOwnerDocument();
         Element div = document.createElement("div");
         if (withDivId) {
             div.setAttribute("id", toHtmlId(testName, tableName));
         }
-        htmlBody.appendChild(div);
+        resultsNode.appendChild(div);
 
         div.appendChild(ResultCell.createNodeWithText(document, "h2", tableName));
 
@@ -318,24 +310,6 @@ public class HtmlFormatter {
             return testName;
         }
         return testName.replaceAll("\\W+", "_") + '.' + tableName.replaceAll("\\W+", "_");
-    }
-
-    private static String getVisibilityFunction() {
-        try (InputStream is = HtmlFormatter.class.getResourceAsStream("/tablasco.js")) {
-            return new String(Objects.requireNonNull(is).readAllBytes(), StandardCharsets.UTF_8)
-                    .replaceAll("\\r\\n", "\n");
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private static String getCSSDefinitions() {
-        try (InputStream is = HtmlFormatter.class.getResourceAsStream("/tablasco.css")) {
-            return new String(Objects.requireNonNull(is).readAllBytes(), StandardCharsets.UTF_8)
-                    .replaceAll("\\r\\n", "\n");
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     abstract static class LazyValue<T> {
