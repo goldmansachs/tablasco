@@ -20,10 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gs.tablasco.core.Tables;
 import com.gs.tablasco.verify.DefaultVerifiableTableAdapter;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -55,49 +53,8 @@ public class TableTestUtils {
         }
     }
 
-    static String getHtml(TableVerifier verifier, String tag) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                Files.newInputStream(verifier.getOutputFile().toPath()), StandardCharsets.UTF_8))) {
-            StringBuilder html = new StringBuilder();
-            boolean foundTable = false;
-            String line = reader.readLine();
-            while (line != null) {
-                line = line.trim();
-                // System.out.println(line);
-                if (line.startsWith("</" + tag)) {
-                    html.append(line);
-                    return cleanHtmlForAssertion(html);
-                }
-                if (line.startsWith('<' + tag)) {
-                    foundTable = true;
-                }
-                if (foundTable) {
-                    html.append(line).append('\n');
-                }
-                line = reader.readLine();
-            }
-        }
-        return null;
-    }
-
-    private static String cleanHtmlForAssertion(StringBuilder html) {
-        // Changes in Transformer post Java 8 seem to have caused some formatting differences.
-        // This seems like the easiest/quickest for given it is just for test assertions (vs complete re-write)
-        return html.toString()
-                .replaceAll("[\n\r]+", "\n")
-                .replaceAll(" class=\"surplus\">\n", " class=\"surplus\">")
-                .replaceAll(" class=\"surplus number\">\n", " class=\"surplus number\">")
-                .replaceAll("\n<p>Surplus</p>", "<p>Surplus</p>")
-                .replaceAll(" class=\"missing\">\n", " class=\"missing\">")
-                .replaceAll(" class=\"missing number\">\n", " class=\"missing number\">")
-                .replaceAll("\n<p>Missing</p>", "<p>Missing</p>")
-                .replaceAll(" class=\"fail\">\n", " class=\"fail\">")
-                .replaceAll(" class=\"fail number\">\n", " class=\"fail number\">")
-                .replaceAll(" class=\"outoforder\">\n", " class=\"outoforder\">")
-                .replaceAll(" class=\"outoforder number\">\n", " class=\"outoforder number\">")
-                .replaceAll(" class=\"summary small\">\n", " class=\"summary small\">")
-                .replaceAll("\n<p>", "<p>")
-                .replaceAll("<hr/>\n", "<hr/>");
+    static String getHtml(TableVerifier verifier) throws IOException {
+        return Files.readString(verifier.getOutputFile().toPath(), StandardCharsets.UTF_8);
     }
 
     /*

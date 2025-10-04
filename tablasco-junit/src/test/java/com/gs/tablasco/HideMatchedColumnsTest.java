@@ -34,9 +34,7 @@ public class HideMatchedColumnsTest {
     void allColumnsMatch(Snapshot snapshot) throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -46,9 +44,7 @@ public class HideMatchedColumnsTest {
         final VerifiableTable table2 = TableTestUtils.createTable(
                 3, "Col 1", "Col 2", "Col 3", "B1", "B2", "B9", "C1", "C2", "C9", "D1", "D2", "D3");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -60,9 +56,7 @@ public class HideMatchedColumnsTest {
                 8, "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "A", "A", "A", "A", "A", "X",
                 "A", "A", "B", "B", "X", "B", "B", "B", "B", "B");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -70,9 +64,7 @@ public class HideMatchedColumnsTest {
         VerifiableTable table = new KeyedVerifiableTableAdapter(
                 TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A", "A", "A"), 0);
         this.tableVerifier.verify("name", table, table);
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -85,8 +77,6 @@ public class HideMatchedColumnsTest {
                 "D", "D", "D");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withHideMatchedRows(true).verify("name", table1, table2));
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

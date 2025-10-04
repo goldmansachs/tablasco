@@ -33,10 +33,8 @@ public class HideMatchedRowsTest {
     void allRowsMatch(Snapshot snapshot) throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.verify("name", table, table);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -47,10 +45,8 @@ public class HideMatchedRowsTest {
                 .verify(
                         TableTestUtils.toNamedTables("name", table, "name2", table, "name3", table),
                         TableTestUtils.toNamedTables("name", table, "name2", table, "name4", table)));
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -58,10 +54,8 @@ public class HideMatchedRowsTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "B1", "B2", "A1", "A2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -69,10 +63,8 @@ public class HideMatchedRowsTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -82,10 +74,8 @@ public class HideMatchedRowsTest {
         final VerifiableTable table2 = TableTestUtils.createTable(
                 3, "Col 3", "Col 4", "Col 1", "A3", "A2", "A1", "B3", "B2", "B9", "C3", "C2", "C1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -97,9 +87,7 @@ public class HideMatchedRowsTest {
                 2, "Col 1", "Col 2", "A1", "A2", "B1", "X2", "C1", "C2", "D1", "D2", "E1", "X2", "F1", "F2", "G1", "G2",
                 "H1", "H2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

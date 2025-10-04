@@ -39,9 +39,7 @@ public class IgnoreTablesTest {
                         TableTestUtils.toNamedTables("table1", tableA, "table2", tableA, "table3", tableX),
                         TableTestUtils.toNamedTables("table1", tableX, "table2", tableA, "table3", tableA));
 
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

@@ -38,8 +38,6 @@ public class SummarisedResultsTest {
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify(
                 TableTestUtils.toNamedTables("name1", table1, "name2", table1),
                 TableTestUtils.toNamedTables("name1", table2, "name2", table2)));
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

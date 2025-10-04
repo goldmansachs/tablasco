@@ -34,10 +34,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -46,10 +44,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 20.456);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -58,10 +54,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", "A2");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withVarianceThreshold(5.0d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -70,10 +64,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A", 48.0);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.1d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -81,10 +73,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", "A2", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -92,10 +82,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", "A3", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -104,10 +92,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", 25, 30.78);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -116,10 +102,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 2", "Col 1", 25.3, 30.78);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -127,10 +111,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 4", "Col 1", "A2", "A1");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -139,10 +121,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 4", "Col 1", 26, 30.78);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.01d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -150,10 +130,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -162,20 +140,16 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", 345.63, 12.8, 56.65, 45.31);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withTolerance(0.1d).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
     void assertionSummaryWithSuccess(Snapshot snapshot) throws IOException {
         VerifiableTable table = TableTestUtils.createTable(1, "Col 1", "A1");
         this.tableVerifier.withAssertionSummary(true).verify("name", table, table);
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -184,10 +158,8 @@ public class HtmlFormattingTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A9", "B1", "B9");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withAssertionSummary(true).verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -197,10 +169,8 @@ public class HtmlFormattingTest {
         this.tableVerifier.withAssertionSummary(true).verify("name1", table1, table1);
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withAssertionSummary(true).verify("name2", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -211,10 +181,8 @@ public class HtmlFormattingTest {
                 .verify(
                         TableTestUtils.toNamedTables("name", table, "name2", table),
                         TableTestUtils.toNamedTables("name", table, "name3", table)));
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -227,9 +195,7 @@ public class HtmlFormattingTest {
                 .withAssertionSummary(true)
                 .withHideMatchedRows(true)
                 .verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

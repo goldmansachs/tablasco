@@ -33,10 +33,8 @@ public class IgnoreMissingAndSurplusTest {
     void allRowsMatch(Snapshot snapshot) throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table, table);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -47,10 +45,8 @@ public class IgnoreMissingAndSurplusTest {
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreMissingRows().verify("name", table1, table2));
 
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -60,10 +56,8 @@ public class IgnoreMissingAndSurplusTest {
 
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreSurplusRows().verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -71,10 +65,8 @@ public class IgnoreMissingAndSurplusTest {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -83,10 +75,8 @@ public class IgnoreMissingAndSurplusTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 3", "C1", "C2", "B1", "B2");
         TableTestUtils.assertAssertionError(() ->
                 tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -95,10 +85,8 @@ public class IgnoreMissingAndSurplusTest {
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B3");
         TableTestUtils.assertAssertionError(() ->
                 tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -106,10 +94,8 @@ public class IgnoreMissingAndSurplusTest {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -117,10 +103,8 @@ public class IgnoreMissingAndSurplusTest {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -128,10 +112,8 @@ public class IgnoreMissingAndSurplusTest {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         VerifiableTable actual = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         this.tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -140,10 +122,8 @@ public class IgnoreMissingAndSurplusTest {
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -151,10 +131,8 @@ public class IgnoreMissingAndSurplusTest {
         VerifiableTable expected = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -163,10 +141,8 @@ public class IgnoreMissingAndSurplusTest {
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         TableTestUtils.assertAssertionError(
                 () -> tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual));
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
@@ -174,9 +150,7 @@ public class IgnoreMissingAndSurplusTest {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().withIgnoreSurplusColumns().verify("name", expected, actual);
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

@@ -42,8 +42,6 @@ public class OutputEncodingSecurityTest {
                 "<script language=\"javascript\">alert(\"boo\")</script>",
                 "<script language=\"javascript\">alert(\"foo\")</script>");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

@@ -37,9 +37,7 @@ public class IgnoreColumnsTest {
                 TableTestUtils.createTable(4, "Col 1", "Col 2", "Col 3", "Col 4", "A1", "XX", "A3", "XX");
         this.tableVerifier.withIgnoreColumns("Col 2", "Col 4").verify("name", table1, table2);
 
-        TableTestUtils.getHtml(this.tableVerifier, "table");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

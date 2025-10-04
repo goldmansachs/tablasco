@@ -4,9 +4,193 @@ snapshot-number: 0
 test-class: com.gs.tablasco.IgnoreMissingAndSurplusTest
 test-method: passesWithEmptyActual
 
-<table border="1" cellspacing="0">
-<tr>
-<th class="pass">Col 1</th>
-<th class="pass">Col 2</th>
-</tr>
-</table>
+<html>
+    <head>
+        <script>
+function toggleVisibility(id) {
+  var summary = document.getElementById(id);
+  if (summary.style.display === 'none') {
+    summary.style.display = 'table-row';
+  } else {
+    summary.style.display = 'none';
+  }
+}
+</script>
+        <style>
+:root {
+    --color-pass: #c0ffc0;
+    --color-fail: #ffc0c0;
+    --color-outoforder: #e0c0ff;
+    --color-missing: #cccccc;
+    --color-surplus: #c0e0ff;
+    --color-summary: #f3f6f8;
+    --color-blue: blue;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-size-small: 0.875rem;
+    --font-size-xsmall: 0.75rem;
+    --font-size-medium: 1rem;
+    --font-size-large: 1.25rem;
+    --padding-small: 0.5rem;
+    --padding-medium: 1rem;
+    --border-color: #000;
+    --border-width: 1px;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    color: #000;
+    padding: var(--padding-medium);
+    font-family: var(--font-family);
+    line-height: 1.5;
+    background-color: #fff;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--padding-medium);
+    font-size: var(--font-size-small);
+}
+th, td {
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--padding-small);
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+}
+th {
+    font-weight: bold;
+    background-color: var(--color-summary);
+}
+.pass {
+    background-color: var(--color-pass);
+}
+
+.fail {
+    background-color: var(--color-fail);
+}
+.outoforder {
+    background-color: var(--color-outoforder);
+}
+.missing {
+    background-color: var(--color-missing);
+    color: var(--color-grey);
+}
+.surplus {
+    background-color: var(--color-surplus);
+    color: var(--color-grey);
+}
+.summary {
+    background-color: var(--color-summary);
+}
+.number {
+    text-align: right;
+}
+.metadata {
+    margin-bottom: var(--padding-medium);
+}
+.multi {
+    font-style: italic;
+}
+.blank_row {
+    height: 0.75rem;
+    border: 0;
+    background-color: #fff;
+}
+.grey {
+    color: var(--color-grey);
+}
+.blue {
+    color: var(--color-blue);
+}
+.italic {
+    font-style: italic;
+}
+.link {
+    color: var(--color-blue);
+    text-decoration: underline;
+    cursor: pointer;
+    font-style: italic;
+}
+.link:hover {
+    text-decoration: none;
+}
+.small {
+    font-size: var(--font-size-xsmall);
+}
+.expected {
+    text-decoration: line-through;
+}
+hr {
+    border: 0;
+    background-color: var(--border-color);
+    height: var(--border-width);
+    margin: var(--padding-small) 0;
+}
+p {
+    font-style: italic;
+    font-size: var(--font-size-xsmall);
+    color: var(--color-blue);
+    padding-top: var(--padding-small);
+}
+h1 {
+    font-size: var(--font-size-large);
+    margin-bottom: var(--padding-small);
+}
+h2 {
+    font-size: var(--font-size-medium);
+    margin-bottom: var(--padding-small);
+}
+.legend-item {
+    display: inline-block;
+    margin-right: var(--padding-medium);
+}
+.legend-box {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    border: var(--border-width) solid var(--border-color);
+    vertical-align: middle;
+}
+@media (max-width: 768px) {
+    body {
+        font-size: var(--font-size-small);
+    }
+
+    table {
+        font-size: var(--font-size-xsmall);
+    }
+
+    th, td {
+        padding: calc(var(--padding-small) / 2);
+    }
+
+    h1 {
+        font-size: var(--font-size-medium);
+    }
+
+    h2 {
+        font-size: var(--font-size-small);
+    }
+}
+</style>
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-type"/>
+        <title>Test Results</title>
+    </head>
+    <body>
+        <div class="metadata"/>
+        <h1>passesWithEmptyActual</h1>
+        <div id="passesWithEmptyActual.name">
+            <h2>name</h2>
+            <table border="1" cellspacing="0">
+                <tr>
+                    <th class="pass">Col 1</th>
+                    <th class="pass">Col 2</th>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

@@ -41,9 +41,7 @@ public class HideMatchedTablesTest {
                         "match", matchTable, "break", breakTableExpected, "outOfOrder", outOfOrderTableExpected),
                 TableTestUtils.toNamedTables(
                         "match", matchTable, "break", breakTableActual, "outOfOrder", outOfOrderTableActual)));
-        TableTestUtils.getHtml(this.tableVerifier, "body");
-        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier, "table"))
-                .asText()
-                .matchesSnapshotText();
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }
