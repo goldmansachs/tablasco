@@ -147,14 +147,14 @@ test-method: missingSurplusColumnsNonNumeric
         .legend-item {
             display: inline-block;
             margin-right: var(--padding-medium);
+            font-size: var(--font-size-medium);
         }
         .legend-box {
             display: inline-block;
-            width: 1rem;
-            height: 1rem;
+            width: 0.875rem;
+            height: 0.875rem;
             margin-right: 0.5rem;
             border: var(--border-width) solid var(--border-color);
-            vertical-align: middle;
         }
         @media (max-width: 768px) {
             body {
@@ -204,6 +204,28 @@ test-method: missingSurplusColumnsNonNumeric
                     </tr>
                 </table>
             </div>
+        </div>
+        <div>
+            <span class="legend-item">
+                <span class="legend-box pass"/>
+                Match
+            </span>
+            <span class="legend-item">
+                <span class="legend-box fail"/>
+                Mismatch
+            </span>
+            <span class="legend-item">
+                <span class="legend-box missing"/>
+                Missing
+            </span>
+            <span class="legend-item">
+                <span class="legend-box surplus"/>
+                Surplus
+            </span>
+            <span class="legend-item">
+                <span class="legend-box outoforder"/>
+                Out of Order
+            </span>
         </div>
     </body>
 </html>

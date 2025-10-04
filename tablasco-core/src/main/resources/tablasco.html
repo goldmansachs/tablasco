@@ -139,14 +139,14 @@
         .legend-item {
             display: inline-block;
             margin-right: var(--padding-medium);
+            font-size: var(--font-size-medium);
         }
         .legend-box {
             display: inline-block;
-            width: 1rem;
-            height: 1rem;
+            width: 0.875rem;
+            height: 0.875rem;
             margin-right: 0.5rem;
             border: var(--border-width) solid var(--border-color);
-            vertical-align: middle;
         }
         @media (max-width: 768px) {
             body {
@@ -169,4 +169,9 @@
         id="tablasco-metadata"></div><h1
         id="tablasco-title"></h1><div
         id="tablasco-summary"></div><div
-        id="tablasco-results"></div></body></html>
+        id="tablasco-results"></div><div><span
+        class="legend-item"><span class="legend-box pass"></span>Match</span><span
+        class="legend-item"><span class="legend-box fail"></span>Mismatch</span><span
+        class="legend-item"><span class="legend-box missing"></span>Missing</span><span
+        class="legend-item"><span class="legend-box surplus"></span>Surplus</span><span
+        class="legend-item"><span class="legend-box outoforder"></span>Out of Order</span></div></body></html>
