@@ -153,7 +153,7 @@ test-method: ignoreColumns
             display: inline-block;
             width: 0.875rem;
             height: 0.875rem;
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             border: var(--border-width) solid var(--border-color);
         }
         @media (max-width: 768px) {
@@ -183,7 +183,7 @@ test-method: ignoreColumns
         <div id="tablasco-results">
             <div id="ignoreColumns.name">
                 <h2>name</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">Col 1</th>
                         <th class="pass">Col 3</th>
@@ -197,23 +197,23 @@ test-method: ignoreColumns
         </div>
         <div>
             <span class="legend-item">
-                <span class="legend-box pass"/>
+                <span class="legend-box pass"> </span>
                 Match
             </span>
             <span class="legend-item">
-                <span class="legend-box fail"/>
+                <span class="legend-box fail"> </span>
                 Mismatch
             </span>
             <span class="legend-item">
-                <span class="legend-box missing"/>
+                <span class="legend-box missing"> </span>
                 Missing
             </span>
             <span class="legend-item">
-                <span class="legend-box surplus"/>
+                <span class="legend-box surplus"> </span>
                 Surplus
             </span>
             <span class="legend-item">
-                <span class="legend-box outoforder"/>
+                <span class="legend-box outoforder"> </span>
                 Out of Order
             </span>
         </div>

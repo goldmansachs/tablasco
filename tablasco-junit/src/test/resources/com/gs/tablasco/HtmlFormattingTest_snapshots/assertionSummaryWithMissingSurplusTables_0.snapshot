@@ -153,7 +153,7 @@ test-method: assertionSummaryWithMissingSurplusTables
             display: inline-block;
             width: 0.875rem;
             height: 0.875rem;
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             border: var(--border-width) solid var(--border-color);
         }
         @media (max-width: 768px) {
@@ -182,7 +182,7 @@ test-method: assertionSummaryWithMissingSurplusTables
         <div id="tablasco-summary">
             <div>
                 <h2>Assertions</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="fail">2 right, 4 wrong, 33.3% correct</th>
                     </tr>
@@ -192,7 +192,7 @@ test-method: assertionSummaryWithMissingSurplusTables
         <div id="tablasco-results">
             <div id="assertionSummaryWithMissingSurplusTables.name">
                 <h2>name</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">Col 1</th>
                     </tr>
@@ -203,7 +203,7 @@ test-method: assertionSummaryWithMissingSurplusTables
             </div>
             <div id="assertionSummaryWithMissingSurplusTables.name2">
                 <h2>name2</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="missing">
                             <span class="expected">Col 1</span>
@@ -218,7 +218,7 @@ test-method: assertionSummaryWithMissingSurplusTables
             </div>
             <div id="assertionSummaryWithMissingSurplusTables.name3">
                 <h2>name3</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="surplus">
                             <span class="actual">Col 1</span>
@@ -234,23 +234,23 @@ test-method: assertionSummaryWithMissingSurplusTables
         </div>
         <div>
             <span class="legend-item">
-                <span class="legend-box pass"/>
+                <span class="legend-box pass"> </span>
                 Match
             </span>
             <span class="legend-item">
-                <span class="legend-box fail"/>
+                <span class="legend-box fail"> </span>
                 Mismatch
             </span>
             <span class="legend-item">
-                <span class="legend-box missing"/>
+                <span class="legend-box missing"> </span>
                 Missing
             </span>
             <span class="legend-item">
-                <span class="legend-box surplus"/>
+                <span class="legend-box surplus"> </span>
                 Surplus
             </span>
             <span class="legend-item">
-                <span class="legend-box outoforder"/>
+                <span class="legend-box outoforder"> </span>
                 Out of Order
             </span>
         </div>

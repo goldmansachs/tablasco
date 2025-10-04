@@ -153,7 +153,7 @@ test-method: assertionSummaryWithSuccess
             display: inline-block;
             width: 0.875rem;
             height: 0.875rem;
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             border: var(--border-width) solid var(--border-color);
         }
         @media (max-width: 768px) {
@@ -182,7 +182,7 @@ test-method: assertionSummaryWithSuccess
         <div id="tablasco-summary">
             <div>
                 <h2>Assertions</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">2 right, 0 wrong, 100.0% correct</th>
                     </tr>
@@ -192,7 +192,7 @@ test-method: assertionSummaryWithSuccess
         <div id="tablasco-results">
             <div id="assertionSummaryWithSuccess.name">
                 <h2>name</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">Col 1</th>
                     </tr>
@@ -204,23 +204,23 @@ test-method: assertionSummaryWithSuccess
         </div>
         <div>
             <span class="legend-item">
-                <span class="legend-box pass"/>
+                <span class="legend-box pass"> </span>
                 Match
             </span>
             <span class="legend-item">
-                <span class="legend-box fail"/>
+                <span class="legend-box fail"> </span>
                 Mismatch
             </span>
             <span class="legend-item">
-                <span class="legend-box missing"/>
+                <span class="legend-box missing"> </span>
                 Missing
             </span>
             <span class="legend-item">
-                <span class="legend-box surplus"/>
+                <span class="legend-box surplus"> </span>
                 Surplus
             </span>
             <span class="legend-item">
-                <span class="legend-box outoforder"/>
+                <span class="legend-box outoforder"> </span>
                 Out of Order
             </span>
         </div>

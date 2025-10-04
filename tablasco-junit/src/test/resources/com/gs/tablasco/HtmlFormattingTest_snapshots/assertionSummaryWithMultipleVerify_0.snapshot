@@ -157,7 +157,7 @@ test-method: assertionSummaryWithMultipleVerify
             display: inline-block;
             width: 0.875rem;
             height: 0.875rem;
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             border: var(--border-width) solid var(--border-color);
         }
         @media (max-width: 768px) {
@@ -195,7 +195,7 @@ test-method: assertionSummaryWithMultipleVerify
                                 
                 <h2>Assertions</h2>
                                 
-                <table border="1" cellspacing="0">
+                <table>
                                         
                     <tr>
                                                 
@@ -209,7 +209,7 @@ test-method: assertionSummaryWithMultipleVerify
                     
             <div>
                 <h2>Assertions</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="fail">1 right, 2 wrong, 33.3% correct</th>
                     </tr>
@@ -223,7 +223,7 @@ test-method: assertionSummaryWithMultipleVerify
                                 
                 <h2>name1</h2>
                                 
-                <table border="1" cellspacing="0">
+                <table>
                                         
                     <tr>
                                                 
@@ -243,7 +243,7 @@ test-method: assertionSummaryWithMultipleVerify
                     
             <div id="assertionSummaryWithMultipleVerify.name2">
                 <h2>name2</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">Col 1</th>
                     </tr>
@@ -265,35 +265,35 @@ test-method: assertionSummaryWithMultipleVerify
                         
             <span class="legend-item">
                                 
-                <span class="legend-box pass"/>
+                <span class="legend-box pass"> </span>
                                 Match
             
             </span>
                         
             <span class="legend-item">
                                 
-                <span class="legend-box fail"/>
+                <span class="legend-box fail"> </span>
                                 Mismatch
             
             </span>
                         
             <span class="legend-item">
                                 
-                <span class="legend-box missing"/>
+                <span class="legend-box missing"> </span>
                                 Missing
             
             </span>
                         
             <span class="legend-item">
                                 
-                <span class="legend-box surplus"/>
+                <span class="legend-box surplus"> </span>
                                 Surplus
             
             </span>
                         
             <span class="legend-item">
                                 
-                <span class="legend-box outoforder"/>
+                <span class="legend-box outoforder"> </span>
                                 Out of Order
             
             </span>

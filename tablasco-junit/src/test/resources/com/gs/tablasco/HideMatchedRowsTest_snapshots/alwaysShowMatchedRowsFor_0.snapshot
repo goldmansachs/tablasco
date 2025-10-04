@@ -153,7 +153,7 @@ test-method: alwaysShowMatchedRowsFor
             display: inline-block;
             width: 0.875rem;
             height: 0.875rem;
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             border: var(--border-width) solid var(--border-color);
         }
         @media (max-width: 768px) {
@@ -183,7 +183,7 @@ test-method: alwaysShowMatchedRowsFor
         <div id="tablasco-results">
             <div id="alwaysShowMatchedRowsFor.name">
                 <h2>name</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">Col 1</th>
                         <th class="pass">Col 2</th>
@@ -195,7 +195,7 @@ test-method: alwaysShowMatchedRowsFor
             </div>
             <div id="alwaysShowMatchedRowsFor.name2">
                 <h2>name2</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="pass">Col 1</th>
                         <th class="pass">Col 2</th>
@@ -212,7 +212,7 @@ test-method: alwaysShowMatchedRowsFor
             </div>
             <div id="alwaysShowMatchedRowsFor.name3">
                 <h2>name3</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="missing">
                             <span class="expected">Col 1</span>
@@ -241,7 +241,7 @@ test-method: alwaysShowMatchedRowsFor
             </div>
             <div id="alwaysShowMatchedRowsFor.name4">
                 <h2>name4</h2>
-                <table border="1" cellspacing="0">
+                <table>
                     <tr>
                         <th class="surplus">
                             <span class="actual">Col 1</span>
@@ -271,23 +271,23 @@ test-method: alwaysShowMatchedRowsFor
         </div>
         <div>
             <span class="legend-item">
-                <span class="legend-box pass"/>
+                <span class="legend-box pass"> </span>
                 Match
             </span>
             <span class="legend-item">
-                <span class="legend-box fail"/>
+                <span class="legend-box fail"> </span>
                 Mismatch
             </span>
             <span class="legend-item">
-                <span class="legend-box missing"/>
+                <span class="legend-box missing"> </span>
                 Missing
             </span>
             <span class="legend-item">
-                <span class="legend-box surplus"/>
+                <span class="legend-box surplus"> </span>
                 Surplus
             </span>
             <span class="legend-item">
-                <span class="legend-box outoforder"/>
+                <span class="legend-box outoforder"> </span>
                 Out of Order
             </span>
         </div>

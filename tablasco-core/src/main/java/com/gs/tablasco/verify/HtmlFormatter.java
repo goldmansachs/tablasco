@@ -221,8 +221,6 @@ public class HtmlFormatter {
         div.appendChild(ResultCell.createNodeWithText(document, "h2", tableName));
 
         Element table = document.createElement("table");
-        table.setAttribute("border", "1");
-        table.setAttribute("cellspacing", "0");
         div.appendChild(table);
         return table;
     }
