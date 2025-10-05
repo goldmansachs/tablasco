@@ -33,7 +33,10 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: Publish to GitHub Packages Apache Maven
+    - name: Generate settings.xml for Deployment
+      run: echo "<settings><servers><server><id>central</id><username>${{ secrets.MAVEN_USERNAME }}</username><password>${{ secrets.MAVEN_PASSWORD }}</password></server></servers></settings>" > $GITHUB_WORKSPACE/settings.xml
+
+    - name: Publish to Maven Central
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+#        GITHUB_TOKEN: ${{ github.token }}
