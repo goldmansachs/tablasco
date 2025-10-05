@@ -38,5 +38,5 @@ jobs:
 
     - name: Publish to Maven Central
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-      env:
+#      env:
 #        GITHUB_TOKEN: ${{ github.token }}
