@@ -4,7 +4,7 @@
 name: Maven Package
 
 on:
-  workflow_run:
+  push:
     branches: deploy-test
 #  release:
 #    types: [created]
