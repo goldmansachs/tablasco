@@ -16,61 +16,54 @@
 
 package com.gs.tablasco.verify.indexmap;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.jupiter.api.Test;
 
-public class TimeBoundPartialMatcherTest
-{
+class TimeBoundPartialMatcherTest {
     @Test
-    public void executionTimesOut()
-    {
-        try
-        {
-            PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> { while (true); };
-            new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null);
-            Assert.fail("timeout expected");
-        }
-        catch (RuntimeException e)
-        {
-            Assert.assertTrue(e.getCause() instanceof TimeoutException);
-        }
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void matchingExceptionPropagates()
-    {
-        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> Collections.singletonList("foo").get(2);
-        new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
+    void executionTimesOut() {
+        PartialMatcher endlessMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
+            try {
+                Thread.sleep(10_000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                fail("Unexpected interrupt");
+            }
+        };
+        RuntimeException runtimeException = assertThrows(
+                RuntimeException.class, () -> new TimeBoundPartialMatcher(endlessMatcher, 1L).match(null, null, null));
+        assertInstanceOf(TimeoutException.class, runtimeException.getCause());
     }
 
     @Test
-    public void matchingErrorPropagates()
-    {
-        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) ->
-        {
+    void matchingExceptionPropagates() {
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
+                throw new IndexOutOfBoundsException("Boom");
+            };
+            new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
+        });
+    }
+
+    @Test
+    void matchingErrorPropagates() {
+        PartialMatcher dyingMatcher = (allMissingRows, allSurplusRows, matchedColumns) -> {
             throw new NoSuchMethodError();
         };
-        try
-        {
-            new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE).match(null, null, null);
-            Assert.fail();
-        }
-        catch (RuntimeException e)
-        {
-            Assert.assertTrue(e.getCause() instanceof NoSuchMethodError);
-        }
+        RuntimeException runtimeException =
+                assertThrows(RuntimeException.class, () -> new TimeBoundPartialMatcher(dyingMatcher, Long.MAX_VALUE)
+                        .match(null, null, null));
+        assertInstanceOf(NoSuchMethodError.class, runtimeException.getCause());
     }
 
     @Test
-    public void successfulMatch()
-    {
+    void successfulMatch() {
         final AtomicBoolean matched = new AtomicBoolean(false);
         PartialMatcher matcher = (allMissingRows, allSurplusRows, matchedColumns) -> matched.set(true);
         new TimeBoundPartialMatcher(matcher, Long.MAX_VALUE).match(null, null, null);
-        Assert.assertTrue(matched.get());
+        assertTrue(matched.get());
     }
 }

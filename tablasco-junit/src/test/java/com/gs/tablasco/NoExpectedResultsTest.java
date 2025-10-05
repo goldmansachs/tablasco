@@ -16,22 +16,20 @@
 
 package com.gs.tablasco;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class NoExpectedResultsTest
-{
-    @Rule
-    public final TableVerifier verifier = new TableVerifier()
-            .withMavenDirectoryStrategy();
+public class NoExpectedResultsTest {
+
+    @RegisterExtension
+    private final TableVerifier verifier = new TableVerifier().withMavenDirectoryStrategy();
 
     @Test
-    public void asynchronousResultsLoadingOnlyFailsIfResultsAreRequired()
-    {
-        Map<String, VerifiableTable> tables = Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
+    void asynchronousResultsLoadingOnlyFailsIfResultsAreRequired() {
+        Map<String, VerifiableTable> tables =
+                Collections.singletonMap(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
         this.verifier.verify(tables, tables);
     }
 }

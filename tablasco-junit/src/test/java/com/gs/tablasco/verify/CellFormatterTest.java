@@ -16,73 +16,67 @@
 
 package com.gs.tablasco.verify;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Timestamp;
+import org.junit.jupiter.api.Test;
 
-public class CellFormatterTest
-{
+class CellFormatterTest {
     @Test
-    public void formatNumbers()
-    {
+    void formatNumbers() {
         CellFormatter formatter = new CellFormatter(0.01, true);
-        Assert.assertEquals("1", formatter.format(1.0d));
-        Assert.assertEquals("1.1", formatter.format(1.10d));
-        Assert.assertEquals("1.11", formatter.format(1.11d));
-        Assert.assertEquals("1.11", formatter.format(1.111d));
-        Assert.assertEquals("1.12", formatter.format(1.116d));
-        Assert.assertEquals("-1.12", formatter.format(-1.116d));
-        Assert.assertEquals("-1,000.12", formatter.format(-1000.116d));
+        assertEquals("1", formatter.format(1.0d));
+        assertEquals("1.1", formatter.format(1.10d));
+        assertEquals("1.11", formatter.format(1.11d));
+        assertEquals("1.11", formatter.format(1.111d));
+        assertEquals("1.12", formatter.format(1.116d));
+        assertEquals("-1.12", formatter.format(-1.116d));
+        assertEquals("-1,000.12", formatter.format(-1000.116d));
 
-        Assert.assertEquals("-1,000.12", formatter.format(-1000.116f));
-        Assert.assertEquals("1,000", formatter.format(1000));
-        Assert.assertEquals("-1,000", formatter.format((long) -1000));
+        assertEquals("-1,000.12", formatter.format(-1000.116f));
+        assertEquals("1,000", formatter.format(1000));
+        assertEquals("-1,000", formatter.format((long) -1000));
 
-        Assert.assertEquals("NaN", formatter.format(Double.NaN));
-        Assert.assertEquals("NaN", formatter.format(Float.NaN));
+        assertEquals("NaN", formatter.format(Double.NaN));
+        assertEquals("NaN", formatter.format(Float.NaN));
 
-        Assert.assertEquals("0", formatter.format(-0.0d));
-        Assert.assertEquals("0", formatter.format(-0));
-        Assert.assertEquals("0", formatter.format(-0.0001));
+        assertEquals("0", formatter.format(-0.0d));
+        assertEquals("0", formatter.format(-0));
+        assertEquals("0", formatter.format(-0.0001));
     }
 
     @Test
-    public void formatNegativeZero()
-    {
+    void formatNegativeZero() {
         CellFormatter formatter = new CellFormatter(0.0001, true);
-        Assert.assertEquals("0", formatter.format(-0.0d));
-        Assert.assertEquals("0", formatter.format(-0));
-        Assert.assertEquals("0", formatter.format(-0.00001));
-        Assert.assertEquals("-0.0001", formatter.format(-0.0001));
+        assertEquals("0", formatter.format(-0.0d));
+        assertEquals("0", formatter.format(-0));
+        assertEquals("0", formatter.format(-0.00001));
+        assertEquals("-0.0001", formatter.format(-0.0001));
 
-        Assert.assertFalse(CellFormatter.isNegativeZero("-01"));
-        Assert.assertTrue(CellFormatter.isNegativeZero("-0.000000"));
+        assertFalse(CellFormatter.isNegativeZero("-01"));
+        assertTrue(CellFormatter.isNegativeZero("-0.000000"));
     }
 
     @Test
-    public void formatDate()
-    {
+    void formatDate() {
         CellFormatter formatter = new CellFormatter(0, false);
-        Assert.assertEquals("2009-02-13 23:31:30", formatter.format(Timestamp.valueOf("2009-02-13 23:31:30.0001")));
+        assertEquals("2009-02-13 23:31:30", formatter.format(Timestamp.valueOf("2009-02-13 23:31:30.0001")));
     }
 
     @Test
-    public void formatString()
-    {
+    void formatString() {
         CellFormatter formatter = new CellFormatter(0, false);
-        Assert.assertEquals("", formatter.format(""));
-        Assert.assertEquals("foo", formatter.format("foo"));
-        Assert.assertEquals("foo", formatter.format(" foo "));
-        Assert.assertEquals("foo bar", formatter.format("foo bar"));
-        Assert.assertEquals("foo  bar", formatter.format("foo  bar"));
-        Assert.assertEquals("foo bar", formatter.format("foo\nbar "));
-        Assert.assertEquals("foo bar", formatter.format(" foo\rbar"));
-        Assert.assertEquals("foo   bar", formatter.format(" foo\r \nbar "));
-        Assert.assertEquals("foo", formatter.format("foo\r"));
-        Assert.assertEquals("foo", formatter.format("\n foo"));
-        Assert.assertEquals("", formatter.format("\n \r "));
-        Assert.assertEquals("", formatter.format(" \n \r"));
+        assertEquals("", formatter.format(""));
+        assertEquals("foo", formatter.format("foo"));
+        assertEquals("foo", formatter.format(" foo "));
+        assertEquals("foo bar", formatter.format("foo bar"));
+        assertEquals("foo  bar", formatter.format("foo  bar"));
+        assertEquals("foo bar", formatter.format("foo\nbar "));
+        assertEquals("foo bar", formatter.format(" foo\rbar"));
+        assertEquals("foo   bar", formatter.format(" foo\r \nbar "));
+        assertEquals("foo", formatter.format("foo\r"));
+        assertEquals("foo", formatter.format("\n foo"));
+        assertEquals("", formatter.format("\n \r "));
+        assertEquals("", formatter.format(" \n \r"));
     }
-
 }

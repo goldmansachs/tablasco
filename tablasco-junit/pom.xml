@@ -7,22 +7,24 @@
     <parent>
         <groupId>com.goldmansachs.tablasco</groupId>
         <artifactId>tablasco</artifactId>
-        <version>2.5.0</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>tablasco-junit</artifactId>
-    <version>2.5.0</version>
+    <version>1.0-SNAPSHOT</version>
 
-    <name>Tablasco JUnit</name>
-    <description>Tablasco is a JUnit rule that adds table verification to your unit tests</description>
+    <name>Tablasco JUnit 5 Extension</name>
+    <description>Tablasco is a JUnit extension that adds table verification to your unit tests</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>com.goldmansachs.tablasco</groupId>
+            <artifactId>tablasco-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -33,7 +35,11 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.1.210</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.skuzzle.test</groupId>
+            <artifactId>snapshot-tests-junit5</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

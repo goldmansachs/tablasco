@@ -17,30 +17,27 @@
 package com.gs.tablasco.files;
 
 /**
- * A <tt>FilenameStrategy</tt> that returns the same filename for each test in a class. The filename is constructed
+ * A {@link FilenameStrategy} that returns the same filename for each test in a class. The filename is constructed
  * using the simple class name of the test plus file extension.
  *
  * @deprecated Rebase does not work correctly with this strategy which will be removed eventually. Please use the
  * default FilePerMethod instead.
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
-public class FilePerClassStrategy implements FilenameStrategy
-{
+public class FilePerClassStrategy implements FilenameStrategy {
     @Override
-    public String getExpectedFilename(Class<?> testClass, String methodName)
-    {
+    public String getExpectedFilename(Class<?> testClass, String methodName) {
         return testClass.getSimpleName() + ".txt";
     }
 
     @Override
-    public String getOutputFilename(Class<?> testClass, String methodName)
-    {
+    public String getOutputFilename(Class<?> testClass, String methodName) {
         return testClass.getSimpleName() + ".html";
     }
 
     @Override
-    public String getActualFilename(Class<?> testClass, String methodName)
-    {
+    public String getActualFilename(Class<?> testClass, String methodName) {
         return testClass.getSimpleName() + ".txt";
     }
 }

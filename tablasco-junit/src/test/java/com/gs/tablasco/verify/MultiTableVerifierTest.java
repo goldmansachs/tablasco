@@ -16,156 +16,151 @@
 
 package com.gs.tablasco.verify;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.gs.tablasco.TableTestUtils;
 import com.gs.tablasco.VerifiableTable;
-import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
-import org.junit.*;
-import org.junit.rules.TestName;
+import com.gs.tablasco.core.HtmlConfig;
+import com.gs.tablasco.core.VerifierConfig;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.util.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-public class MultiTableVerifierTest
-{
+public class MultiTableVerifierTest {
     private static final CellComparator CELL_COMPARATOR = new ToleranceCellComparator(new CellFormatter(1.0, false));
 
-    @Rule
-    public final TestName testName = new TestName();
+    public String testName;
 
     private MultiTableVerifier verifier;
     private File resultsFile;
     private int expectedTables;
+    private boolean expectingException = false;
 
-    @Before
-    public void setUp()
-    {
-        this.resultsFile = new File(TableTestUtils.getOutputDirectory(), MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName.getMethodName() + ".html");
-        this.resultsFile.delete();
-        ColumnComparators columnComparators = new ColumnComparators.Builder().build();
-        this.verifier = new MultiTableVerifier(new IndexMapTableVerifier(columnComparators, true, IndexMapTableVerifier.DEFAULT_BEST_MATCH_THRESHOLD, false, false));
+    @BeforeEach
+    void setUp(TestInfo testInfo) throws IOException {
+        Optional<Method> testMethod = testInfo.getTestMethod();
+        testMethod.ifPresent(method -> this.testName = method.getName());
+        this.resultsFile = new File(
+                TableTestUtils.getOutputDirectory(),
+                MultiTableVerifierTest.class.getSimpleName() + '_' + this.testName + ".html");
+        Files.deleteIfExists(this.resultsFile.toPath());
+        this.verifier = new MultiTableVerifier(new VerifierConfig().withVerifyRowOrder(true));
     }
 
-    @After
-    public void tearDown() throws IOException, SAXException, NoSuchMethodException
-    {
-        Class<? extends Throwable> expected = this.getClass().getMethod(this.testName.getMethodName()).getAnnotation(Test.class).expected();
-        if (Test.None.class.equals(expected))
-        {
-            Assert.assertTrue(this.resultsFile.exists());
+    @AfterEach
+    void tearDown() throws IOException, SAXException {
+        if (!expectingException) {
+            assertTrue(this.resultsFile.exists());
             Document html = TableTestUtils.parseHtml(this.resultsFile);
-            Assert.assertEquals(this.expectedTables, html.getElementsByTagName("table").getLength());
+            assertEquals(this.expectedTables, html.getElementsByTagName("table").getLength());
         }
     }
 
     @Test
-    public void missingTable()
-    {
+    void missingTable() {
         Map<String, ResultTable> results = verifyTables(createTables("assets"), createTables("assets", "liabs"));
-        Assert.assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
-        Assert.assertEquals(newMissingTable(), results.get("liabs").getVerifiedRows());
+        assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
+        assertEquals(newMissingTable(), results.get("liabs").getVerifiedRows());
         this.expectedTables = 2;
     }
 
     @Test
-    public void surplusTable()
-    {
+    void surplusTable() {
         Map<String, ResultTable> results = this.verifyTables(createTables("assets", "liabs"), createTables("liabs"));
-        Assert.assertEquals(newSurplusTable(), results.get("assets").getVerifiedRows());
-        Assert.assertEquals(newPassTable(), results.get("liabs").getVerifiedRows());
+        assertEquals(newSurplusTable(), results.get("assets").getVerifiedRows());
+        assertEquals(newPassTable(), results.get("liabs").getVerifiedRows());
         this.expectedTables = 2;
     }
 
     @Test
-    public void misnamedTable()
-    {
-        Map<String, ResultTable> results = this.verifyTables(createTables("assets", "liabs"), createTables("assets", "liabz"));
-        Assert.assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
-        Assert.assertEquals(newSurplusTable(), results.get("liabs").getVerifiedRows());
-        Assert.assertEquals(newMissingTable(), results.get("liabz").getVerifiedRows());
+    void misnamedTable() {
+        Map<String, ResultTable> results =
+                this.verifyTables(createTables("assets", "liabs"), createTables("assets", "liabz"));
+        assertEquals(newPassTable(), results.get("assets").getVerifiedRows());
+        assertEquals(newSurplusTable(), results.get("liabs").getVerifiedRows());
+        assertEquals(newMissingTable(), results.get("liabz").getVerifiedRows());
         this.expectedTables = 3;
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void noExpectedColumns()
-    {
-        this.verifyTables(
-                Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
-                Collections.singletonMap("table", TableTestUtils.createTable(0)));
+    @Test
+    void noExpectedColumns() {
+        this.expectingException = true;
+        assertThrows(
+                IllegalStateException.class,
+                () -> this.verifyTables(
+                        Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")),
+                        Collections.singletonMap("table", TableTestUtils.createTable(0))));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void noActualColumns()
-    {
-        this.verifyTables(
-                Collections.singletonMap("table", TableTestUtils.createTable(0)),
-                Collections.singletonMap("table", TableTestUtils.createTable(1, "Col")));
+    @Test
+    void noActualColumns() {
+        this.expectingException = true;
+        assertThrows(
+                IllegalStateException.class,
+                () -> this.verifyTables(
+                        Collections.singletonMap("table", TableTestUtils.createTable(0)),
+                        Collections.singletonMap("table", TableTestUtils.createTable(1, "Col"))));
     }
 
-    private Map<String, ResultTable> verifyTables(Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults)
-    {
+    private Map<String, ResultTable> verifyTables(
+            Map<String, VerifiableTable> actualResults, Map<String, VerifiableTable> expectedResults) {
         Map<String, ResultTable> results = this.verifier.verifyTables(expectedResults, actualResults);
-        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlOptions(false, HtmlFormatter.DEFAULT_ROW_LIMIT, false, false, false, Collections.emptySet()));
-        htmlFormatter.appendResults(this.testName.getMethodName(), results, null);
+        HtmlFormatter htmlFormatter = new HtmlFormatter(this.resultsFile, new HtmlConfig());
+        htmlFormatter.appendResults(this.testName, results, null);
         return results;
     }
 
-    private List<List<ResultCell>> newMissingTable()
-    {
+    private List<List<ResultCell>> newMissingTable() {
         return Arrays.asList(
                 Collections.singletonList(ResultCell.createMissingCell(CELL_COMPARATOR.getFormatter(), "Heading")),
                 Collections.singletonList(ResultCell.createMissingCell(CELL_COMPARATOR.getFormatter(), "Value")));
     }
 
-    private List<List<ResultCell>> newSurplusTable()
-    {
+    private List<List<ResultCell>> newSurplusTable() {
         return Arrays.asList(
                 Collections.singletonList(ResultCell.createSurplusCell(CELL_COMPARATOR.getFormatter(), "Heading")),
                 Collections.singletonList(ResultCell.createSurplusCell(CELL_COMPARATOR.getFormatter(), "Value")));
     }
 
-    private static List<List<ResultCell>> newPassTable()
-    {
+    private static List<List<ResultCell>> newPassTable() {
         return Arrays.asList(
                 Collections.singletonList(ResultCell.createMatchedCell(CELL_COMPARATOR, "Heading", "Heading")),
                 Collections.singletonList(ResultCell.createMatchedCell(CELL_COMPARATOR, "Value", "Value")));
     }
 
-    private static Map<String, VerifiableTable> createTables(String... names)
-    {
+    private static Map<String, VerifiableTable> createTables(String... names) {
         Map<String, VerifiableTable> tables = new HashMap<>();
-        for (String name : names)
-        {
-            tables.put(name, new VerifiableTable()
-            {
+        for (String name : names) {
+            tables.put(name, new VerifiableTable() {
                 @Override
-                public int getRowCount()
-                {
+                public int getRowCount() {
                     return 1;
                 }
 
                 @Override
-                public int getColumnCount()
-                {
+                public int getColumnCount() {
                     return 1;
                 }
 
                 @Override
-                public String getColumnName(int columnIndex)
-                {
+                public String getColumnName(int columnIndex) {
                     return "Heading";
                 }
 
                 @Override
-                public Object getValueAt(int rowIndex, int columnIndex)
-                {
+                public Object getValueAt(int rowIndex, int columnIndex) {
                     return "Value";
                 }
             });
         }
         return tables;
     }
-
 }

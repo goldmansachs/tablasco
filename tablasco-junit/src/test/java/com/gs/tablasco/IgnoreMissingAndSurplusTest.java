@@ -16,283 +16,141 @@
 
 package com.gs.tablasco;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-
+import de.skuzzle.test.snapshots.Snapshot;
+import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
 import java.io.IOException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class IgnoreMissingAndSurplusTest
-{
-    @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy();
+@EnableSnapshotTests
+public class IgnoreMissingAndSurplusTest {
+
+    @RegisterExtension
+    private final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void allRowsMatch() throws IOException
-    {
+    void allRowsMatch(Snapshot snapshot) throws IOException {
         VerifiableTable table = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table, table);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A2</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void failsWithSurplusAndToldToIgnoreJustMissing() throws IOException
-    {
+    void failsWithSurplusAndToldToIgnoreJustMissing(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
 
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().verify("name", table1, table2));
+        TableTestUtils.assertAssertionError(
+                () -> tableVerifier.withIgnoreMissingRows().verify("name", table1, table2));
 
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">C1<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"surplus\">C2<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void failsWithMissingAndToldToIgnoreJustSurplus() throws IOException
-    {
+    void failsWithMissingAndToldToIgnoreJustSurplus(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
 
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreSurplusRows().verify("name", table1, table2));
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">A1<p>Missing</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">A2<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.assertAssertionError(
+                () -> tableVerifier.withIgnoreSurplusRows().verify("name", table1, table2));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void passesWithSurplusAndMissing() throws IOException
-    {
+    void passesWithSurplusAndMissing(Snapshot snapshot) throws IOException {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"pass\">B2</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void failsWithMissingSurplusHeader() throws IOException
-    {
+    void failsWithMissingSurplusHeader(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 3", "C1", "C2", "B1", "B2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"surplus\">Col 3<p>Surplus</p>\n" +
-                "</th>\n" +
-                "<th class=\"missing\">Col 2<p>Missing</p>\n" +
-                "</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"surplus\">B2<p>Surplus</p>\n" +
-                "</td>\n" +
-                "<td class=\"missing\">B2<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.assertAssertionError(() ->
+                tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void failsWithDifferenceInCommonRow() throws IOException
-    {
+    void failsWithDifferenceInCommonRow(Snapshot snapshot) throws IOException {
         final VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2", "B1", "B2");
         final VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B3");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">B1</td>\n" +
-                "<td class=\"fail\">B2<p>Expected</p>\n" +
-                "<hr/>B3<p>Actual</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.assertAssertionError(() ->
+                tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void passesWithEmptyExpected() throws IOException
-    {
+    void passesWithEmptyExpected(Snapshot snapshot) throws IOException {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void passesWithEmptyActual() throws IOException
-    {
+    void passesWithEmptyActual(Snapshot snapshot) throws IOException {
         VerifiableTable table1 = TableTestUtils.createTable(2, "Col 1", "Col 2", "C1", "C2", "B1", "B2");
         VerifiableTable table2 = TableTestUtils.createTable(2, "Col 1", "Col 2");
         this.tableVerifier.withIgnoreMissingRows().withIgnoreSurplusRows().verify("name", table1, table2);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 2</th>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void ignoreSurplusColumnsPassesWithSurplus() throws IOException
-    {
+    void ignoreSurplusColumnsPassesWithSurplus(Snapshot snapshot) throws IOException {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         VerifiableTable actual = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         this.tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A3</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void ignoreSurplusColumnsFailsWithMissing() throws IOException
-    {
+    void ignoreSurplusColumnsFailsWithMissing(Snapshot snapshot) throws IOException {
         final VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual));
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"missing\">Col 3<p>Missing</p>\n" +
-                "</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"missing\">A3<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.assertAssertionError(
+                () -> tableVerifier.withIgnoreSurplusColumns().verify("name", expected, actual));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void ignoreMissingColumnsPassesWithMissing() throws IOException
-    {
+    void ignoreMissingColumnsPassesWithMissing(Snapshot snapshot) throws IOException {
         VerifiableTable expected = TableTestUtils.createTable(3, "Col 1", "Col 2", "Col 3", "A1", "A2", "A3");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"pass\">Col 3</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"pass\">A3</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void ignoreMissingColumnsFailsWithSurplus() throws IOException
-    {
+    void ignoreMissingColumnsFailsWithSurplus(Snapshot snapshot) throws IOException {
         final VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         final VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
-        TableTestUtils.assertAssertionError(() -> tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual));
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "<th class=\"surplus\">Col 3<p>Surplus</p>\n" +
-                "</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "<td class=\"surplus\">A3<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.assertAssertionError(
+                () -> tableVerifier.withIgnoreMissingColumns().verify("name", expected, actual));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 
     @Test
-    public void ignoreMissingAndSurplusColumnsPasses() throws IOException
-    {
+    void ignoreMissingAndSurplusColumnsPasses(Snapshot snapshot) throws IOException {
         VerifiableTable expected = TableTestUtils.createTable(2, "Col 1", "Col 2", "A1", "A2");
         VerifiableTable actual = TableTestUtils.createTable(2, "Col 1", "Col 3", "A1", "A3");
         this.tableVerifier.withIgnoreMissingColumns().withIgnoreSurplusColumns().verify("name", expected, actual);
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col 1</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">A1</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        TableTestUtils.getHtml(this.tableVerifier);
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

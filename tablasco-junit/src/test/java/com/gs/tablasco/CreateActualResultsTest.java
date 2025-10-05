@@ -16,48 +16,46 @@
 
 package com.gs.tablasco;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CreateActualResultsTest
-{
-    private final TableVerifier verifier = new TableVerifier()
-            .withMavenDirectoryStrategy()
-            .withFilePerMethod();
+import java.nio.file.Files;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-    @Rule
-    public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
+public class CreateActualResultsTest {
+    @RegisterExtension
+    private final TableVerifier verifier =
+            new TableVerifier().withMavenDirectoryStrategy().withFilePerMethod();
 
-    @Before
-    public void setUp()
-    {
-        this.verifier.starting(this.description.get());
-        this.verifier.getActualFile().delete();
+    @RegisterExtension
+    public final TableTestUtils.TestExtensionContext extensionContext = new TableTestUtils.TestExtensionContext();
+
+    @BeforeEach
+    void setUp() throws Exception {
+        this.verifier.beforeEach(this.extensionContext.get());
+        Files.deleteIfExists(this.verifier.getActualFile().toPath());
     }
 
     @Test
-    public void testDefault()
-    {
+    void testDefault() {
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
-        Assert.assertTrue(this.verifier.getActualFile().exists());
+        this.verifier.afterEach(this.extensionContext.get());
+        assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testTrue()
-    {
+    void testTrue() {
         this.verifier.withCreateActualResults(true).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
-        Assert.assertTrue(this.verifier.getActualFile().exists());
+        this.verifier.afterEach(this.extensionContext.get());
+        assertTrue(this.verifier.getActualFile().exists());
     }
 
     @Test
-    public void testFalse()
-    {
+    void testFalse() {
         this.verifier.withCreateActualResults(false).verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
-        Assert.assertFalse(this.verifier.getActualFile().exists());
+        this.verifier.afterEach(this.extensionContext.get());
+        assertFalse(this.verifier.getActualFile().exists());
     }
 }

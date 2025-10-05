@@ -16,8 +16,8 @@
 
 package com.gs.tablasco.legal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,49 +25,38 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
-public class CopyrightTest
-{
+class CopyrightTest {
     @Test
-    public void test() throws IOException
-    {
+    void test() throws IOException {
         List<File> javaSource = new ArrayList<>();
         scan(new File("src"), javaSource);
-        Assert.assertFalse(javaSource.isEmpty());
-        for (File file : javaSource)
-        {
+        assertFalse(javaSource.isEmpty());
+        for (File file : javaSource) {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
             boolean foundApacheLicence = false;
             boolean foundApacheUrl = false;
-            for (String line : lines)
-            {
-                if (line.contains("Licensed under the Apache License, Version 2.0"))
-                {
+            for (String line : lines) {
+                if (line.contains("Licensed under the Apache License, Version 2.0")) {
                     foundApacheLicence = true;
                 }
-                if (line.contains("http://www.apache.org/licenses/LICENSE-2.0"))
-                {
+                if (line.contains("http://www.apache.org/licenses/LICENSE-2.0")) {
                     foundApacheUrl = true;
                 }
             }
-            Assert.assertTrue("Found Apache license in " + file.getName(), foundApacheLicence);
-            Assert.assertTrue("Found Apache license URL in " + file.getName(), foundApacheUrl);
+            assertTrue(foundApacheLicence, "Found Apache license in " + file.getName());
+            assertTrue(foundApacheUrl, "Found Apache license URL in " + file.getName());
         }
     }
 
-    private void scan(File dir, List<File> javaSource)
-    {
+    private void scan(File dir, List<File> javaSource) {
         File[] files = dir.listFiles();
-        if (files != null)
-        {
-            for (File file : files)
-            {
-                if (file.isDirectory())
-                {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
                     scan(file, javaSource);
-                }
-                else if (file.getName().endsWith(".java"))
-                {
+                } else if (file.getName().endsWith(".java")) {
                     javaSource.add(file);
                 }
             }

@@ -17,34 +17,30 @@
 package com.gs.tablasco.verify;
 
 import com.gs.tablasco.verify.indexmap.IndexMapTableVerifier;
-import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingleTableVerifierTest
-{
+@TestMethodOrder(MethodName.class)
+public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingleTableVerifierTest {
     @Override
-    protected IndexMapTableVerifier createSingleTableVerifier(ColumnComparators columnComparators)
-    {
+    protected IndexMapTableVerifier createSingleTableVerifier(ColumnComparators columnComparators) {
         return new IndexMapTableVerifier(columnComparators, true, 1, false, false);
     }
 
     @Override
-    protected List<List<ResultCell>> getExpectedVerification(String methodName)
-    {
+    protected List<List<ResultCell>> getExpectedVerification(String methodName) {
         return ROW_KEY_VERIFICATIONS.get(methodName);
     }
-    
+
     static final Map<String, List<List<ResultCell>>> ROW_KEY_VERIFICATIONS;
-    static
-    {
+
+    static {
         ROW_KEY_VERIFICATIONS = new HashMap<>(SingleTableVerifierMaxBestMatchThresholdTest.MAX_BEST_MATCH_THRESHOLD);
-        addVerification("adaptiveMatcherLeavesLeastUnmatchedRows",
+        addVerification(
                 row(pass("Col 1"), pass("Col 2"), pass("Col 3")),
                 row(pass("A"), pass("A"), fail("0", "1")),
                 row(pass("A"), pass("A"), fail("2", "3")),
@@ -55,12 +51,13 @@ public class SingleTableVerifierMinBestMatchThresholdTest extends AbstractSingle
                 row(surplus("X"), surplus("C"), surplus("0")),
                 row(missing("Y"), missing("C"), missing("1")),
                 row(surplus("X"), surplus("X"), surplus("0")),
-                row(missing("Y"), missing("Y"), missing("1"))
-        );
+                row(missing("Y"), missing("Y"), missing("1")));
     }
 
-    private static void addVerification(String testName, List<ResultCell>... rows)
-    {
-        ROW_KEY_VERIFICATIONS.put(testName, Arrays.asList(rows));
+    private static void addVerification(List<?>... rows) {
+        List<List<ResultCell>> castRows = Arrays.stream(rows)
+                .map(r -> r.stream().map(ResultCell.class::cast).toList())
+                .toList();
+        ROW_KEY_VERIFICATIONS.put("adaptiveMatcherLeavesLeastUnmatchedRows", castRows);
     }
 }

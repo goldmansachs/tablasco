@@ -16,28 +16,25 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.gs.tablasco.files.FilePerClassStrategy;
 import com.gs.tablasco.results.ExpectedResultsLoader;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class ExpectedResultsLoaderTest implements ExpectedResultsLoader
-{
-    @Rule
-    public final TableVerifier verifier = new TableVerifier()
+public class ExpectedResultsLoaderTest implements ExpectedResultsLoader {
+    @RegisterExtension
+    private final TableVerifier verifier = new TableVerifier()
             .withMavenDirectoryStrategy()
-            .withFileStrategy(new FilePerClassStrategy()
-            {
+            .withFileStrategy(new FilePerClassStrategy() {
                 @Override
-                public String getExpectedFilename(Class<?> testClass, String methodName)
-                {
+                public String getExpectedFilename(Class<?> testClass, String methodName) {
                     return super.getExpectedFilename(testClass, methodName).replace(".txt", ".raw.txt");
                 }
             })
@@ -46,34 +43,29 @@ public class ExpectedResultsLoaderTest implements ExpectedResultsLoader
     private static final AtomicInteger loadCount = new AtomicInteger();
 
     @Override
-    public InputStream load(File expectedFile) throws IOException
-    {
+    public InputStream load(File expectedFile) throws IOException {
         loadCount.incrementAndGet();
         File file = new File(expectedFile.getPath().replace(".raw.txt", ".txt"));
-        return new FileInputStream(file);
+        return Files.newInputStream(file.toPath());
     }
 
     @Test
-    public void testOne()
-    {
+    void testOne() {
         runTest();
     }
 
     @Test
-    public void testTwo()
-    {
+    void testTwo() {
         runTest();
     }
 
     @Test
-    public void testThree()
-    {
+    void testThree() {
         runTest();
     }
 
-    private void runTest()
-    {
+    private void runTest() {
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        Assert.assertEquals("Results should be loaded once and used by all three tests", 1, loadCount.intValue());
+        assertEquals(1, loadCount.intValue(), "Results should be loaded once and used by all three tests");
     }
 }

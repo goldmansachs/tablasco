@@ -18,37 +18,31 @@ package com.gs.tablasco.files;
 
 import java.io.File;
 
-public class FixedDirectoryStrategy implements DirectoryStrategy
-{
+public class FixedDirectoryStrategy implements DirectoryStrategy {
     private final File expectedDir;
     private final File outputDir;
 
-    public FixedDirectoryStrategy()
-    {
+    public FixedDirectoryStrategy() {
         this(new File(System.getProperty("user.dir")), new File(System.getProperty("java.io.tmpdir")));
     }
 
-    public FixedDirectoryStrategy(File expectedDir, File outputDir)
-    {
+    public FixedDirectoryStrategy(File expectedDir, File outputDir) {
         this.expectedDir = expectedDir;
         this.outputDir = outputDir;
     }
 
     @Override
-    public File getExpectedDirectory(Class<?> testClass)
-    {
+    public File getExpectedDirectory(Class<?> testClass) {
         return this.expectedDir;
     }
 
     @Override
-    public File getOutputDirectory(Class<?> testClass)
-    {
+    public File getOutputDirectory(Class<?> testClass) {
         return this.outputDir;
     }
 
     @Override
-    public File getActualDirectory(Class<?> testClass)
-    {
+    public File getActualDirectory(Class<?> testClass) {
         return this.outputDir;
     }
 }

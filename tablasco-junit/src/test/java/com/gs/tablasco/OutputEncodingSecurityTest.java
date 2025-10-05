@@ -16,41 +16,32 @@
 
 package com.gs.tablasco;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-
+import de.skuzzle.test.snapshots.Snapshot;
+import de.skuzzle.test.snapshots.junit5.EnableSnapshotTests;
 import java.io.IOException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class OutputEncodingSecurityTest
-{
-    @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
-            .withFilePerMethod()
-            .withMavenDirectoryStrategy();
+@EnableSnapshotTests
+public class OutputEncodingSecurityTest {
+
+    @RegisterExtension
+    private final TableVerifier tableVerifier =
+            new TableVerifier().withFilePerMethod().withMavenDirectoryStrategy();
 
     @Test
-    public void htmlTagsAreEncoded() throws IOException
-    {
-        final VerifiableTable table1 = TableTestUtils.createTable(1, "Col", "<script language=\"javascript\">alert(\"boo\")</script>", "<script language=\"javascript\">alert(\"boo\")</script>");
-        final VerifiableTable table2 = TableTestUtils.createTable(1, "Col", "<script language=\"javascript\">alert(\"boo\")</script>", "<script language=\"javascript\">alert(\"foo\")</script>");
+    void htmlTagsAreEncoded(Snapshot snapshot) throws IOException {
+        final VerifiableTable table1 = TableTestUtils.createTable(
+                1,
+                "Col",
+                "<script language=\"javascript\">alert(\"boo\")</script>",
+                "<script language=\"javascript\">alert(\"boo\")</script>");
+        final VerifiableTable table2 = TableTestUtils.createTable(
+                1,
+                "Col",
+                "<script language=\"javascript\">alert(\"boo\")</script>",
+                "<script language=\"javascript\">alert(\"foo\")</script>");
         TableTestUtils.assertAssertionError(() -> tableVerifier.verify("name", table1, table2));
-        Assert.assertEquals(
-                "<table border=\"1\" cellspacing=\"0\">\n" +
-                "<tr>\n" +
-                "<th class=\"pass\">Col</th>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"pass\">&lt;script language=\"javascript\"&gt;alert(\"boo\")&lt;/script&gt;</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"surplus\">&lt;script language=\"javascript\"&gt;alert(\"foo\")&lt;/script&gt;<p>Surplus</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td class=\"missing\">&lt;script language=\"javascript\"&gt;alert(\"boo\")&lt;/script&gt;<p>Missing</p>\n" +
-                "</td>\n" +
-                "</tr>\n" +
-                "</table>", TableTestUtils.getHtml(this.tableVerifier, "table"));
+        snapshot.assertThat(TableTestUtils.getHtml(this.tableVerifier)).asText().matchesSnapshotText();
     }
 }

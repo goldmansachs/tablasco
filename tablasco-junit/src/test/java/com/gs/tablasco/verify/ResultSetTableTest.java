@@ -16,26 +16,23 @@
 
 package com.gs.tablasco.verify;
 
-import com.gs.tablasco.NamedTable;
-import com.gs.tablasco.TableVerifier;
-import com.gs.tablasco.TestTable;
-import com.gs.tablasco.VerifiableTable;
-import org.h2.tools.SimpleResultSet;
-import org.junit.Rule;
-import org.junit.Test;
-
+import com.gs.tablasco.*;
+import com.gs.tablasco.core.Tables;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import org.h2.tools.SimpleResultSet;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class ResultSetTableTest {
 
-    @Rule
-    public final TableVerifier tableVerifier = new TableVerifier();
+    @RegisterExtension
+    private final TableVerifier tableVerifier = new TableVerifier();
 
     @Test
-    public void create() throws SQLException {
+    void create() throws SQLException {
         SimpleResultSet resultSet = new SimpleResultSet();
         resultSet.addColumn("Name", Types.VARCHAR, 0, 0);
         resultSet.addColumn("Age", Types.INTEGER, 0, 0);
@@ -46,10 +43,9 @@ public class ResultSetTableTest {
         VerifiableTable expected = new TestTable("Name", "Age", "Height", "DoB")
                 .withRow("Joe", 70, 6.0, Date.valueOf("1940-02-16"))
                 .withRow("Sue", 45, 5.8, Date.valueOf("1975-02-16"));
-        VerifiableTable actual = ResultSetTable.create(resultSet);
+        VerifiableTable actual = Tables.fromResultSet(resultSet);
         this.tableVerifier.verify(
                 Collections.singletonList(new NamedTable("table", expected)),
                 Collections.singletonList(new NamedTable("table", actual)));
-
     }
 }

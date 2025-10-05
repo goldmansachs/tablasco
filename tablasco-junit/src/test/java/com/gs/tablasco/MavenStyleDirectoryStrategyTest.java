@@ -17,23 +17,22 @@
 package com.gs.tablasco;
 
 import com.gs.tablasco.files.MavenStyleDirectoryStrategy;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class MavenStyleDirectoryStrategyTest
-{
-    @Rule
-    public final TableVerifier tableVerifier = new TableVerifier()
+public class MavenStyleDirectoryStrategyTest {
+
+    @RegisterExtension
+    private final TableVerifier tableVerifier = new TableVerifier()
             .withFilePerClass()
-            .withDirectoryStrategy(
-                    new MavenStyleDirectoryStrategy()
-                            .withAnchorFile("pom.xml")
-                            .withExpectedSubDir("maven_input")
-                            .withOutputSubDir("maven_output"));
+            .withDirectoryStrategy(new MavenStyleDirectoryStrategy()
+                    .withAnchorFile("pom.xml")
+                    .withExpectedSubDir("maven_input")
+                    .withOutputSubDir("maven_output"));
 
     @Test
-    public void testMavenStyleDirectoryStrategy()
-    {
-        this.tableVerifier.verify("maven", new TestTable("h1", "h2").withRow("r11", "r12").withRow("r21", "r22"));
+    void testMavenStyleDirectoryStrategy() {
+        this.tableVerifier.verify(
+                "maven", new TestTable("h1", "h2").withRow("r11", "r12").withRow("r21", "r22"));
     }
 }

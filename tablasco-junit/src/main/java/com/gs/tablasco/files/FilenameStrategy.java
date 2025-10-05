@@ -19,8 +19,7 @@ package com.gs.tablasco.files;
 /**
  * A strategy for determining the expected results and verification output filenames for a given test class.
  */
-public interface FilenameStrategy
-{
+public interface FilenameStrategy {
     /**
      * Returns the expected results filename for a given test class.
      * @param testClass the test class

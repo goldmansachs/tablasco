@@ -1,8 +1,10 @@
 # Tablasco
 
 ## What is it?
-Tablasco is a baseline testing utility for JUnit. It was initially developed to verify financial reports but can be used 
-to make assertions on any outputs that can be presented in a tabular format.
+Tablasco is a snapshot testing utility for tabular datasets. It was initially developed to verify financial reports, but 
+can be used to make assertions on any data that can be presented in a tabular format.
+
+Tablasco now supports JUnit 5 and Java 11+. Please use version 2.5.0 if you still need Tablasco for JUnit 4 or Java 8.
 
 ### 1. Fast and efficient table verification algorithm
 Tablasco's table verification algorithm can process tens of thousands of table rows out-of-the-box, and many more with
@@ -14,8 +16,6 @@ Each test produces a color-coded HTML report showing how the actual and expected
 quickly identify problems. Output can be configured to support large datasets by hiding matched rows and collapsing 
 similar breaks.
 
-![Example HTML report](img/html_report.png?raw=true)
-
 ### 3. Automatic baseline management
 Each Tablasco test is backed by a text file containing expected results; this _baseline_ file is normally saved with the
 code in version control. If a test fails because of a change that caused an expected difference the test can be
@@ -25,10 +25,10 @@ _rebased_ to update the text file with the new results.
 The two most important Tablasco classes to be familiar with are `TableVerifier` and `VerifiableTable`.
 
 ### TableVerifier
-`TableVerifier` is a [JUnit rule](http://junit.org/junit4/javadoc/4.12/org/junit/Rule.html) that needs to be defined in
-each Tablasco test class:
+`TableVerifier` is a [JUnit 5 Extension](https://docs.junit.org/current/user-guide/#extensions) that needs to be defined 
+in each Tablasco test class:
 ```
-@Rule
+@RegisterExtension
 public final TableVerifier tableVerifier = new TableVerifier()
     .withExpectedDir("src/test/resources")
     .withOutputDir("target");
@@ -37,14 +37,14 @@ JUnit, by design, ensures that each test method has its own instance of `TableVe
 this to offer a fluent API that allows configuration to cascade from the project, to the class, to the test level. To
 set project level configuration you can wrap the initialisation code above in a factory method:
 ```
-@Rule
+@RegisterExtension
 public final TableVerifier tableVerifier = 
     MyTableVerifierFactory.newTableVerifier();
 ```
 
 Configuration that you want to apply at a class level can be set when the field is initialised:
 ```
-@Rule
+@RegisterExtension
 public final TableVerifier tableVerifier = 
     MyTableVerifierFactory.newTableVerifier().withHideMatchedRows(true);
 ```

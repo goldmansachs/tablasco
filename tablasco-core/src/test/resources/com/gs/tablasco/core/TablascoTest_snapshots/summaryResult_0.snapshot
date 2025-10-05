@@ -1,0 +1,505 @@
+dynamic-directory: false
+snapshot-name: summaryResult_0
+snapshot-number: 0
+test-class: com.gs.tablasco.core.TablascoTest
+test-method: summaryResult
+
+<html lang="en">
+    <head>
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-type"/>
+        <script>
+        function toggleVisibility(id) {
+          var summary = document.getElementById(id);
+          if (summary.style.display === 'none') {
+            summary.style.display = 'table-row';
+          } else {
+            summary.style.display = 'none';
+          }
+        }
+        </script>
+        <style>
+        :root {
+            --color-pass: #c0ffc0;
+            --color-fail: #ffc0c0;
+            --color-outoforder: #e0c0ff;
+            --color-missing: #cccccc;
+            --color-surplus: #c0e0ff;
+            --color-summary: #f3f6f8;
+            --color-blue: blue;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-size-small: 0.875rem;
+            --font-size-xsmall: 0.75rem;
+            --font-size-medium: 1rem;
+            --font-size-large: 1.25rem;
+            --padding-small: 0.5rem;
+            --padding-medium: 1rem;
+            --border-color: #000;
+            --border-width: 1px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            color: #000;
+            padding: var(--padding-medium);
+            font-family: var(--font-family);
+            line-height: 1.5;
+            background-color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--padding-medium);
+            font-size: var(--font-size-small);
+        }
+        th, td {
+            border: var(--border-width) solid var(--border-color);
+            padding: var(--padding-small);
+            text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+        th {
+            font-weight: bold;
+            background-color: var(--color-summary);
+        }
+        .pass {
+            background-color: var(--color-pass);
+        }
+
+        .fail {
+            background-color: var(--color-fail);
+        }
+        .outoforder {
+            background-color: var(--color-outoforder);
+        }
+        .missing {
+            background-color: var(--color-missing);
+            color: var(--color-grey);
+        }
+        .surplus {
+            background-color: var(--color-surplus);
+            color: var(--color-grey);
+        }
+        .summary {
+            background-color: var(--color-summary);
+        }
+        .number {
+            text-align: right;
+        }
+        .metadata {
+            margin-bottom: var(--padding-medium);
+        }
+        .multi {
+            font-style: italic;
+        }
+        .blank_row {
+            height: 0.75rem;
+            border: 0;
+            background-color: #fff;
+        }
+        .grey {
+            color: var(--color-grey);
+        }
+        .blue {
+            color: var(--color-blue);
+        }
+        .italic {
+            font-style: italic;
+        }
+        .link {
+            color: var(--color-blue);
+            text-decoration: underline;
+            cursor: pointer;
+            font-style: italic;
+        }
+        .link:hover {
+            text-decoration: none;
+        }
+        .small {
+            font-size: var(--font-size-xsmall);
+        }
+        .expected {
+            text-decoration: line-through;
+        }
+        hr {
+            border: 0;
+            background-color: var(--border-color);
+            height: var(--border-width);
+            margin: var(--padding-small) 0;
+        }
+        p {
+            font-style: italic;
+            font-size: var(--font-size-xsmall);
+            color: var(--color-blue);
+            padding-top: var(--padding-small);
+        }
+        h1 {
+            font-size: var(--font-size-large);
+            margin-bottom: var(--padding-small);
+        }
+        h2 {
+            font-size: var(--font-size-medium);
+            margin-bottom: var(--padding-small);
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: var(--padding-medium);
+            font-size: var(--font-size-medium);
+        }
+        .legend-box {
+            display: inline-block;
+            width: 0.875rem;
+            height: 0.875rem;
+            margin-right: 0.25rem;
+            border: var(--border-width) solid var(--border-color);
+        }
+        @media (max-width: 768px) {
+            body {
+                font-size: var(--font-size-small);
+            }
+            table {
+                font-size: var(--font-size-xsmall);
+            }
+            th, td {
+                padding: calc(var(--padding-small) / 2);
+            }
+            h1 {
+                font-size: var(--font-size-medium);
+            }
+            h2 {
+                font-size: var(--font-size-small);
+            }
+        }
+        </style>
+        <title>Test Results</title>
+    </head>
+    <body>
+        <div id="tablasco-metadata"/>
+        <h1 id="tablasco-title">HtmlTest</h1>
+        <div id="tablasco-summary">
+            <div>
+                <h2>Assertions</h2>
+                <table>
+                    <tr>
+                        <th class="fail">19 right, 71 wrong, 21.1% correct</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="tablasco-results">
+            <div id="HtmlTest.Table">
+                <h2>Table</h2>
+                <table>
+                    <tr>
+                        <th class="pass">id</th>
+                        <th class="outoforder">str2</th>
+                        <th class="pass">str1</th>
+                        <th class="pass">num1</th>
+                        <th class="surplus">
+                            <span class="actual">num3</span>
+                        </th>
+                        <th class="missing">
+                            <span class="expected">num2</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="blank_row" colspan="6"/>
+                    </tr>
+                    <tr>
+                        <td class="pass number">5</td>
+                        <td class="outoforder">data</td>
+                        <td class="pass">sample</td>
+                        <td class="pass number">42</td>
+                        <td class="surplus number">
+                            <span class="actual">84</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">84</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pass number">6</td>
+                        <td class="outoforder">text</td>
+                        <td class="pass">example</td>
+                        <td class="pass number">7</td>
+                        <td class="surplus number">
+                            <span class="actual">14</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">14</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pass number">11</td>
+                        <td class="outoforder">yellow</td>
+                        <td class="pass">green</td>
+                        <td class="pass number">55</td>
+                        <td class="surplus number">
+                            <span class="actual">66</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">66</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="blank_row" colspan="6"/>
+                    </tr>
+                    <tr>
+                        <td class="missing number">
+                            <span class="expected">1</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected">world</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected">hello</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">10</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected"/>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">20</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="missing number">
+                            <span class="expected">2</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected">bar</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected">foo</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">5</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected"/>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">15</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="missing number">
+                            <span class="expected">3</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected">ipsum</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected">lorem</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">0</span>
+                        </td>
+                        <td class="missing">
+                            <span class="expected"/>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">100</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="blank_row" colspan="6"/>
+                    </tr>
+                    <tr>
+                        <td class="outoforder number">8</td>
+                        <td class="outoforder">delta</td>
+                        <td class="outoforder">gamma</td>
+                        <td class="outoforder number">-1</td>
+                        <td class="surplus number">
+                            <span class="actual">-2</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">-2</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="outoforder number">7</td>
+                        <td class="outoforder">beta</td>
+                        <td class="outoforder">alpha</td>
+                        <td class="outoforder number">1</td>
+                        <td class="surplus number">
+                            <span class="actual">2</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">2</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="surplus number">
+                            <span class="actual">12</span>
+                        </td>
+                        <td class="surplus">
+                            <span class="actual">white</span>
+                        </td>
+                        <td class="surplus">
+                            <span class="actual">black</span>
+                        </td>
+                        <td class="surplus number">
+                            <span class="actual">7</span>
+                        </td>
+                        <td class="surplus number">
+                            <span class="actual">8</span>
+                        </td>
+                        <td class="surplus">
+                            <span class="actual"/>
+                        </td>
+                    </tr>
+                    <tr onclick="toggleVisibility('HtmlTest.Table.summaryRow2')">
+                        <td class="summary" colspan="6">
+                            <a class="link">2 more breaks like this...</a>
+                        </td>
+                    </tr>
+                    <tr id="HtmlTest.Table.summaryRow2" style="display:none">
+                        <td class="summary small">
+                            13 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                            14 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                        </td>
+                        <td class="summary small">
+                            moon 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                            dog 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                        </td>
+                        <td class="summary small">
+                            cat 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                            sun 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                        </td>
+                        <td class="summary small">
+                            3 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                            8 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                        </td>
+                        <td class="summary small">
+                            16 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                            6 
+                            <span>- </span>
+                            <span class="italic blue">1 row</span>
+                            <br/>
+                        </td>
+                        <td class="summary small">
+                             
+                            <span>- </span>
+                            <span class="italic blue">2 rows</span>
+                            <br/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="blank_row" colspan="6"/>
+                    </tr>
+                    <tr>
+                        <td class="pass number">9</td>
+                        <td class="outoforder">two</td>
+                        <td class="pass">one</td>
+                        <td class="fail number">
+                            <span class="expected">11</span>
+                            <span class="actual">119</span>
+                            (-108 / 981.82%)
+                        </td>
+                        <td class="surplus number">
+                            <span class="actual">22</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">22</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="blank_row" colspan="6"/>
+                    </tr>
+                    <tr>
+                        <td class="pass number">10</td>
+                        <td class="fail">
+                            <span class="expected">blue</span>
+                            <span class="actual">blue bell</span>
+                        </td>
+                        <td class="pass">red</td>
+                        <td class="pass number">99</td>
+                        <td class="surplus number">
+                            <span class="actual">889</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">88</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="blank_row" colspan="6"/>
+                    </tr>
+                    <tr>
+                        <td class="fail number">
+                            <span class="expected">4</span>
+                            <span class="actual">44</span>
+                            (-40 / 1,000%)
+                        </td>
+                        <td class="fail">
+                            <span class="expected">case</span>
+                            <span class="actual">caseX</span>
+                        </td>
+                        <td class="pass">test</td>
+                        <td class="pass number">-10</td>
+                        <td class="surplus number">
+                            <span class="actual">-20</span>
+                        </td>
+                        <td class="missing number">
+                            <span class="expected">-20</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div>
+            <span class="legend-item">
+                <span class="legend-box pass"> </span>
+                Match
+            </span>
+            <span class="legend-item">
+                <span class="legend-box fail"> </span>
+                Mismatch
+            </span>
+            <span class="legend-item">
+                <span class="legend-box missing"> </span>
+                Missing
+            </span>
+            <span class="legend-item">
+                <span class="legend-box surplus"> </span>
+                Surplus
+            </span>
+            <span class="legend-item">
+                <span class="legend-box outoforder"> </span>
+                Out of Order
+            </span>
+        </div>
+    </body>
+</html>

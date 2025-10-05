@@ -16,76 +16,70 @@
 
 package com.gs.tablasco;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gs.tablasco.files.DirectoryStrategy;
 import com.gs.tablasco.files.FilePerClassStrategy;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.io.File;
+import java.nio.file.Files;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class FileAndDirectoryStrategyTest
-{
+public class FileAndDirectoryStrategyTest {
+    @RegisterExtension
     private final TableVerifier verifier = new TableVerifier()
-            .withDirectoryStrategy(new DirectoryStrategy()
-            {
+            .withDirectoryStrategy(new DirectoryStrategy() {
                 @Override
-                public File getExpectedDirectory(Class<?> testClass)
-                {
+                public File getExpectedDirectory(Class<?> testClass) {
                     return TableTestUtils.getExpectedDirectory();
                 }
 
                 @Override
-                public File getOutputDirectory(Class<?> testClass)
-                {
+                public File getOutputDirectory(Class<?> testClass) {
                     return TableTestUtils.getOutputDirectory();
                 }
 
                 @Override
-                public File getActualDirectory(Class<?> testClass)
-                {
+                public File getActualDirectory(Class<?> testClass) {
                     return new File(TableTestUtils.getOutputDirectory(), "actual");
                 }
             })
-            .withFileStrategy(new FilePerClassStrategy()
-
-            {
+            .withFileStrategy(new FilePerClassStrategy() {
                 @Override
-                public String getExpectedFilename(Class<?> testClass, String methodName)
-                {
+                public String getExpectedFilename(Class<?> testClass, String methodName) {
                     return "Custom" + super.getExpectedFilename(testClass, methodName);
                 }
 
                 @Override
-                public String getOutputFilename(Class<?> testClass, String methodName)
-                {
+                public String getOutputFilename(Class<?> testClass, String methodName) {
                     return "Custom" + super.getOutputFilename(testClass, methodName);
                 }
 
                 @Override
-                public String getActualFilename(Class<?> testClass, String methodName)
-                {
+                public String getActualFilename(Class<?> testClass, String methodName) {
                     return "Custom" + super.getActualFilename(testClass, methodName);
                 }
             });
 
-    @Rule
-    public final TableTestUtils.TestDescription description = new TableTestUtils.TestDescription();
+    @RegisterExtension
+    public final TableTestUtils.TestExtensionContext extensionContext = new TableTestUtils.TestExtensionContext();
 
-    @Before
-    public void setUp()
-    {
-        this.verifier.starting(this.description.get());
-        this.verifier.getActualFile().delete();
+    @BeforeEach
+    void setUp() throws Exception {
+        this.verifier.beforeEach(this.extensionContext.get());
+        Files.deleteIfExists(this.verifier.getActualFile().toPath());
     }
 
     @Test
-    public void testFiles()
-    {
+    void testFiles() {
         this.verifier.verify(TableTestUtils.TABLE_NAME, TableTestUtils.ACTUAL);
-        this.verifier.succeeded(this.description.get());
-        Assert.assertTrue(new File(new File(TableTestUtils.getOutputDirectory().getPath(), "actual"), "CustomFileAndDirectoryStrategyTest.txt").exists());
-        Assert.assertTrue(new File(TableTestUtils.getOutputDirectory().getPath(), "CustomFileAndDirectoryStrategyTest.html").exists());
+        this.verifier.afterEach(this.extensionContext.get());
+        assertTrue(new File(
+                        new File(TableTestUtils.getOutputDirectory().getPath(), "actual"),
+                        "CustomFileAndDirectoryStrategyTest.txt")
+                .exists());
+        assertTrue(new File(TableTestUtils.getOutputDirectory().getPath(), "CustomFileAndDirectoryStrategyTest.html")
+                .exists());
     }
 }
