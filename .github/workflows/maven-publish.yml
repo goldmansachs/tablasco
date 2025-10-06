@@ -39,6 +39,12 @@ jobs:
     - name: Prepare GPG Key
       run: echo "${{ secrets.MAVEN_GPG_KEY_BASE64 }}" | base64 --decode > $GITHUB_WORKSPACE/maven-gpg.key
 
+    - name: Head
+      run: head -n 2 $GITHUB_WORKSPACE/maven-gpg.key
+
+    - name: Tail
+      run: tail n 2 $GITHUB_WORKSPACE/maven-gpg.key
+
     - name: Publish to Maven Central
       run: mvn -P release deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
