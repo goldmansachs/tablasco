@@ -36,7 +36,12 @@ jobs:
     - name: Generate settings.xml for Deployment
       run: echo "<settings><servers><server><id>central</id><username>${{ secrets.MAVEN_USERNAME }}</username><password>${{ secrets.MAVEN_PASSWORD }}</password></server></servers></settings>" > $GITHUB_WORKSPACE/settings.xml
 
+    - name: Prepare GPG Key
+      run: echo "${{ secrets.MAVEN_GPG_KEY_BASE64 }}" | base64 --decode > $GITHUB_WORKSPACE/maven-gpg.key
+
     - name: Publish to Maven Central
       run: mvn -P release deploy -s $GITHUB_WORKSPACE/settings.xml
-#      env:
+      env:
 #        GITHUB_TOKEN: ${{ github.token }}
+        MAVEN_GPG_KEY: $GITHUB_WORKSPACE/maven-gpg.key
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
