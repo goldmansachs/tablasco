@@ -39,7 +39,7 @@ jobs:
       run: mvn -B package --file pom.xml
     
     - name: Publish to Maven Central
-      run: mvn -P release deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn -P release deploy
       env:
 #        GITHUB_TOKEN: ${{ github.token }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
