@@ -20,9 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Prepare GPG Key
-      run: echo "${{ secrets.MAVEN_GPG_KEY_BASE64 }}" | base64 --decode > $GITHUB_WORKSPACE/maven-gpg.key
-    
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -42,7 +39,7 @@ jobs:
       run: mvn -P release deploy
       env:
 #        GITHUB_TOKEN: ${{ github.token }}
+        MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-        MAVEN_GPG_KEY: $GITHUB_WORKSPACE/maven-gpg.key
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
