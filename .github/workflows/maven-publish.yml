@@ -4,10 +4,8 @@
 name: Maven Central Release
 
 on:
-  push:
-    branches: deploy-test
-#  release:
-#    types: [created]
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -30,7 +28,7 @@ jobs:
         server-password: MAVEN_PASSWORD
     
     - name: Set release version
-      run:  mvn -B versions:set -DnewVersion=3.0.0 -DgenerateBackupPoms=false
+      run:  mvn -B versions:set -DnewVersion=$GITHUB_REF_NAME -DgenerateBackupPoms=false
     
     - name: Publish to Maven Central
       run: mvn -P release deploy
